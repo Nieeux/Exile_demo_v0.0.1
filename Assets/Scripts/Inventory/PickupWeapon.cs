@@ -5,23 +5,28 @@ using UnityEngine;
 public class PickupWeapon : MonoBehaviour, Interactable, SharedObject
 {
 	public InventoryItem item;
+	public WeaponController WeaponPrefab;
 
 	public int amount;
 
 	public int id;
 
-	private Vector3 defaultScale;
-
-	private Vector3 desiredScale;
 
 	private void Awake()
 	{
-		this.defaultScale = base.transform.localScale;
-		this.desiredScale = this.defaultScale;
+
 	}
 	public void Interact()
 	{
-
+		if (PlayerWeaponManager.Instance.AddWeapon(WeaponPrefab))
+		{
+			// Handle auto-switching to weapon if no weapons currently
+			if (PlayerWeaponManager.Instance.GetActiveWeapon() == null)
+			{
+				PlayerWeaponManager.Instance.SwitchWeapon(true);
+			}
+			Destroy(gameObject);
+		}
 	}
 
 	public void LocalExecute()
@@ -61,9 +66,7 @@ public class PickupWeapon : MonoBehaviour, Interactable, SharedObject
 
 	private void Update()
 	{
-		this.desiredScale = Vector3.Lerp(this.desiredScale, this.defaultScale, Time.deltaTime * 15f);
-		this.desiredScale.y = this.defaultScale.y;
-		base.transform.localScale = Vector3.Lerp(base.transform.localScale, this.desiredScale, Time.deltaTime * 15f);
+
 	}
 
 	public int GetId()

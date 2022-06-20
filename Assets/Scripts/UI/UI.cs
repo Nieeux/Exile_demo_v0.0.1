@@ -7,14 +7,13 @@ using UnityEngine.UI;
 public class UI : MonoBehaviour
 {
     //public Texture crosshairTexture;
-    public WeaponController weapon;
 
     public Image HealthBar;
     public Image HurtBar;
 
-    float HurtSpeed = 0.001f;
+    private float HurtSpeed = 0.002f;
     public Transform playerCam;
-    public PlayerStats m_PlayerHealth;
+    public Health m_PlayerHealth;
 
     void Start()
     {

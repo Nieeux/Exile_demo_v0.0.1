@@ -35,7 +35,7 @@ public class ActiveEvent : MonoBehaviour, SharedObject
         Vector3 position = base.transform.position + new Vector3(Random.Range(-1f, 1f) * 10f, 0f, Random.Range(-1f, 1f) * 10f);
         GameObject enemy = Instantiate(enemyPrefab, position, Quaternion.identity);
 
-        EnemyStats npc = enemy.GetComponent<EnemyStats>();
+        EnemyController npc = enemy.GetComponent<EnemyController>();
         npc.playerTransform = player.transform;
         npc.es = this;
         EnemiesSpawned++;

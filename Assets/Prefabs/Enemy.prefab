@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 5991690360591797727}
   - component: {fileID: 2909493400169758485}
   - component: {fileID: 6727386281272580769}
+  - component: {fileID: 2937776639657386030}
   m_Layer: 11
   m_Name: Enemy
   m_TagString: Untagged
@@ -95,9 +96,24 @@ MonoBehaviour:
   npcDeadPrefab: {fileID: 5801546367149701388, guid: 084a28c03a7f2754ca3cfe519d453af8, type: 3}
   enemyManager: {fileID: 0}
   randomItemDrop: {fileID: 214904090821446178, guid: 688d900f01dadfb4a87c4bca665ec47f, type: 3}
+  LootPrefab: {fileID: 0}
+  DropRate: 1
   playerTransform: {fileID: 0}
   es: {fileID: 0}
   Timer: 0
+--- !u!114 &2937776639657386030
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3803431396737150512}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 10ec911888739ee429dea17ae94234d3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  MaxHealth: 100
 --- !u!1 &6119073495747824648
 GameObject:
   m_ObjectHideFlags: 0
@@ -141,6 +157,7 @@ GameObject:
   - component: {fileID: 5256121380415684223}
   - component: {fileID: 2722398569355067376}
   - component: {fileID: 7152255757851997826}
+  - component: {fileID: 6805704824804052846}
   m_Layer: 11
   m_Name: EnemyBody
   m_TagString: Untagged
@@ -226,3 +243,16 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &6805704824804052846
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6697561071157000789}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4d329538dbf9d0a4688301e6f18eb5db, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  DamageMultiplier: 1

@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 using DG.Tweening;
+using System.Collections;
 
 public class WeaponAnimation : MonoBehaviour
 {
@@ -26,6 +27,9 @@ public class WeaponAnimation : MonoBehaviour
     public float punchDuration = .3f;
     public float punchElasticity = .5f;
 
+    //public Animator animator;
+
+
     private void Start()
     {
         WeaponAnimation.Instance = this;
@@ -35,11 +39,25 @@ public class WeaponAnimation : MonoBehaviour
 
     private void Update()
     {
+        /*
+        if (Input.GetMouseButtonDown(1))
+        {
+            animator.SetBool("Punch", true);
+            StartCoroutine(idle());
+
+        }
+        */
         CalculateSway();
         MoveSway();
         TiltSway();
     }
-
+    /*
+    public IEnumerator idle()
+    {
+        yield return new WaitForSeconds(1);
+        animator.SetBool("Punch", false);
+    }
+    */
     public void RecoilAni()
     {
         //Súng gi?t

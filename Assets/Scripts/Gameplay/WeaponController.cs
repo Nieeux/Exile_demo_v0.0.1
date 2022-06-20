@@ -6,8 +6,7 @@ public class WeaponController : MonoBehaviour
 {
 
     public Transform firePoint;
-    private WeaponAnimation Animation;
-    public GunRecoil Recoil;
+    private PlayerWeaponManager Recoil;
     public HelmetScript RecoilHelmet;
     public bool singleFire = false;
 
@@ -28,7 +27,6 @@ public class WeaponController : MonoBehaviour
     void Awake()
     {
         this.player = base.GetComponentInParent<Player>();
-        this.Animation = base.GetComponent<WeaponAnimation>();
     }
     void Start()
     {
@@ -89,8 +87,8 @@ public class WeaponController : MonoBehaviour
                     firePoint.LookAt(firePointPointerPosition);
                     //Fire
                     GameObject bulletObject = Instantiate(GunStats.bulletPrefab, firePoint.position, firePoint.rotation);
-                    this.Animation.RecoilAni();
-                    this.Recoil.RecoilFire();
+                    WeaponAnimation.Instance.RecoilAni();
+                    PlayerWeaponManager.Instance.RecoilFire();
                     this.RecoilHelmet.RecoilHUD();
 
                     GunStats.CurrentMagazine--;

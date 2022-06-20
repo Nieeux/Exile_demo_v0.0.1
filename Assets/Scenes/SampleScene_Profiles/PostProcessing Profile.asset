@@ -1,42 +1,5 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &-8937068727920803318
-MonoBehaviour:
-  m_ObjectHideFlags: 3
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b3f6f3f7c722b4544b97e3c75840aa33, type: 3}
-  m_Name: AutoExposure
-  m_EditorClassIdentifier: 
-  active: 1
-  enabled:
-    overrideState: 1
-    value: 1
-  filtering:
-    overrideState: 1
-    value: {x: 50, y: 95}
-  minLuminance:
-    overrideState: 1
-    value: 0
-  maxLuminance:
-    overrideState: 1
-    value: 0
-  keyValue:
-    overrideState: 1
-    value: 1
-  eyeAdaptation:
-    overrideState: 1
-    value: 0
-  speedUp:
-    overrideState: 1
-    value: 2
-  speedDown:
-    overrideState: 1
-    value: 1
 --- !u!114 &-5757868243690876038
 MonoBehaviour:
   m_ObjectHideFlags: 3
@@ -1409,7 +1372,6 @@ MonoBehaviour:
   - {fileID: 3496882492639226146}
   - {fileID: -1222511198807670028}
   - {fileID: 8913013358266476140}
-  - {fileID: -8937068727920803318}
   - {fileID: -5757868243690876038}
 --- !u!114 &331883005395741277
 MonoBehaviour:
@@ -1480,7 +1442,7 @@ MonoBehaviour:
     defaultState: 1
   intensity:
     overrideState: 1
-    value: 0.074
+    value: 0.2
   fastMode:
     overrideState: 0
     value: 0
@@ -1496,18 +1458,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c1cb7e9e120078f43bce4f0b1be547a7, type: 3}
   m_Name: AmbientOcclusion
   m_EditorClassIdentifier: 
-  active: 1
+  active: 0
   enabled:
     overrideState: 1
     value: 1
   mode:
     overrideState: 1
-    value: 0
+    value: 1
   intensity:
     overrideState: 1
-    value: 1.07
+    value: 1
   color:
-    overrideState: 1
+    overrideState: 0
     value: {r: 0, g: 0, b: 0, a: 1}
   ambientOnly:
     overrideState: 0
@@ -1523,7 +1485,7 @@ MonoBehaviour:
     value: -12
   thicknessModifier:
     overrideState: 0
-    value: 1
+    value: 3.39
   directLightingStrength:
     overrideState: 0
     value: 0

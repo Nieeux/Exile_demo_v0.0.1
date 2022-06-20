@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class PlayerInput : MonoBehaviour
 {
-    public PlayerStats m_PlayerHealth;
+    public Health m_PlayerHealth;
     void Start()
     {
 

@@ -7,7 +7,7 @@ public class PickupHealth : Pickup
 
     protected override void OnPicked(Player other)
     {
-        PlayerStats health = other.GetComponent<PlayerStats>();
+        Health health = other.GetComponent<Health>();
         if (health)
         {
             health.Heal(amount);

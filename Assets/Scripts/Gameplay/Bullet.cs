@@ -12,7 +12,7 @@ public class Bullet : MonoBehaviour
     Vector3 oldPos;
     bool hasHit = false;
 
-    public float damagePoints = 100;
+    public float Damage = 100;
 
 
     void Awake()
@@ -40,11 +40,12 @@ public class Bullet : MonoBehaviour
                 {
                     hit.rigidbody.AddForce(direction * hitForce);
 
-                    EnemyStats npc = hit.transform.GetComponent<EnemyStats>();
+                    EnemyController npc = hit.transform.GetComponent<EnemyController>();
                     if (npc != null)
                     {
                         //Apply damage to NPC
-                        npc.ApplyDamage(damagePoints);
+                        OnHit(hit.collider);
+                        //npc.ApplyDamage(Damage);
                     }
 
                 }
@@ -65,6 +66,15 @@ public class Bullet : MonoBehaviour
             StartCoroutine(DestroyBullet());
         }
     }
+    void OnHit(Collider collider)
+    {
+        // point damage
+        Damageable damageable = collider.GetComponent<Damageable>();
+        if (damageable)
+        {
+            damageable.InflictDamage(Damage, false);
+        }
+    }
 
     IEnumerator DestroyBullet()
     {
@@ -72,12 +82,4 @@ public class Bullet : MonoBehaviour
         yield return new WaitForSeconds(0.5f);
         Destroy(gameObject);
     }
-
-    //Set how much damage this bullet will deal
-    /*
-    public void SetDamage(float points)
-    {
-        damagePoints = points;
-    }
-    */
 }

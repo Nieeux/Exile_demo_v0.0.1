@@ -42,7 +42,6 @@ GameObject:
   - component: {fileID: 3145592819018264618}
   - component: {fileID: 3145592819018264613}
   - component: {fileID: 3145592819018264614}
-  - component: {fileID: 3145592819018264609}
   - component: {fileID: 3145592819018264619}
   - component: {fileID: 3145592819018264608}
   - component: {fileID: 3145592819018264615}
@@ -83,8 +82,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   firePoint: {fileID: 3145592818913048083}
-  playerCamera: {fileID: 0}
-  Animation: {fileID: 3145592819018264614}
   Recoil: {fileID: 0}
   RecoilHelmet: {fileID: 0}
   singleFire: 0
@@ -93,7 +90,7 @@ MonoBehaviour:
     m_Bits: 2048
   fireAudio: {fileID: 8300000, guid: 57370f17c98a2154cba34219e83859fb, type: 3}
   reloadAudio: {fileID: 8300000, guid: f02e7563c10830748a7719d342d27800, type: 3}
-  GunData: {fileID: 11400000, guid: f16312497f8ae834c8205b5c073643ef, type: 2}
+  GunStats: {fileID: 0}
   canFire: 1
 --- !u!114 &3145592819018264614
 MonoBehaviour:
@@ -118,29 +115,6 @@ MonoBehaviour:
   punchVibrato: 5
   punchDuration: 0.07
   punchElasticity: 0.5
---- !u!114 &3145592819018264609
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3145592819018264617}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c4cfe7081ad401741a7eaf0a0ad5e1c7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  gunScript: {fileID: 3145592819018264613}
-  AniGunScript: {fileID: 3145592819018264614}
-  rb: {fileID: 3145592819018264608}
-  coll: {fileID: 3145592819018264615}
-  player: {fileID: 0}
-  gunContainer: {fileID: 0}
-  fpsCam: {fileID: 0}
-  pickUpRange: 4
-  dropForwardForce: 10
-  dropUpwardForce: 1
-  equipped: 1
 --- !u!82 &3145592819018264619
 AudioSource:
   m_ObjectHideFlags: 0

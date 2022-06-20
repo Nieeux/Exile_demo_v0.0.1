@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.Events;
 using TMPro;
 
 [RequireComponent(typeof(CharacterController))]
@@ -10,6 +11,7 @@ public class Player : MonoBehaviour
     public float lookSpeed = 2.0f;
     public float lookXLimit = 90f;
     public float Speed = 5f;
+    Health health;
 
     [HideInInspector]
     public bool canMove = true;
@@ -28,13 +30,17 @@ public class Player : MonoBehaviour
 
     public static Player Instance { get; private set; }
     public Interactable currentInteractable { get; private set; }
+    public bool IsDead { get; private set; }
 
-
+    public WeaponController Weapon;
 
     private void Awake()
     {
+        health = GetComponent<Health>();
+        health.OnDie += OnDie;
+
         Player.Instance = this;
-        this.interactUi = UnityEngine.Object.Instantiate<GameObject>(this.interactUI).transform;
+        this.interactUi = Object.Instantiate<GameObject>(this.interactUI).transform;
         this.interactText = this.interactUi.GetComponentInChildren<TextMeshProUGUI>();
         this.interactUi.gameObject.SetActive(false);
     }
@@ -85,6 +91,12 @@ public class Player : MonoBehaviour
         }
 
         
+    }
+    void OnDie()
+    {
+        IsDead = true;
+        canMove = false;
+        Weapon.canFire = false;
     }
     private void DetectItem()
     {

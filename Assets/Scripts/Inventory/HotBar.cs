@@ -49,7 +49,7 @@ public class HotBar : MonoBehaviour
 	}
 	public void UpdateHotbar()
 	{
-		StartCoroutine(TurnOffBar());
+		//StartCoroutine(TurnOffBar());
 		if (this.inventoryBars[this.currentActive].currentItem != this.currentItem)
 		{
 			this.currentItem = this.inventoryBars[this.currentActive].currentItem;

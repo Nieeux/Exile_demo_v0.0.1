@@ -1,20 +1,29 @@
 ﻿using UnityEngine;
 using UnityEngine.AI;
 using System;
+using UnityEngine.Events;
 
 [RequireComponent(typeof(NavMeshAgent))]
 
-public class EnemyStats : MonoBehaviour
+public class EnemyController : MonoBehaviour
 {
     public float attackDistance = 3f;
     public float movementSpeed = 4f;
     public float EnemyHP;
     public float enemyDamage;
     public float attackRate = 0.5f;
+
     public Transform firePoint;
     public GameObject npcDeadPrefab;
     public ActiveEvent enemyManager;
     public ItemDrop randomItemDrop;
+    Health health;
+
+
+    [Header("Loot")]
+    public GameObject LootPrefab;
+    [Range(0, 1)]
+    public float DropRate = 1f;
 
     [HideInInspector]
     public Transform playerTransform;
@@ -24,8 +33,14 @@ public class EnemyStats : MonoBehaviour
     float nextAttackTime = 0;
     public float Timer;
 
+    public UnityAction onDamaged;
+
     void Start()
     {
+        health = GetComponent<Health>();
+        health.OnDie += OnDie;
+        health.OnDamaged += OnDamaged;
+
         agent = GetComponent<NavMeshAgent>();
         agent.stoppingDistance = attackDistance;
         agent.speed = movementSpeed;
@@ -60,7 +75,7 @@ public class EnemyStats : MonoBehaviour
                     {
                         Debug.DrawLine(firePoint.position, firePoint.position + firePoint.forward * attackDistance, Color.cyan);
 
-                        PlayerStats player = hit.transform.GetComponent<PlayerStats>();
+                        Health player = hit.transform.GetComponent<Health>();
                         player.TakeDamage(enemyDamage);
                     }
                 }
@@ -72,7 +87,21 @@ public class EnemyStats : MonoBehaviour
         transform.LookAt(new Vector3(playerTransform.transform.position.x, transform.position.y, playerTransform.position.z));
     }
 
+    void OnDamaged(float damage)
+    {
+        onDamaged?.Invoke();
+    }
+    void OnDie()
+    {
+        ItemDrop randomitem = Instantiate(randomItemDrop, transform.position, transform.rotation);
+        GameObject npcDead = Instantiate(npcDeadPrefab, transform.position, transform.rotation);
+        npcDead.GetComponent<Rigidbody>().velocity = (-(playerTransform.position - transform.position).normalized * 8) + new Vector3(0, 5, 0);
+
+        Destroy(gameObject);
+    }
+
     //Địch nhận DMG và chết
+    /*
     public void ApplyDamage(float points)
     {
         EnemyHP -= points;
@@ -88,6 +117,17 @@ public class EnemyStats : MonoBehaviour
             //es.EnemyEliminated(this);
             Destroy(gameObject);
         }
+    }
+    */
+
+    public bool TryDropItem()
+    {
+        if (DropRate == 0 || LootPrefab == null)
+            return false;
+        else if (DropRate == 1)
+            return true;
+        else
+            return (UnityEngine.Random.value <= DropRate);
     }
 
 }

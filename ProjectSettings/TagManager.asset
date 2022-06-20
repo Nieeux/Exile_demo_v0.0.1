@@ -8,11 +8,11 @@ TagManager:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - Helmet
+  - Weapon
   - Water
   - UI
   - Ground
-  - Weapon
+  - Helmet
   - PostProcessing
   - Player
   - Item

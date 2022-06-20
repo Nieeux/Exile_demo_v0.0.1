@@ -46,7 +46,7 @@ public class EventSurvival : MonoBehaviour
         Vector3 position = base.transform.position;
         GameObject enemy = Instantiate(enemyPrefab, position, Quaternion.identity);
 
-        EnemyStats npc = enemy.GetComponent<EnemyStats>();
+        EnemyController npc = enemy.GetComponent<EnemyController>();
         npc.playerTransform = player.transform;
         //npc.es = this;
         EnemiesSpawned++;
