@@ -4,10 +4,9 @@ using UnityEngine;
 [RequireComponent(typeof(AudioSource))]
 public class WeaponController : MonoBehaviour
 {
+    public static WeaponController Instance;
 
     public Transform firePoint;
-    private PlayerWeaponManager Recoil;
-    public HelmetScript RecoilHelmet;
     public bool singleFire = false;
 
     public LayerMask enemy;
@@ -15,7 +14,7 @@ public class WeaponController : MonoBehaviour
     public AudioClip fireAudio;
     public AudioClip reloadAudio;
 
-    [SerializeField] private InventoryItem GunStats;
+    public InventoryItem GunStats;
 
     float nextFireTime = 0;
     public bool canFire = true;
@@ -24,12 +23,22 @@ public class WeaponController : MonoBehaviour
 
     private Player player;
 
+    public GameObject WeaponRoot;
+    public AudioClip ChangeWeaponSfx;
+    AudioSource m_ShootAudioSource;
+
+    public bool IsWeaponActive { get; private set; }
+    public bool IsCharging { get; private set; }
+    public GameObject Owner { get; set; }
+    public GameObject SourcePrefab { get; set; }
+
     void Awake()
     {
         this.player = base.GetComponentInParent<Player>();
     }
     void Start()
     {
+        WeaponController.Instance = this;
         GunStats.CurrentMagazine = GunStats.Magazine;
         audioSource = GetComponent<AudioSource>();
         audioSource.playOnAwake = false;
@@ -89,7 +98,7 @@ public class WeaponController : MonoBehaviour
                     GameObject bulletObject = Instantiate(GunStats.bulletPrefab, firePoint.position, firePoint.rotation);
                     WeaponAnimation.Instance.RecoilAni();
                     PlayerWeaponManager.Instance.RecoilFire();
-                    this.RecoilHelmet.RecoilHUD();
+                    HelmetScript.Instance.RecoilHUD();
 
                     GunStats.CurrentMagazine--;
                     audioSource.clip = fireAudio;
@@ -114,5 +123,16 @@ public class WeaponController : MonoBehaviour
         GunStats.CurrentMagazine = GunStats.Magazine;
 
         canFire = true;
+    }
+    public void ShowWeapon(bool show)
+    {
+        WeaponRoot.SetActive(show);
+
+        if (show && ChangeWeaponSfx)
+        {
+            m_ShootAudioSource.PlayOneShot(ChangeWeaponSfx);
+        }
+
+        IsWeaponActive = show;
     }
 }

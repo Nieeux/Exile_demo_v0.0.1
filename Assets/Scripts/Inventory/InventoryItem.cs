@@ -39,9 +39,12 @@ public class InventoryItem : ScriptableObject
 
 	public GameObject bulletPrefab;
 
+	public AudioClip fireAudio;
+
+	public AudioClip reloadAudio;
+
 	[Header("Visuals")]
 	public Sprite sprite;
-
 
 	public Vector3 rotationOffset;
 

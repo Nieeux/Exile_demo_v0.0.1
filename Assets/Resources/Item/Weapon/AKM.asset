@@ -22,7 +22,7 @@ MonoBehaviour:
   GunDamage: 50
   singleFire: 0
   fireRate: 0.1
-  CurrentMagazine: 0
+  CurrentMagazine: 20
   Magazine: 30
   ReloadTime: 2
   bulletPrefab: {fileID: 4696296699401721060, guid: 4ac93e5b76843f743916331815ea1a24, type: 3}

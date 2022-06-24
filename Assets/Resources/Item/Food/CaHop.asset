@@ -16,19 +16,19 @@ MonoBehaviour:
   id: 2
   name: "C\xE1 h\u1ED9p"
   description: 
-  resourceDamage: 1
-  attackDamage: 1
-  attackSpeed: 1
-  attackRange: 0
   stackable: 1
   amount: 1
   max: 1
+  GunDamage: 0
+  singleFire: 0
+  fireRate: 0
+  CurrentMagazine: 0
+  Magazine: 0
+  ReloadTime: 0
+  bulletPrefab: {fileID: 0}
   sprite: {fileID: 21300000, guid: 9962eb46544fecf4f9d9783754c8086d, type: 3}
-  material: {fileID: 0}
-  mesh: {fileID: 0}
   rotationOffset: {x: 0, y: 0, z: 0}
   positionOffset: {x: 0, y: 0, z: 0}
-  scale: 1
+  scale: 0.5
   type: 3
   prefab: {fileID: 2841471369595137429, guid: f2d30cc8554c77b44911832e2894a671, type: 3}
-  tag: 0

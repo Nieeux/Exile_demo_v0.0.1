@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class PickupWeapon : MonoBehaviour, Interactable, SharedObject
 {
-	public InventoryItem item;
 	public WeaponController WeaponPrefab;
 
 	public int amount;
@@ -50,7 +49,7 @@ public class PickupWeapon : MonoBehaviour, Interactable, SharedObject
 
 	public string GetName()
 	{
-		return "E | " + this.item.name;
+		return "E | " + this.WeaponPrefab.GunStats.name;
 
 	}
 

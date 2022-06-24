@@ -53,11 +53,12 @@ public class HotBar : MonoBehaviour
 		if (this.inventoryBars[this.currentActive].currentItem != this.currentItem)
 		{
 			this.currentItem = this.inventoryBars[this.currentActive].currentItem;
+			/*
 			if (UseBar.Instance)
 			{
-				Debug.Log("Usebar setweapon");
 				UseBar.Instance.SetWeapon(this.currentItem);
 			}
+			*/
 		}
 		for (int i = 0; i < this.Bars.Length; i++)
 		{

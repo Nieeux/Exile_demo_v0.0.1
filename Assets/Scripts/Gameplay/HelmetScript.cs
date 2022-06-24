@@ -5,7 +5,7 @@ using DG.Tweening;
 
 public class HelmetScript : MonoBehaviour
 {
-
+    public static HelmetScript Instance;
     public Vector2 amount;
     public float lerp = .5f;
     public Transform Model;
@@ -17,7 +17,7 @@ public class HelmetScript : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-
+        HelmetScript.Instance = this;
     }
 
     // Update is called once per frame

@@ -15,6 +15,7 @@ public class Player : MonoBehaviour
 
     [HideInInspector]
     public bool canMove = true;
+    public LineRenderer line;
 
     CharacterController characterController;
     Vector3 moveDirection = Vector3.zero;
@@ -22,6 +23,7 @@ public class Player : MonoBehaviour
     public float rotationX = 0;
 
     [Header("DetectItem")]
+    public Transform DetectCamera;
     public LayerMask whatIsInteractable;
     public GameObject interactUI;
     private Transform interactUi;
@@ -32,13 +34,11 @@ public class Player : MonoBehaviour
     public Interactable currentInteractable { get; private set; }
     public bool IsDead { get; private set; }
 
-    public WeaponController Weapon;
+    PlayerWeaponManager WeaponsManager;
+
 
     private void Awake()
     {
-        health = GetComponent<Health>();
-        health.OnDie += OnDie;
-
         Player.Instance = this;
         this.interactUi = Object.Instantiate<GameObject>(this.interactUI).transform;
         this.interactText = this.interactUi.GetComponentInChildren<TextMeshProUGUI>();
@@ -46,13 +46,14 @@ public class Player : MonoBehaviour
     }
 
 
-
     void Start()
     {
         characterController = GetComponent<CharacterController>();
+        WeaponsManager = GetComponent<PlayerWeaponManager>();
+        health = GetComponent<Health>();
+        health.OnDie += OnDie;
         rotation.y = transform.eulerAngles.y;
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
+
     }
 
     void Update()
@@ -87,45 +88,55 @@ public class Player : MonoBehaviour
             rotationX = Mathf.Clamp(rotationX, -lookXLimit, lookXLimit);
             playerCamera.transform.localRotation = Quaternion.Euler(rotationX, 0, 0);
             transform.rotation *= Quaternion.Euler(0, Input.GetAxis("Mouse X") * lookSpeed, 0);
-            DetectItem();
+            
         }
 
         
     }
+    void LateUpdate()
+    {
+        DetectItem();
+    }
+
     void OnDie()
     {
         IsDead = true;
         canMove = false;
-        Weapon.canFire = false;
+        WeaponsManager.SwitchToWeaponIndex(-1, true);
     }
     private void DetectItem()
     {
         // Detect Item
-        RaycastHit raycastHit;
-        if (Physics.SphereCast(this.playerCamera.position, 1.5f, this.playerCamera.forward, out raycastHit, 4f, this.whatIsInteractable))
+        RaycastHit Hit;
+        if (Physics.Raycast(DetectCamera.transform.position, DetectCamera.transform.forward, out Hit, 2) && Hit.transform.gameObject.layer == LayerMask.NameToLayer("Item"))
         {
-
-            // di vao trigger hien ten item
-            if (raycastHit.collider.isTrigger)
+            line.enabled = true;
+            line.SetPosition(0, DetectCamera.transform.position);
+            line.SetPosition(1, Hit.point);
+            this.currentInteractable = Hit.collider.gameObject.GetComponent<Interactable>();
+            if (this.currentInteractable == null)
             {
-                this.currentInteractable = raycastHit.collider.gameObject.GetComponent<Interactable>();
-                if (this.currentInteractable == null)
-                {
-                    return;
-                }
-                if (this.currentInteractable != null)
-                {
-                    this.currentCollider = raycastHit.collider;
-                }
-                this.interactUi.gameObject.SetActive(true);
-                this.interactText.text = (this.currentInteractable.GetName() ?? "");
-                this.interactUi.transform.position = raycastHit.collider.gameObject.transform.position + Vector3.up * raycastHit.collider.bounds.extents.y;
-                this.interactText.CrossFadeAlpha(1f, 0.1f, false);
                 return;
+            }
+
+            if (this.currentInteractable != null)
+            {
+                this.currentCollider = Hit.collider;
+            }
+            this.interactUi.gameObject.SetActive(true);
+            this.interactText.text = (this.currentInteractable.GetName() ?? "");
+            this.interactUi.transform.position = Hit.collider.gameObject.transform.position + Vector3.up * Hit.collider.bounds.extents.y;
+            this.interactText.CrossFadeAlpha(1f, 0.1f, false);
+            return;
+            // di vao trigger hien ten item
+            if (Hit.collider.isTrigger)
+            {
+
             }
         }
         else
         {
+            line.enabled = false;
             this.currentCollider = null;
             this.currentInteractable = null;
             this.interactText.CrossFadeAlpha(0f, 0.1f, false);

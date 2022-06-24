@@ -8,7 +8,8 @@ public class PlayerInput : MonoBehaviour
     public Health m_PlayerHealth;
     void Start()
     {
-
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
     }
     void Update()
     {
@@ -38,5 +39,20 @@ public class PlayerInput : MonoBehaviour
                 SceneManager.LoadScene(scene.name);
             }
         }
+    }
+    public int GetSwitchWeaponInput()
+    {
+        if (CanProcessInput())
+        {
+            if (Input.GetAxis("Mouse ScrollWheel") > 0f)
+                return -1;
+            else if (Input.GetAxis("Mouse ScrollWheel") < 0f)
+                return 1;
+        }
+        return 0;
+    }
+    public bool CanProcessInput()
+    {
+        return Cursor.lockState == CursorLockMode.Locked;
     }
 }
