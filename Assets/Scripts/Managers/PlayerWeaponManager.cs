@@ -15,12 +15,14 @@ public class PlayerWeaponManager : MonoBehaviour
         PutDownPrevious,
         PutUpNew,
     }
+
     WeaponController[] WeaponSlots = new WeaponController[2];
     public Transform DefaultWeaponPosition;
     public Transform WeaponContainer;
     public Transform DownWeaponPosition;
 
     public int ActiveWeaponIndex { get; private set; }
+    public bool IsAiming { get; private set; }
 
     public UnityAction<WeaponController> OnSwitchedToWeapon;
     public UnityAction<WeaponController, int> OnAddedWeapon;
@@ -49,9 +51,11 @@ public class PlayerWeaponManager : MonoBehaviour
     [SerializeField] private float snappiness;
     [SerializeField] private float returnSpeed;
 
+    public float dropForwardForce, dropUpwardForce;
+
     void Start()
     {
-        ActiveWeaponIndex = -1;
+        //ActiveWeaponIndex = -1;
         m_WeaponSwitchState = WeaponSwitchState.Down;
         OnSwitchedToWeapon += OnWeaponSwitched;
         InputHandler = GetComponent<PlayerInput>();
@@ -79,7 +83,23 @@ public class PlayerWeaponManager : MonoBehaviour
                 bool switchUp = switchWeaponInput > 0;
                 SwitchWeapon(switchUp);
             }
+
         }
+        //Drop Weapon
+        if (activeWeapon != null)
+        {
+            if (InputHandler.DropWeaponInput())
+            {
+                Debug.Log("DropWeapon");
+                RemoveWeapon(activeWeapon);
+            }
+        }
+        //Neu khong co vu khi trong inventory thi ActiveWeaponIndex = -1
+        if (activeWeapon == null)
+        {
+            ActiveWeaponIndex = -1;
+        }
+
     }
     public void RecoilFire()
     {
@@ -92,6 +112,7 @@ public class PlayerWeaponManager : MonoBehaviour
         // Set final weapon socket position based on all the combined animation influences
         WeaponContainer.localPosition = m_WeaponMainLocalPosition;
     }
+
     void UpdateWeaponSwitching()
     {
         // Calculate the time ratio (0 to 1) since weapon switch was triggered
@@ -158,7 +179,7 @@ public class PlayerWeaponManager : MonoBehaviour
     }
 
     //Add v? khí vào tay
-    public bool AddWeapon(WeaponController weaponPrefab)
+    public bool AddWeapon(WeaponController weaponPrefab, InventoryItem item)
     {
         // search our weapon slots for the first free one, assign the weapon to it, and return true if we found one. Return false otherwise
         for (int i = 0; i < WeaponSlots.Length; i++)
@@ -167,9 +188,19 @@ public class PlayerWeaponManager : MonoBehaviour
             if (WeaponSlots[i] == null)
             {
                 // spawn the weapon prefab as child of the weapon socket
+
                 WeaponController weaponInstance = Instantiate(weaponPrefab, WeaponContainer);
                 weaponInstance.transform.localPosition = Vector3.zero;
                 weaponInstance.transform.localRotation = Quaternion.identity;
+                //Tat collider
+                weaponInstance.coll.enabled = false;
+
+                weaponInstance.rb.isKinematic = true;
+
+                // tao thuoc tinh moi cho Weapon
+                InventoryItem inventoryItem = ScriptableObject.CreateInstance<InventoryItem>();
+                inventoryItem.GetWeapon(item, item.CurrentDurability);
+                weaponInstance.GunStats = inventoryItem;
 
                 // Set owner to this gameObject so the weapon can alter projectile/damage logic accordingly
                 weaponInstance.Owner = gameObject;
@@ -307,8 +338,16 @@ public class PlayerWeaponManager : MonoBehaviour
                 {
                     OnRemovedWeapon.Invoke(weaponInstance, i);
                 }
-
                 Destroy(weaponInstance.gameObject);
+                WeaponController Instance = Instantiate(weaponInstance.GunStats.prefab, WeaponContainer.transform.position + (WeaponContainer.transform.forward), Quaternion.identity).GetComponent<WeaponController>();
+                //weaponInstance.rb.isKinematic = false;
+                Instance.rb.velocity = GetComponent<CharacterController>().velocity;
+                Instance.rb.AddForce(transform.forward * dropForwardForce, ForceMode.Impulse);
+                Instance.rb.AddForce(transform.up * dropUpwardForce, ForceMode.Impulse);
+                //Add random rotation
+                float random = Random.Range(-1f, 1f);
+                Instance.rb.AddTorque(new Vector3(random, random, random) * 10);
+
 
                 // Handle case of removing active weapon (switch to next weapon)
                 if (i == ActiveWeaponIndex)

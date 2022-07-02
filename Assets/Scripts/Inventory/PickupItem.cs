@@ -47,7 +47,7 @@ public class PickupItem : MonoBehaviour, Interactable, SharedObject
 
 	public string GetName()
 	{
-		return "E | " + this.item.name;
+		return "E| " + this.item.name;
 
 	}
 

@@ -27,13 +27,17 @@ public class InventoryItem : ScriptableObject
 
 	public float GunDamage;
 
-	public bool singleFire;
-
 	public float fireRate;
+
+	public int CurrentDurability;
+
+	public float Durability;
 
 	public int CurrentMagazine;
 
 	public int Magazine;
+
+	public bool singleFire;
 
 	public float ReloadTime;
 
@@ -45,6 +49,10 @@ public class InventoryItem : ScriptableObject
 
 	[Header("Visuals")]
 	public Sprite sprite;
+
+	public Material material;
+
+	public Mesh mesh;
 
 	public Vector3 rotationOffset;
 
@@ -75,11 +83,44 @@ public class InventoryItem : ScriptableObject
 
 		this.singleFire = item.singleFire;
 		this.fireRate = item.fireRate;
+		this.CurrentDurability = item.CurrentDurability;
+		this.Durability = item.Durability;
 		this.Magazine = item.Magazine;
+		this.CurrentMagazine = item.CurrentMagazine;
 		this.ReloadTime = item.ReloadTime;
 		this.bulletPrefab = item.bulletPrefab;
 
 		this.sprite = item.sprite;
+		this.material = item.material;
+		this.mesh = item.mesh;
+		this.type = item.type;
+		this.prefab = item.prefab;
+		this.rotationOffset = item.rotationOffset;
+		this.positionOffset = item.positionOffset;
+		this.scale = item.scale;
+	}
+	public void GetWeapon(InventoryItem item, int amount)
+	{
+		this.id = item.id;
+		this.name = item.name;
+		this.description = item.description;
+
+		this.stackable = item.stackable;
+		this.amount = item.amount;
+		this.max = item.max;
+
+		this.singleFire = item.singleFire;
+		this.fireRate = item.fireRate;
+		this.CurrentDurability = amount;
+		this.Durability = item.Durability;
+		this.Magazine = item.Magazine;
+		this.CurrentMagazine = item.CurrentMagazine;
+		this.ReloadTime = item.ReloadTime;
+		this.bulletPrefab = item.bulletPrefab;
+
+		this.sprite = item.sprite;
+		this.material = item.material;
+		this.mesh = item.mesh;
 		this.type = item.type;
 		this.prefab = item.prefab;
 		this.rotationOffset = item.rotationOffset;

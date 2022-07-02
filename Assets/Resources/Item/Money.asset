@@ -14,21 +14,23 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   important: 0
   id: 0
-  name: Money
+  name: "Ti\u1EC1n"
   description: 
-  resourceDamage: 1
-  attackDamage: 1
-  attackSpeed: 1
-  attackRange: 0
   stackable: 1
   amount: 999999
   max: 999999
+  GunDamage: 0
+  singleFire: 0
+  fireRate: 0
+  CurrentMagazine: 0
+  Magazine: 0
+  ReloadTime: 0
+  bulletPrefab: {fileID: 0}
+  fireAudio: {fileID: 0}
+  reloadAudio: {fileID: 0}
   sprite: {fileID: 0}
-  material: {fileID: 0}
-  mesh: {fileID: 0}
   rotationOffset: {x: 0, y: 0, z: 0}
   positionOffset: {x: 0, y: 0, z: 0}
   scale: 1
   type: 0
   prefab: {fileID: 2841471369595137429, guid: cfe515a02498e1a42abf34327603ea75, type: 3}
-  tag: 0

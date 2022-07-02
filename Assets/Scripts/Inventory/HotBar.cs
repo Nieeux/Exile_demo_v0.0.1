@@ -12,7 +12,7 @@ public class HotBar : MonoBehaviour
 	private InventoryBar[] Bars;
 	private InventoryBar[] inventoryBars;
 	public InventoryItem currentItem;
-	public Player playerToDrop;
+	public DetectItem playerToDrop;
 
 
 	private void Start()
@@ -53,12 +53,12 @@ public class HotBar : MonoBehaviour
 		if (this.inventoryBars[this.currentActive].currentItem != this.currentItem)
 		{
 			this.currentItem = this.inventoryBars[this.currentActive].currentItem;
-			/*
+
 			if (UseBar.Instance)
 			{
-				UseBar.Instance.SetWeapon(this.currentItem);
+				//UseBar.Instance.SetWeapon(this.currentItem);
 			}
-			*/
+
 		}
 		for (int i = 0; i < this.Bars.Length; i++)
 		{
@@ -85,7 +85,7 @@ public class HotBar : MonoBehaviour
 
 		if (currentItem != null)
         {
-			PickupItem pickup = Instantiate(currentItem.prefab, playerToDrop.playerCamera.transform.position + (playerToDrop.playerCamera.transform.forward), Quaternion.identity).GetComponent<PickupItem>();
+			PickupItem pickup = Instantiate(currentItem.prefab, playerToDrop.DetectCamera.transform.position + (playerToDrop.DetectCamera.transform.forward), Quaternion.identity).GetComponent<PickupItem>();
 			pickup.GetComponentInChildren<SharedObject>().SetId(ResourceManager.Instance.GetNextId());
 			this.inventoryBars[this.currentActive].RemoveItem();
 			this.UpdateHotbar();

@@ -6,6 +6,7 @@ using UnityEngine;
 public class PlayerInput : MonoBehaviour
 {
     public Health m_PlayerHealth;
+
     void Start()
     {
         Cursor.lockState = CursorLockMode.Locked;
@@ -13,23 +14,25 @@ public class PlayerInput : MonoBehaviour
     }
     void Update()
     {
-
-        if (Input.GetButtonDown("Pickup"))
+        if (CanProcessInput())
         {
-            Interactable currentInteractable = Player.Instance.currentInteractable;
-            Debug.Log("Da bam E");
-            // neu item ton tai va chua full do
-            if (currentInteractable != null && !Inventory.Instance.IsInventoryFull())
+            if (Input.GetButtonDown("Pickup"))
             {
-                currentInteractable.Interact();
+                Interactable currentInteractable = DetectItem.Instance.currentInteractable;
+                Debug.Log("Pickup");
+                // neu item ton tai va chua full do
+                if (currentInteractable != null && !Inventory.Instance.IsInventoryFull())
+                {
+                    currentInteractable.Interact();
+                }
             }
-        }
-        if (Input.GetMouseButtonDown(1))
-        {
-            Debug.Log("Da bam chuot phai");
-            HotBar.Instance.DropItem();
-        }
+            if (Input.GetMouseButtonDown(1))
+            {
+                Debug.Log("Da bam chuot phai");
+                HotBar.Instance.DropItem();
+            }
 
+        }
         // Player ch?t load l?i game 
         if (m_PlayerHealth.CurrentHealth <= 0)
         {
@@ -40,6 +43,11 @@ public class PlayerInput : MonoBehaviour
             }
         }
     }
+    public bool CanProcessInput()
+    {
+        return Cursor.lockState == CursorLockMode.Locked;
+    }
+
     public int GetSwitchWeaponInput()
     {
         if (CanProcessInput())
@@ -51,8 +59,21 @@ public class PlayerInput : MonoBehaviour
         }
         return 0;
     }
-    public bool CanProcessInput()
+
+    public bool DropWeaponInput()
     {
-        return Cursor.lockState == CursorLockMode.Locked;
+        if (CanProcessInput())
+        {
+            return Input.GetButtonDown("Drop Weapon");
+        }
+        return false;
+    }
+    public bool GetCrouchInputDown()
+    {
+        if (CanProcessInput())
+        {
+            return Input.GetButtonDown("Crouch");
+        }
+        return false;
     }
 }

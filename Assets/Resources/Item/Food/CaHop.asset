@@ -15,7 +15,10 @@ MonoBehaviour:
   important: 0
   id: 2
   name: "C\xE1 h\u1ED9p"
-  description: 
+  description: "T\u1EEBng l\xE0 m\u1ED9t lo\u1EA1i th\u1EF1c ph\u1EA9m v\xF4 c\xF9ng
+    ph\u1ED5 bi\u1EBFn tr\u01B0\u1EDBc C\xE1ch M\u1EA1ng 12. Nh\u01B0ng \u0111\u1EBFn
+    nay \u0111\xE3 kh\xF4ng c\xF2n nh\xE0 m\xE1y n\xE0o c\xF3 th\u1EC3 s\u1EA3n xu\u1EA5t
+    \u0111\u01B0\u1EE3c n\xF3 n\u1EEFa."
   stackable: 1
   amount: 1
   max: 1
@@ -26,7 +29,9 @@ MonoBehaviour:
   Magazine: 0
   ReloadTime: 0
   bulletPrefab: {fileID: 0}
-  sprite: {fileID: 21300000, guid: 9962eb46544fecf4f9d9783754c8086d, type: 3}
+  fireAudio: {fileID: 0}
+  reloadAudio: {fileID: 0}
+  sprite: {fileID: 0}
   rotationOffset: {x: 0, y: 0, z: 0}
   positionOffset: {x: 0, y: 0, z: 0}
   scale: 0.5

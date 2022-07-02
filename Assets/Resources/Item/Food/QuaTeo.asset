@@ -15,20 +15,26 @@ MonoBehaviour:
   important: 0
   id: 1
   name: "Qu\u1EA3 T\xE9o"
-  description: 
-  resourceDamage: 1
-  attackDamage: 1
-  attackSpeed: 1
-  attackRange: 0
+  description: "M\u1ED9t lo\u1EA1i qu\u1EA3 m\xE1y t\u1EA1o c\xF3 gi\xE1 tr\u1ECB
+    dinh d\u01B0\u1EE1ng th\u1EA5p nh\u01B0ng s\u1EBD gi\xFAp b\u1EA1n t\u1EC9nh
+    t\xE1o"
   stackable: 1
   amount: 1
   max: 1
+  GunDamage: 0
+  singleFire: 0
+  fireRate: 0
+  CurrentMagazine: 0
+  Magazine: 0
+  ReloadTime: 0
+  bulletPrefab: {fileID: 0}
+  fireAudio: {fileID: 0}
+  reloadAudio: {fileID: 0}
   sprite: {fileID: 0}
-  material: {fileID: 0}
-  mesh: {fileID: 0}
+  material: {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
+  mesh: {fileID: 4300002, guid: 75dcb58506746b84db987c4ce01e99b5, type: 3}
   rotationOffset: {x: 0, y: 0, z: 0}
   positionOffset: {x: 0, y: 0, z: 0}
   scale: 1
   type: 3
   prefab: {fileID: 2841471369595137429, guid: bbcaef54a3fab0444b82c88f04cf5c6b, type: 3}
-  tag: 0

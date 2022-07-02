@@ -5,14 +5,31 @@ using UnityEngine.UI;
 
 public class PickedupUI : MonoBehaviour
 {
+	public Image icon;
+
+	public TextMeshProUGUI item;
+
+	private HorizontalLayoutGroup layout;
+
+	private float desiredPad;
+
+	private float fadeStart = 3f;
+
+	private float fadeTime = 1f;
+
+	private float padLeft;
 
 	private void Awake()
 	{
+
 		this.layout = base.GetComponent<HorizontalLayoutGroup>();
+		/*
 		this.desiredPad = (float)this.layout.padding.left;
 		this.layout.padding.left = -300;
 		this.padLeft = (float)this.layout.padding.left;
+		*/
 		base.Invoke("StartFade", this.fadeStart);
+
 	}
 
 	private void StartFade()
@@ -41,24 +58,14 @@ public class PickedupUI : MonoBehaviour
 
 	public void Update()
 	{
+		/*
 		this.padLeft = Mathf.Lerp(this.padLeft, this.desiredPad, Time.deltaTime * 7f);
 		RectOffset rectOffset = new RectOffset(this.layout.padding.left, this.layout.padding.right, this.layout.padding.top, this.layout.padding.bottom);
 		rectOffset.left = (int)this.padLeft;
 		this.layout.padding = rectOffset;
 		this.layout.padding.left = (int)this.padLeft;
+		*/
 	}
 
-	public Image icon;
 
-	public TextMeshProUGUI item;
-
-	private HorizontalLayoutGroup layout;
-
-	private float desiredPad;
-
-	private float fadeStart = 3f;
-
-	private float fadeTime = 1f;
-
-	private float padLeft;
 }

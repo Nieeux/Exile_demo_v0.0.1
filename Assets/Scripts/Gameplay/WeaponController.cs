@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using UnityEngine;
+using UnityEngine.Events;
 
 [RequireComponent(typeof(AudioSource))]
 public class WeaponController : MonoBehaviour
@@ -9,8 +10,6 @@ public class WeaponController : MonoBehaviour
     public Transform firePoint;
     public bool singleFire = false;
 
-    public LayerMask enemy;
-
     public AudioClip fireAudio;
     public AudioClip reloadAudio;
 
@@ -18,6 +17,8 @@ public class WeaponController : MonoBehaviour
 
     float nextFireTime = 0;
     public bool canFire = true;
+    public Rigidbody rb;
+    public BoxCollider coll;
 
     AudioSource audioSource;
 
@@ -27,6 +28,7 @@ public class WeaponController : MonoBehaviour
     public AudioClip ChangeWeaponSfx;
     AudioSource m_ShootAudioSource;
 
+    public UnityAction onDamaged;
     public bool IsWeaponActive { get; private set; }
     public bool IsCharging { get; private set; }
     public GameObject Owner { get; set; }
@@ -34,10 +36,13 @@ public class WeaponController : MonoBehaviour
 
     void Awake()
     {
+        
         this.player = base.GetComponentInParent<Player>();
     }
     void Start()
     {
+        rb = base.GetComponent<Rigidbody>();
+        coll = base.GetComponent<BoxCollider>();
         WeaponController.Instance = this;
         GunStats.CurrentMagazine = GunStats.Magazine;
         audioSource = GetComponent<AudioSource>();
@@ -74,6 +79,7 @@ public class WeaponController : MonoBehaviour
             StartCoroutine(Reload());
         }
         */
+
     }
 
     void Fire()
@@ -96,9 +102,12 @@ public class WeaponController : MonoBehaviour
                     firePoint.LookAt(firePointPointerPosition);
                     //Fire
                     GameObject bulletObject = Instantiate(GunStats.bulletPrefab, firePoint.position, firePoint.rotation);
+
+                    GunStats.CurrentDurability --;
+
                     WeaponAnimation.Instance.RecoilAni();
                     PlayerWeaponManager.Instance.RecoilFire();
-                    HelmetScript.Instance.RecoilHUD();
+                    //HelmetScript.Instance.RecoilHUD();
 
                     GunStats.CurrentMagazine--;
                     audioSource.clip = fireAudio;
@@ -124,6 +133,7 @@ public class WeaponController : MonoBehaviour
 
         canFire = true;
     }
+
     public void ShowWeapon(bool show)
     {
         WeaponRoot.SetActive(show);

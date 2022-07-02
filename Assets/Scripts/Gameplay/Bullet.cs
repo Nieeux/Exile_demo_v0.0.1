@@ -40,6 +40,8 @@ public class Bullet : MonoBehaviour
                 {
                     hit.rigidbody.AddForce(direction * hitForce);
 
+                    OnHit(hit.collider);
+                    /*
                     EnemyController npc = hit.transform.GetComponent<EnemyController>();
                     if (npc != null)
                     {
@@ -47,6 +49,7 @@ public class Bullet : MonoBehaviour
                         OnHit(hit.collider);
                         //npc.ApplyDamage(Damage);
                     }
+                    */
 
                 }
 
@@ -73,6 +76,7 @@ public class Bullet : MonoBehaviour
         if (damageable)
         {
             damageable.InflictDamage(Damage, false);
+            Debug.Log("Damageable");
         }
     }
 

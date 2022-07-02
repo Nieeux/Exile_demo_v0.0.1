@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 using DG.Tweening;
 using System.Collections;
@@ -20,18 +19,29 @@ public class WeaponAnimation : MonoBehaviour
     private Quaternion initialRotation;
 
     private float InputX, InputY;
-    public Transform Model;
 
+    [Header("Weapon Recoil Animation")]
     public float punchStrenght = .2f;
     public int punchVibrato = 5;
     public float punchDuration = .3f;
+    public float punchDurationR = .3f;
     public float punchElasticity = .5f;
 
-    //public Animator animator;
+    [Header("Weapon Shake")]
+    public float randomness = 70;
+    public float ShakeDuration = 1;
+    public float ShakeStrenght = 1;
+
+    [Header("Camera Shake")]
+    public Transform CameraShake;
+    public int ShakeVibrato = 1;
+    public float CameraShakeDuration = 1;
+    public float CameraShakeStrenght = 1;
 
 
     private void Start()
     {
+
         WeaponAnimation.Instance = this;
         initialPosition = transform.localPosition;
         initialRotation = transform.localRotation;
@@ -39,6 +49,7 @@ public class WeaponAnimation : MonoBehaviour
 
     private void Update()
     {
+
         /*
         if (Input.GetMouseButtonDown(1))
         {
@@ -51,6 +62,13 @@ public class WeaponAnimation : MonoBehaviour
         MoveSway();
         TiltSway();
     }
+    private void FixedUpdate()
+    {
+
+
+    }
+
+
     /*
     public IEnumerator idle()
     {
@@ -61,8 +79,15 @@ public class WeaponAnimation : MonoBehaviour
     public void RecoilAni()
     {
         //Súng gi?t
+        Sequence c = DOTween.Sequence();
+        c.Append(CameraShake.DOShakeRotation(CameraShakeDuration, CameraShakeStrenght, ShakeVibrato, randomness, true));
         Sequence s = DOTween.Sequence();
-        s.Append(Model.DOPunchPosition(new Vector3(0, 0, -punchStrenght), punchDuration, punchVibrato, punchElasticity));
+        s.Append(transform.DOShakeRotation(ShakeDuration, ShakeStrenght, punchVibrato, randomness, true));
+        Sequence r = DOTween.Sequence();
+        r.Append(transform.DOPunchRotation(new Vector3(-20, 0, -10), punchDurationR, punchVibrato, punchElasticity));
+        Sequence p = DOTween.Sequence();
+        p.Append(transform.DOPunchPosition(new Vector3(0, 0, -punchStrenght), punchDuration, punchVibrato, punchElasticity));
+
     }
 
     private void CalculateSway()

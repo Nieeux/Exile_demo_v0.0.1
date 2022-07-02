@@ -6,7 +6,9 @@ public class PickupWeapon : MonoBehaviour, Interactable, SharedObject
 {
 	public WeaponController WeaponPrefab;
 
-	public int amount;
+	public InventoryItem item;
+
+	public int Durability;
 
 	public int id;
 
@@ -17,7 +19,9 @@ public class PickupWeapon : MonoBehaviour, Interactable, SharedObject
 	}
 	public void Interact()
 	{
-		if (PlayerWeaponManager.Instance.AddWeapon(WeaponPrefab))
+		InventoryItem inventoryItem = ScriptableObject.CreateInstance<InventoryItem>();
+		inventoryItem.GetWeapon(this.item, this.Durability);
+		if (PlayerWeaponManager.Instance.AddWeapon(WeaponPrefab, inventoryItem))
 		{
 			// Handle auto-switching to weapon if no weapons currently
 			if (PlayerWeaponManager.Instance.GetActiveWeapon() == null)

@@ -1,38 +1,52 @@
 ﻿using UnityEngine;
 using UnityEngine.Events;
-using TMPro;
 
-[RequireComponent(typeof(CharacterController))]
+[RequireComponent(typeof(CharacterController), typeof(PlayerInput))]
 public class Player : MonoBehaviour
 {
-    [Header("PlayerStats")]
+    public static Player Instance;
+
+    [Header("Player Stats")]
     public float gravity = 20.0f;
     public Transform playerCamera;
+    public Transform cameraCrouching;
     public float lookSpeed = 2.0f;
     public float lookXLimit = 90f;
     public float Speed = 5f;
     Health health;
 
+    [Header("Movement")]
+    [Tooltip("Max movement speed when grounded (when not sprinting)")]
+    public float MaxSpeedOnGround = 10f;
+    [Tooltip("Multiplicator for the sprint speed (based on grounded speed)")]
+    public float SprintSpeedModifier = 2f;
+
     [HideInInspector]
     public bool canMove = true;
-    public LineRenderer line;
 
+    PlayerInput InputHandler;
     CharacterController characterController;
     Vector3 moveDirection = Vector3.zero;
     Vector2 rotation = Vector2.zero;
     public float rotationX = 0;
 
-    [Header("DetectItem")]
-    public Transform DetectCamera;
-    public LayerMask whatIsInteractable;
-    public GameObject interactUI;
-    private Transform interactUi;
-    private TextMeshProUGUI interactText;
-    private Collider currentCollider;
+    [Header("Stance")]
+    [Tooltip("Ratio (0-1) of the character height where the camera will be at")]
+    public float CameraHeightRatio = 0.9f;
+    [Tooltip("Height of character when crouching")]
+    public float CapsuleHeightCrouching = 0.9f;
+    [Tooltip("Height of character when standing")]
+    public float CapsuleHeightStanding = 1.8f;
 
-    public static Player Instance { get; private set; }
-    public Interactable currentInteractable { get; private set; }
+    [Tooltip("Speed of crouching transitions")]
+    public float CrouchingSharpness = 10f;
+
+    float m_TargetCharacterHeight;
+
+    public UnityAction<bool> OnStanceChanged;
+    public bool IsCrouching { get; private set; }
     public bool IsDead { get; private set; }
+    public bool IsGrounded { get; private set; }
 
     PlayerWeaponManager WeaponsManager;
 
@@ -40,9 +54,7 @@ public class Player : MonoBehaviour
     private void Awake()
     {
         Player.Instance = this;
-        this.interactUi = Object.Instantiate<GameObject>(this.interactUI).transform;
-        this.interactText = this.interactUi.GetComponentInChildren<TextMeshProUGUI>();
-        this.interactUi.gameObject.SetActive(false);
+
     }
 
 
@@ -50,9 +62,14 @@ public class Player : MonoBehaviour
     {
         characterController = GetComponent<CharacterController>();
         WeaponsManager = GetComponent<PlayerWeaponManager>();
+        InputHandler = GetComponent<PlayerInput>();
         health = GetComponent<Health>();
         health.OnDie += OnDie;
         rotation.y = transform.eulerAngles.y;
+
+        // force the crouch state to false when starting
+        SetCrouchingState(false, true);
+        UpdateCharacterHeight(true);
 
     }
 
@@ -88,58 +105,91 @@ public class Player : MonoBehaviour
             rotationX = Mathf.Clamp(rotationX, -lookXLimit, lookXLimit);
             playerCamera.transform.localRotation = Quaternion.Euler(rotationX, 0, 0);
             transform.rotation *= Quaternion.Euler(0, Input.GetAxis("Mouse X") * lookSpeed, 0);
-            
+
+        }
+        // crouching
+        if (InputHandler.GetCrouchInputDown())
+        {
+            Debug.Log("Crouch");
+            SetCrouchingState(!IsCrouching, false);
+        }
+        UpdateCharacterHeight(false);
+    }
+    void UpdateCharacterHeight(bool force)
+    {
+        // Update height instantly
+        if (force)
+        {
+            characterController.height = m_TargetCharacterHeight;
+            characterController.center = Vector3.up * characterController.height * 0.5f;
+            cameraCrouching.transform.localPosition = Vector3.up * m_TargetCharacterHeight * CameraHeightRatio;
+            //m_Actor.AimPoint.transform.localPosition = characterController.center;
+        }
+        // Update smooth height
+        else if (characterController.height != m_TargetCharacterHeight)
+        {
+            // resize the capsule and adjust camera position
+            characterController.height = Mathf.Lerp(characterController.height, m_TargetCharacterHeight,
+                CrouchingSharpness * Time.deltaTime);
+            characterController.center = Vector3.up * characterController.height * 0.5f;
+            cameraCrouching.transform.localPosition = Vector3.Lerp(cameraCrouching.transform.localPosition,
+                Vector3.up * m_TargetCharacterHeight * CameraHeightRatio, CrouchingSharpness * Time.deltaTime);
+            //m_Actor.AimPoint.transform.localPosition = characterController.center;
+        }
+    }
+
+    bool SetCrouchingState(bool crouched, bool ignoreObstructions)
+    {
+        // set appropriate heights
+        if (crouched)
+        {
+            m_TargetCharacterHeight = CapsuleHeightCrouching;
+        }
+        else
+        {
+            // Detect obstructions
+            if (!ignoreObstructions)
+            {
+                Collider[] standingOverlaps = Physics.OverlapCapsule(
+                    GetCapsuleBottomHemisphere(),
+                    GetCapsuleTopHemisphere(CapsuleHeightStanding),
+                    characterController.radius,
+                    -1,
+                    QueryTriggerInteraction.Ignore);
+                foreach (Collider c in standingOverlaps)
+                {
+                    if (c != characterController)
+                    {
+                        return false;
+                    }
+                }
+            }
+
+            m_TargetCharacterHeight = CapsuleHeightStanding;
         }
 
-        
-    }
-    void LateUpdate()
-    {
-        DetectItem();
-    }
+        if (OnStanceChanged != null)
+        {
+            OnStanceChanged.Invoke(crouched);
+        }
 
+        IsCrouching = crouched;
+        return true;
+    }
+    // Gets the center point of the bottom hemisphere of the character controller capsule    
+    Vector3 GetCapsuleBottomHemisphere()
+    {
+        return transform.position + (transform.up * characterController.radius);
+    }
+    // Gets the center point of the top hemisphere of the character controller capsule    
+    Vector3 GetCapsuleTopHemisphere(float atHeight)
+    {
+        return transform.position + (transform.up * (atHeight - characterController.radius));
+    }
     void OnDie()
     {
         IsDead = true;
         canMove = false;
         WeaponsManager.SwitchToWeaponIndex(-1, true);
-    }
-    private void DetectItem()
-    {
-        // Detect Item
-        RaycastHit Hit;
-        if (Physics.Raycast(DetectCamera.transform.position, DetectCamera.transform.forward, out Hit, 2) && Hit.transform.gameObject.layer == LayerMask.NameToLayer("Item"))
-        {
-            line.enabled = true;
-            line.SetPosition(0, DetectCamera.transform.position);
-            line.SetPosition(1, Hit.point);
-            this.currentInteractable = Hit.collider.gameObject.GetComponent<Interactable>();
-            if (this.currentInteractable == null)
-            {
-                return;
-            }
-
-            if (this.currentInteractable != null)
-            {
-                this.currentCollider = Hit.collider;
-            }
-            this.interactUi.gameObject.SetActive(true);
-            this.interactText.text = (this.currentInteractable.GetName() ?? "");
-            this.interactUi.transform.position = Hit.collider.gameObject.transform.position + Vector3.up * Hit.collider.bounds.extents.y;
-            this.interactText.CrossFadeAlpha(1f, 0.1f, false);
-            return;
-            // di vao trigger hien ten item
-            if (Hit.collider.isTrigger)
-            {
-
-            }
-        }
-        else
-        {
-            line.enabled = false;
-            this.currentCollider = null;
-            this.currentInteractable = null;
-            this.interactText.CrossFadeAlpha(0f, 0.1f, false);
-        }
     }
 }
