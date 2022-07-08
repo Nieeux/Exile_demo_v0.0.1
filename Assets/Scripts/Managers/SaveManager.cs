@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class SaveManager : MonoBehaviour
 {
-    public PlayerSave state;
 
     public static SaveManager Instance { get; set; }
     void Start()

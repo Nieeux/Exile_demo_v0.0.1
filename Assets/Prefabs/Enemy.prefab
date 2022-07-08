@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 2909493400169758485}
   - component: {fileID: 6727386281272580769}
   - component: {fileID: 2937776639657386030}
+  - component: {fileID: 8904353610766858186}
   m_Layer: 11
   m_Name: Enemy
   m_TagString: Untagged
@@ -88,7 +89,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   attackDistance: 3
-  movementSpeed: 15
+  movementSpeed: 5
   EnemyHP: 100
   enemyDamage: 10
   attackRate: 0.5
@@ -114,6 +115,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   MaxHealth: 100
+  DamageMultiplier: 1
+  numberFx: {fileID: 6567150810459544244, guid: 199c2e0e5da209d498e21ee9b322ebdc, type: 3}
+--- !u!65 &8904353610766858186
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3803431396737150512}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &6119073495747824648
 GameObject:
   m_ObjectHideFlags: 0
@@ -156,8 +172,6 @@ GameObject:
   - component: {fileID: 3494249759497272945}
   - component: {fileID: 5256121380415684223}
   - component: {fileID: 2722398569355067376}
-  - component: {fileID: 7152255757851997826}
-  - component: {fileID: 6805704824804052846}
   m_Layer: 11
   m_Name: EnemyBody
   m_TagString: Untagged
@@ -230,29 +244,3 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!65 &7152255757851997826
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6697561071157000789}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &6805704824804052846
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6697561071157000789}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4d329538dbf9d0a4688301e6f18eb5db, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  DamageMultiplier: 1

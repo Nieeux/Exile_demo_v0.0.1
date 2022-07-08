@@ -5,10 +5,15 @@ using UnityEngine;
 
 public class PlayerInput : MonoBehaviour
 {
-    public Health m_PlayerHealth;
+    public static PlayerInput Instance;
+    public PlayerStats PlayerHealth;
+    public PlayerWeaponManager WeaponManager;
 
     void Start()
     {
+        PlayerInput.Instance = this;
+        this.WeaponManager = base.GetComponent<PlayerWeaponManager>();
+        this.PlayerHealth = base.GetComponent<PlayerStats>();
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
     }
@@ -31,10 +36,10 @@ public class PlayerInput : MonoBehaviour
                 Debug.Log("Da bam chuot phai");
                 HotBar.Instance.DropItem();
             }
-
         }
+
         // Player ch?t load l?i game 
-        if (m_PlayerHealth.CurrentHealth <= 0)
+        if (PlayerHealth.CurrentHealth <= 0)
         {
             if (Input.GetKeyDown(KeyCode.Space))
             {
@@ -65,6 +70,9 @@ public class PlayerInput : MonoBehaviour
         if (CanProcessInput())
         {
             return Input.GetButtonDown("Drop Weapon");
+            {
+
+            }
         }
         return false;
     }
@@ -73,6 +81,14 @@ public class PlayerInput : MonoBehaviour
         if (CanProcessInput())
         {
             return Input.GetButtonDown("Crouch");
+        }
+        return false;
+    }
+    public bool GetRunningInputDown()
+    {
+        if (CanProcessInput())
+        {
+            return Input.GetKey(KeyCode.LeftShift);
         }
         return false;
     }

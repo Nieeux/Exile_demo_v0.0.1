@@ -18,20 +18,20 @@ public class DebugObject : MonoBehaviour
 	// Token: 0x0600012E RID: 302 RVA: 0x00008128 File Offset: 0x00006328
 	private void OnGUI()
 	{
-		if (!Player.Instance)
+		if (!PlayerMovement.Instance)
 		{
 			return;
 		}
 		if (!this.cam)
 		{
-			this.cam = Player.Instance.playerCamera.GetComponentInChildren<Camera>();
+			this.cam = PlayerMovement.Instance.playerCamera.GetComponentInChildren<Camera>();
 			return;
 		}
 		Vector3 vector = this.cam.WorldToViewportPoint(base.transform.position);
 		if (vector.x >= 0f && vector.x <= 1f && vector.y >= 0f && vector.y <= 1f && vector.z > 0f)
 		{
 			Vector3 vector2 = Camera.main.WorldToScreenPoint(base.gameObject.transform.position);
-			if (Vector3.Distance(Player.Instance.transform.position, base.transform.position) > 30f)
+			if (Vector3.Distance(PlayerMovement.Instance.transform.position, base.transform.position) > 30f)
 			{
 				return;
 			}

@@ -13,7 +13,7 @@ public class Billboard : MonoBehaviour
 	void Update()
 	{
 
-		transform.localEulerAngles = new Vector3(0f, Player.Instance.playerCamera.transform.eulerAngles.y, 0f);
+		transform.localEulerAngles = new Vector3(0f, PlayerMovement.Instance.playerCamera.transform.eulerAngles.y, 0f);
 
 	}
 

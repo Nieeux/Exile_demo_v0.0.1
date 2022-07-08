@@ -8,12 +8,11 @@ public class Bullet : MonoBehaviour
     public float destroyAfter = 3.5f;
 
     float currentTime = 0;
+    public float DamageBullet;
     Vector3 newPos;
     Vector3 oldPos;
     bool hasHit = false;
-
-    public float Damage = 100;
-
+    Vector3 pos;
 
     void Awake()
     {
@@ -22,6 +21,7 @@ public class Bullet : MonoBehaviour
 
     IEnumerator Start()
     {
+
         newPos = transform.position;
         oldPos = newPos;
 
@@ -41,16 +41,6 @@ public class Bullet : MonoBehaviour
                     hit.rigidbody.AddForce(direction * hitForce);
 
                     OnHit(hit.collider);
-                    /*
-                    EnemyController npc = hit.transform.GetComponent<EnemyController>();
-                    if (npc != null)
-                    {
-                        //Apply damage to NPC
-                        OnHit(hit.collider);
-                        //npc.ApplyDamage(Damage);
-                    }
-                    */
-
                 }
 
                 newPos = hit.point; //Adjust new position
@@ -69,17 +59,25 @@ public class Bullet : MonoBehaviour
             StartCoroutine(DestroyBullet());
         }
     }
-    void OnHit(Collider collider)
+    public void OnHit(Collider collider)
     {
         // point damage
-        Damageable damageable = collider.GetComponent<Damageable>();
+        HitAble damageable = collider.GetComponent<HitAble>();
         if (damageable)
         {
-            damageable.InflictDamage(Damage, false);
-            Debug.Log("Damageable");
+            DamageCalculations.DamageResult damageMultiplier = DamageCalculations.Instance.GetDamage();
+            float damageMultiplier2 = damageMultiplier.damageMultiplier;
+            bool crit = damageMultiplier.crit;
+            float Damage = (int)((float)DamageBullet * damageMultiplier2);
+            HitEffect hitEffect = HitEffect.AmmoNormal;
+            if (crit)
+            {
+                hitEffect = HitEffect.Crit;
+            }
+            pos = collider.transform.position;
+            damageable.Damage(Damage, (int)hitEffect, pos);
         }
     }
-
     IEnumerator DestroyBullet()
     {
         hasHit = true;

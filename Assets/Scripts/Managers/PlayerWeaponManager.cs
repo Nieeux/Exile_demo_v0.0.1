@@ -35,6 +35,7 @@ public class PlayerWeaponManager : MonoBehaviour
 
     public float WeaponSwitchDelay = 1f;
     PlayerInput InputHandler;
+    InventoryItem inventoryItem;
 
 
     Vector3 m_WeaponMainLocalPosition;
@@ -69,6 +70,7 @@ public class PlayerWeaponManager : MonoBehaviour
     void Update()
     {
         WeaponController activeWeapon = GetActiveWeapon();
+
         //Recoil sung
         targetRotation = Vector3.Lerp(targetRotation, Vector3.zero, returnSpeed * Time.deltaTime);
         currentRotation = Vector3.Slerp(currentRotation, targetRotation, snappiness * Time.fixedDeltaTime);
@@ -91,7 +93,8 @@ public class PlayerWeaponManager : MonoBehaviour
             if (InputHandler.DropWeaponInput())
             {
                 Debug.Log("DropWeapon");
-                RemoveWeapon(activeWeapon);
+                Interactable weaponIndex = activeWeapon.WeaponIndex;
+                weaponIndex.RemoveObject();
             }
         }
         //Neu khong co vu khi trong inventory thi ActiveWeaponIndex = -1
@@ -198,8 +201,7 @@ public class PlayerWeaponManager : MonoBehaviour
                 weaponInstance.rb.isKinematic = true;
 
                 // tao thuoc tinh moi cho Weapon
-                InventoryItem inventoryItem = ScriptableObject.CreateInstance<InventoryItem>();
-                inventoryItem.GetWeapon(item, item.CurrentDurability);
+                InventoryItem inventoryItem = weaponPrefab.GunStats;
                 weaponInstance.GunStats = inventoryItem;
 
                 // Set owner to this gameObject so the weapon can alter projectile/damage logic accordingly
@@ -324,7 +326,7 @@ public class PlayerWeaponManager : MonoBehaviour
             newWeapon.ShowWeapon(true);
         }
     }
-    public bool RemoveWeapon(WeaponController weaponInstance)
+    public bool RemoveWeapon(WeaponController weaponInstance, InventoryItem item)
     {
         // Look through our slots for that weapon
         for (int i = 0; i < WeaponSlots.Length; i++)
@@ -340,7 +342,9 @@ public class PlayerWeaponManager : MonoBehaviour
                 }
                 Destroy(weaponInstance.gameObject);
                 WeaponController Instance = Instantiate(weaponInstance.GunStats.prefab, WeaponContainer.transform.position + (WeaponContainer.transform.forward), Quaternion.identity).GetComponent<WeaponController>();
-                //weaponInstance.rb.isKinematic = false;
+                InventoryItem inventoryItem = weaponInstance.GunStats;
+                Instance.GunStats = inventoryItem;
+
                 Instance.rb.velocity = GetComponent<CharacterController>().velocity;
                 Instance.rb.AddForce(transform.forward * dropForwardForce, ForceMode.Impulse);
                 Instance.rb.AddForce(transform.up * dropUpwardForce, ForceMode.Impulse);

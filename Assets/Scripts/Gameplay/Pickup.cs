@@ -21,7 +21,7 @@ public class Pickup : MonoBehaviour
     //Trigger vào
     void OnTriggerEnter(Collider other)
     {
-        Player pickingPlayer = other.GetComponent<Player>();
+        PlayerMovement pickingPlayer = other.GetComponent<PlayerMovement>();
 
         if (pickingPlayer != null)
         {
@@ -29,7 +29,7 @@ public class Pickup : MonoBehaviour
         }
     }
 
-    protected virtual void OnPicked(Player Controller)
+    protected virtual void OnPicked(PlayerMovement Controller)
     {
         PlayPickupFeedback();
     }

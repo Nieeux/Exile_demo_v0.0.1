@@ -5,7 +5,7 @@ using UnityEngine;
 public class ActiveEvent : MonoBehaviour, SharedObject
 {
     public GameObject enemyPrefab;
-    public Player player;
+    public PlayerMovement player;
 
     public float EnemyInterval = 1f;
 
@@ -19,7 +19,7 @@ public class ActiveEvent : MonoBehaviour, SharedObject
         if (other.CompareTag("Player"))
         {
             StartCoroutine(SpawnEnemy(EnemyInterval, enemyPrefab));
-            player = FindObjectOfType<Player>();
+            player = FindObjectOfType<PlayerMovement>();
             //EventManager.current.Randomevents(id);
             Debug.Log("Da trigger");
             //id++;

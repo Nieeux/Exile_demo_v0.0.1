@@ -64,7 +64,7 @@ public class PlayerManager : MonoBehaviour, IComparable
 	public Color color;
 
 	// Token: 0x04000543 RID: 1347
-	public Player player;
+	public PlayerMovement player;
 
 	// Token: 0x04000544 RID: 1348
 	public int kills;

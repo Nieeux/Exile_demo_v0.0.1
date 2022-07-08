@@ -25,6 +25,7 @@ public class GameManager : MonoBehaviour
 		{
 			Object.Destroy(this);
 		}
+		Application.targetFrameRate = 144;
 	}
 
 	public static int GetSeed()

@@ -1,8 +1,9 @@
 ﻿using System.Collections;
 using UnityEngine;
 using UnityEngine.Events;
+using System.Collections.Generic;
 
-[RequireComponent(typeof(AudioSource))]
+[RequireComponent(typeof(AudioSource), typeof(ItemStatsGenerator))]
 public class WeaponController : MonoBehaviour
 {
     public static WeaponController Instance;
@@ -14,6 +15,7 @@ public class WeaponController : MonoBehaviour
     public AudioClip reloadAudio;
 
     public InventoryItem GunStats;
+    ItemStatsGenerator StatsGenerator;
 
     float nextFireTime = 0;
     public bool canFire = true;
@@ -22,13 +24,15 @@ public class WeaponController : MonoBehaviour
 
     AudioSource audioSource;
 
-    private Player player;
+    private PlayerMovement player;
 
     public GameObject WeaponRoot;
     public AudioClip ChangeWeaponSfx;
     AudioSource m_ShootAudioSource;
 
     public UnityAction onDamaged;
+    public Interactable WeaponIndex { get; private set; }
+
     public bool IsWeaponActive { get; private set; }
     public bool IsCharging { get; private set; }
     public GameObject Owner { get; set; }
@@ -37,14 +41,18 @@ public class WeaponController : MonoBehaviour
     void Awake()
     {
         
-        this.player = base.GetComponentInParent<Player>();
+        this.player = base.GetComponentInParent<PlayerMovement>();
+        //GunStats.CurrentMagazine = GunStats.Magazine;
     }
     void Start()
     {
+        this.StatsGenerator = GetComponent<ItemStatsGenerator>();
+
+        this.WeaponIndex = GetComponent<PickupWeapon>();
         rb = base.GetComponent<Rigidbody>();
         coll = base.GetComponent<BoxCollider>();
         WeaponController.Instance = this;
-        GunStats.CurrentMagazine = GunStats.Magazine;
+
         audioSource = GetComponent<AudioSource>();
         audioSource.playOnAwake = false;
         //Make sound 3D
@@ -53,9 +61,15 @@ public class WeaponController : MonoBehaviour
 
     void Update()
     {
+        if (GunStats == null)
+        {
+            GunStats = StatsGenerator.itemChange;
+        }
+
         if (Input.GetMouseButtonDown(0) && singleFire)
         {
             Fire();
+ 
         }
         if (Input.GetMouseButton(0) && !singleFire)
         {
@@ -81,7 +95,11 @@ public class WeaponController : MonoBehaviour
         */
 
     }
+    void CalculateStats()
+    {
+        //foreach(InventoryItem GunStats in GunStats)
 
+    }
     void Fire()
     {
         if (canFire)
@@ -101,9 +119,10 @@ public class WeaponController : MonoBehaviour
                     }
                     firePoint.LookAt(firePointPointerPosition);
                     //Fire
-                    GameObject bulletObject = Instantiate(GunStats.bulletPrefab, firePoint.position, firePoint.rotation);
-
-                    GunStats.CurrentDurability --;
+                    Bullet bulletObject = Instantiate(GunStats.bulletPrefab, firePoint.position, firePoint.rotation).GetComponent<Bullet>();
+                    bulletObject.DamageBullet = GunStats.GunDamage;
+                    // giam Durability khi ban
+                    GunStats.CurrentDurability -= 0.5f;
 
                     WeaponAnimation.Instance.RecoilAni();
                     PlayerWeaponManager.Instance.RecoilFire();
@@ -137,7 +156,7 @@ public class WeaponController : MonoBehaviour
     public void ShowWeapon(bool show)
     {
         WeaponRoot.SetActive(show);
-
+        //enabled = (show);
         if (show && ChangeWeaponSfx)
         {
             m_ShootAudioSource.PlayOneShot(ChangeWeaponSfx);

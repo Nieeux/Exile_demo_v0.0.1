@@ -17,8 +17,7 @@ public class EnemyController : MonoBehaviour
     public GameObject npcDeadPrefab;
     public ActiveEvent enemyManager;
     public ItemDrop randomItemDrop;
-    Health health;
-
+    HitAble health;
 
     [Header("Loot")]
     public GameObject LootPrefab;
@@ -37,7 +36,7 @@ public class EnemyController : MonoBehaviour
 
     void Start()
     {
-        health = GetComponent<Health>();
+        health = GetComponent<HitAble>();
         health.OnDie += OnDie;
         health.OnDamaged += OnDamaged;
 
@@ -75,8 +74,8 @@ public class EnemyController : MonoBehaviour
                     {
                         Debug.DrawLine(firePoint.position, firePoint.position + firePoint.forward * attackDistance, Color.cyan);
 
-                        Health player = hit.transform.GetComponent<Health>();
-                        player.TakeDamage(enemyDamage);
+                        PlayerStats player = hit.transform.GetComponent<PlayerStats>();
+                        player.Damage(enemyDamage);
                     }
                 }
             }
@@ -86,7 +85,7 @@ public class EnemyController : MonoBehaviour
         //Always look at player
         transform.LookAt(new Vector3(playerTransform.transform.position.x, transform.position.y, playerTransform.position.z));
     }
-
+    //Địch nhận DMG
     void OnDamaged(float damage)
     {
         onDamaged?.Invoke();

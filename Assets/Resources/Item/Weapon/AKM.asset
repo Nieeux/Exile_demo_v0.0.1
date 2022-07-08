@@ -20,10 +20,10 @@ MonoBehaviour:
   stackable: 0
   amount: 1
   max: 1
-  GunDamage: 50
+  GunDamage: 100
   fireRate: 0.1
-  CurrentDurability: 1000
-  Durability: 1000
+  CurrentDurability: 100
+  Durability: 100
   CurrentMagazine: 30
   Magazine: 30
   singleFire: 0
@@ -31,6 +31,7 @@ MonoBehaviour:
   bulletPrefab: {fileID: 4696296699401721060, guid: 4ac93e5b76843f743916331815ea1a24, type: 3}
   fireAudio: {fileID: 0}
   reloadAudio: {fileID: 0}
+  Rare: 0
   sprite: {fileID: 21300000, guid: 9962eb46544fecf4f9d9783754c8086d, type: 3}
   material: {fileID: 0}
   mesh: {fileID: 0}

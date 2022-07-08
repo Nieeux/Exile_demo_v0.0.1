@@ -15,7 +15,6 @@ public class InventoryItem : ScriptableObject
 
 	public string description;
 
-
 	[Header("Inventory details")]
 	public bool stackable = true;
 
@@ -29,7 +28,7 @@ public class InventoryItem : ScriptableObject
 
 	public float fireRate;
 
-	public int CurrentDurability;
+	public float CurrentDurability;
 
 	public float Durability;
 
@@ -46,6 +45,12 @@ public class InventoryItem : ScriptableObject
 	public AudioClip fireAudio;
 
 	public AudioClip reloadAudio;
+
+	public InventoryItem.ItemRare Rare;
+
+	//public ItemBuff[] buffs;
+
+	//public Dictionary<StatType, float> stats = new Dictionary<StatType, float>();
 
 	[Header("Visuals")]
 	public Sprite sprite;
@@ -64,13 +69,6 @@ public class InventoryItem : ScriptableObject
 
 	public GameObject prefab;
 
-	public enum ItemType
-	{
-		Item,
-		Food,
-		Equipment,
-		Gun,
-	}
 	public void Get(InventoryItem item, int amount)
 	{
 		this.id = item.id;
@@ -99,7 +97,20 @@ public class InventoryItem : ScriptableObject
 		this.positionOffset = item.positionOffset;
 		this.scale = item.scale;
 	}
-	public void GetWeapon(InventoryItem item, int amount)
+	/*
+	public void GetRandom(InventoryItem item)
+    {
+		buffs = new ItemBuff[item.buffs.Length];
+		for (int i = 0; i < buffs.Length; i++)
+		{
+			item.buffs[i].value = Random.Range(item.buffs[i].min, item.buffs[i].max);
+			stats.Add(item.buffs[i].stat, item.buffs[i].value);
+
+		}
+		this.stats = item.stats;
+	}
+	*/
+	public void GetWeapon(InventoryItem item, float amount)
 	{
 		this.id = item.id;
 		this.name = item.name;
@@ -109,6 +120,7 @@ public class InventoryItem : ScriptableObject
 		this.amount = item.amount;
 		this.max = item.max;
 
+		this.GunDamage = item.GunDamage;
 		this.singleFire = item.singleFire;
 		this.fireRate = item.fireRate;
 		this.CurrentDurability = amount;
@@ -127,13 +139,7 @@ public class InventoryItem : ScriptableObject
 		this.positionOffset = item.positionOffset;
 		this.scale = item.scale;
 	}
-	[System.Serializable]
-	public enum ItemTag
-	{
-		None,
-		Food,
-		Support
-	}
+
 	public bool Compare(InventoryItem other)
 	{
 		return !(other == null) && this.id == other.id;
@@ -146,4 +152,47 @@ public class InventoryItem : ScriptableObject
 		}
 		return this.amount.ToString();
 	}
+
+	[System.Serializable]
+	public enum ItemType
+	{
+		Item,
+		Food,
+		Equipment,
+		Weapon,
+	}
+	[System.Serializable]
+	public enum ItemRare
+	{
+		original,//Nguyên b?n
+		upgrade, //Nâng c?p
+		advanced,//Tân ti?n
+	}
+	[System.Serializable]
+	public enum ItemTag
+	{
+		None,
+		Food,
+		Support
+	}
+	[System.Serializable]
+	public enum StatType
+	{
+		GunDamage,
+		fireRate,
+		Durability,
+	}
+
+	[System.Serializable]
+	public class ItemBuff
+	{
+		public StatType stat;
+		public int value;
+
+		public int min;
+
+		public int max;
+
+	}
+
 }

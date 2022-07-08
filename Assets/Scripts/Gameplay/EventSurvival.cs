@@ -5,7 +5,7 @@ using UnityEngine;
 public class EventSurvival : MonoBehaviour
 {
     public GameObject enemyPrefab;
-    public Player player;
+    public PlayerMovement player;
 
     public float EnemyInterval = 1f;
     public bool WaveEvent = false;
@@ -17,7 +17,7 @@ public class EventSurvival : MonoBehaviour
     {
         Debug.Log("Survival");
         StartCoroutine(SpawnEnemy(EnemyInterval, enemyPrefab));
-        player = FindObjectOfType<Player>();
+        player = FindObjectOfType<PlayerMovement>();
     }
 
     void Update()

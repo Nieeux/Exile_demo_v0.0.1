@@ -8,6 +8,14 @@ using UnityEngine.SceneManagement;
 
 public class Debuging : MonoBehaviour
 {
+	public TextMeshProUGUI fps;
+
+	private float deltaTime;
+
+	public static List<string> r = new List<string>();
+
+	public static Debuging Instance;
+
 	private void Start()
 	{
 		Debuging.Instance = this;
@@ -25,12 +33,6 @@ public class Debuging : MonoBehaviour
 
 
 
-	public TextMeshProUGUI fps;
 
-	private float deltaTime;
-
-	public static List<string> r = new List<string>();
-
-	public static Debuging Instance;
 
 }
