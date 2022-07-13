@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class PickupItem : MonoBehaviour, Interactable, SharedObject
 {
-	public InventoryItem item;
+	public ItemStats item;
 
 	public int amount;
 
@@ -16,7 +16,7 @@ public class PickupItem : MonoBehaviour, Interactable, SharedObject
 
 	public void Interact()
 	{
-		InventoryItem inventoryItem = ScriptableObject.CreateInstance<InventoryItem>();
+		ItemStats inventoryItem = ScriptableObject.CreateInstance<ItemStats>();
 		inventoryItem.Get(this.item, this.amount);
 		Inventory.Instance.AddItemToInventory(inventoryItem);
 		//ClientSend.PickupInteract(this.id);
@@ -25,7 +25,7 @@ public class PickupItem : MonoBehaviour, Interactable, SharedObject
 
 	public void LocalExecute()
 	{
-		InventoryItem inventoryItem = ScriptableObject.CreateInstance<InventoryItem>();
+		ItemStats inventoryItem = ScriptableObject.CreateInstance<ItemStats>();
 		inventoryItem.Get(this.item, this.amount);
 		Inventory.Instance.AddItemToInventory(inventoryItem);
 	}

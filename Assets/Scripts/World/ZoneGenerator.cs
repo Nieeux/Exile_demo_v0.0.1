@@ -7,7 +7,7 @@ public class ZoneGenerator : MonoBehaviour
 
 	private List<GameObject> structures;
 	protected Randomly randomGen;
-	public int nShrines = 1;
+	public int nShrines = 10;
 	private Vector3[] shrines;
 
 	public bool dontAddToResourceManager;

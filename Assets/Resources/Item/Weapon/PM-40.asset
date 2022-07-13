@@ -21,6 +21,7 @@ MonoBehaviour:
   max: 1
   GunDamage: 20
   fireRate: 0.3
+  Critical: 0.1
   CurrentDurability: 100
   Durability: 100
   CurrentMagazine: 14
@@ -31,7 +32,7 @@ MonoBehaviour:
   fireAudio: {fileID: 0}
   reloadAudio: {fileID: 0}
   Rare: 0
-  sprite: {fileID: 21300000, guid: 96a6232489b84b347a0bba2b07cc3478, type: 3}
+  sprite: {fileID: 21300000, guid: 8ec7044eacfd6674ab1434bec32be147, type: 3}
   material: {fileID: 0}
   mesh: {fileID: 0}
   rotationOffset: {x: 0, y: 0, z: 0}
@@ -39,3 +40,4 @@ MonoBehaviour:
   scale: 1
   type: 0
   prefab: {fileID: 367534550845903707, guid: 5a2ec5af6b9e0ff49be315c204ca4d1e, type: 3}
+  BuffInfo: []

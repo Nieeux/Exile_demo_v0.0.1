@@ -5,7 +5,7 @@ using UnityEngine.EventSystems;
 
 public class WeaponInfo : MonoBehaviour, IPointerEnterHandler, IEventSystemHandler, IPointerExitHandler
 {
-	public InventoryItem powerup { get; set; }
+	public ItemStats powerup { get; set; }
 
 	public void OnPointerEnter(PointerEventData eventData)
 	{

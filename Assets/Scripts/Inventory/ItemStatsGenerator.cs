@@ -6,16 +6,16 @@ public class ItemStatsGenerator : MonoBehaviour
 {
     public static ItemStatsGenerator Instance;
 
-    public InventoryItem item;
+    public ItemStats item;
 
     public int Durability;
 
-    public InventoryItem itemChange;
+    public ItemStats itemChange;
 
     void Start()
     {
         ItemStatsGenerator.Instance = this;
-        InventoryItem inventoryItem = ScriptableObject.CreateInstance<InventoryItem>();
+        ItemStats inventoryItem = ScriptableObject.CreateInstance<ItemStats>();
         inventoryItem.GetWeapon(this.item, this.Durability);
         itemChange = inventoryItem;
     }

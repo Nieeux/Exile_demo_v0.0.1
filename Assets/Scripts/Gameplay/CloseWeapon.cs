@@ -10,6 +10,7 @@ public class CloseWeapon : MonoBehaviour
     public Transform rotationPoint;
 
     public float rotationalRecoilSpeed = 8f;
+    public float pad = 0;
 
     public Vector3 DownPosition = new Vector3(0.124f, -0.12f, 0);
     public Vector3 DownRotation = new Vector3(-70f, 0, -30f);
@@ -46,18 +47,24 @@ public class CloseWeapon : MonoBehaviour
         }
         else
         {
-            defuTransform();
+            if (pad > 0)
+            {
+                Debug.Log("CloseWeapon");
+                defuTransform();
+            }
         }
 
     }
     private void PutDownWeapons()
     {
+        this.pad = Mathf.Lerp(this.pad, 300, Time.deltaTime * 10f);
         Rot = Vector3.Slerp(Rot, DownRotation, rotationalRecoilSpeed * Time.deltaTime);
         transform.localRotation = Quaternion.Euler(Rot);
         transform.localPosition = Vector3.Slerp(transform.localPosition, DownPosition, rotationalRecoilSpeed * Time.deltaTime);
     }
     public bool defuTransform()
     {
+        this.pad = (int)Mathf.Lerp(this.pad, 0, Time.deltaTime * 10f);
         Rot = Vector3.Slerp(Rot, defuRotation, rotationalRecoilSpeed * Time.deltaTime);
         transform.localRotation = Quaternion.Euler(Rot);
         transform.localPosition = Vector3.Slerp(transform.localPosition, defuPotation, rotationalRecoilSpeed * Time.deltaTime);

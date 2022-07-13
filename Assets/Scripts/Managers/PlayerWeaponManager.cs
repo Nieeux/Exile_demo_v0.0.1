@@ -16,12 +16,14 @@ public class PlayerWeaponManager : MonoBehaviour
         PutUpNew,
     }
 
-    WeaponController[] WeaponSlots = new WeaponController[2];
+    public WeaponController[] WeaponSlots = new WeaponController[2];
     public Transform DefaultWeaponPosition;
     public Transform WeaponContainer;
     public Transform DownWeaponPosition;
+    public Transform CamDrop;
 
     public int ActiveWeaponIndex { get; private set; }
+    public int index;
     public bool IsAiming { get; private set; }
 
     public UnityAction<WeaponController> OnSwitchedToWeapon;
@@ -35,8 +37,6 @@ public class PlayerWeaponManager : MonoBehaviour
 
     public float WeaponSwitchDelay = 1f;
     PlayerInput InputHandler;
-    InventoryItem inventoryItem;
-
 
     Vector3 m_WeaponMainLocalPosition;
 
@@ -70,14 +70,14 @@ public class PlayerWeaponManager : MonoBehaviour
     void Update()
     {
         WeaponController activeWeapon = GetActiveWeapon();
-
+        index = ActiveWeaponIndex;
         //Recoil sung
         targetRotation = Vector3.Lerp(targetRotation, Vector3.zero, returnSpeed * Time.deltaTime);
         currentRotation = Vector3.Slerp(currentRotation, targetRotation, snappiness * Time.fixedDeltaTime);
         CameraRecoil.transform.localRotation = Quaternion.Euler(currentRotation);
 
         // weapon switch handling
-        if ((activeWeapon == null || !activeWeapon.IsCharging) && (m_WeaponSwitchState == WeaponSwitchState.Up || m_WeaponSwitchState == WeaponSwitchState.Down))
+        if (ActiveWeaponIndex != -1 && (activeWeapon == null || !activeWeapon.IsCharging) && (m_WeaponSwitchState == WeaponSwitchState.Up || m_WeaponSwitchState == WeaponSwitchState.Down))
         {
             int switchWeaponInput = InputHandler.GetSwitchWeaponInput();
             if (switchWeaponInput != 0)
@@ -97,7 +97,7 @@ public class PlayerWeaponManager : MonoBehaviour
                 weaponIndex.RemoveObject();
             }
         }
-        //Neu khong co vu khi trong inventory thi ActiveWeaponIndex = -1
+        //Neu khong co vu khi dang active thi ha het vu khi
         if (activeWeapon == null)
         {
             ActiveWeaponIndex = -1;
@@ -180,9 +180,23 @@ public class PlayerWeaponManager : MonoBehaviour
                 DefaultWeaponPosition.localPosition, switchingTimeFactor);
         }
     }
+    public void CloseWeapon()
+    {
+        if (GetActiveWeapon() != null)
+        {
+            SwitchToWeaponIndex(-1, true);
+        }
+    }
+    public void ShowWeapon()
+    {
+        if (ActiveWeaponIndex == -1)
+        {
+            SwitchWeapon(true);
+        }
 
+    }
     //Add v? khí vào tay
-    public bool AddWeapon(WeaponController weaponPrefab, InventoryItem item)
+    public bool AddWeapon(WeaponController weaponPrefab, ItemStats item)
     {
         // search our weapon slots for the first free one, assign the weapon to it, and return true if we found one. Return false otherwise
         for (int i = 0; i < WeaponSlots.Length; i++)
@@ -201,7 +215,7 @@ public class PlayerWeaponManager : MonoBehaviour
                 weaponInstance.rb.isKinematic = true;
 
                 // tao thuoc tinh moi cho Weapon
-                InventoryItem inventoryItem = weaponPrefab.GunStats;
+                ItemStats inventoryItem = weaponPrefab.GunStats;
                 weaponInstance.GunStats = inventoryItem;
 
                 // Set owner to this gameObject so the weapon can alter projectile/damage logic accordingly
@@ -235,18 +249,18 @@ public class PlayerWeaponManager : MonoBehaviour
     public WeaponController GetWeaponAtSlotIndex(int index)
     {
         // find the active weapon in our weapon slots based on our active weapon index
-        if (index >= 0 &&
-            index < WeaponSlots.Length)
+        if (index >= 0 && index < WeaponSlots.Length)
         {
             return WeaponSlots[index];
         }
 
-        // if we didn't find a valid active weapon in our weapon slots, return null
         return null;
     }
+
     // Iterate on all weapon slots to find the next valid weapon to switch to
     public void SwitchWeapon(bool ascendingOrder)
     {
+        Debug.Log("SwitchWeapon");
         int newWeaponIndex = -1;
         int closestSlotDistance = WeaponSlots.Length;
         for (int i = 0; i < WeaponSlots.Length; i++)
@@ -326,7 +340,7 @@ public class PlayerWeaponManager : MonoBehaviour
             newWeapon.ShowWeapon(true);
         }
     }
-    public bool RemoveWeapon(WeaponController weaponInstance, InventoryItem item)
+    public bool RemoveWeapon(WeaponController weaponInstance, ItemStats item)
     {
         // Look through our slots for that weapon
         for (int i = 0; i < WeaponSlots.Length; i++)
@@ -341,13 +355,14 @@ public class PlayerWeaponManager : MonoBehaviour
                     OnRemovedWeapon.Invoke(weaponInstance, i);
                 }
                 Destroy(weaponInstance.gameObject);
-                WeaponController Instance = Instantiate(weaponInstance.GunStats.prefab, WeaponContainer.transform.position + (WeaponContainer.transform.forward), Quaternion.identity).GetComponent<WeaponController>();
-                InventoryItem inventoryItem = weaponInstance.GunStats;
+                WeaponController Instance = Instantiate(weaponInstance.GunStats.prefab, CamDrop.transform.position, Quaternion.identity).GetComponent<WeaponController>();
+                ItemStats inventoryItem = weaponInstance.GunStats;
                 Instance.GunStats = inventoryItem;
 
                 Instance.rb.velocity = GetComponent<CharacterController>().velocity;
                 Instance.rb.AddForce(transform.forward * dropForwardForce, ForceMode.Impulse);
                 Instance.rb.AddForce(transform.up * dropUpwardForce, ForceMode.Impulse);
+
                 //Add random rotation
                 float random = Random.Range(-1f, 1f);
                 Instance.rb.AddTorque(new Vector3(random, random, random) * 10);

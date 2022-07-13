@@ -8,11 +8,14 @@ public class PlayerStats : MonoBehaviour
     public static PlayerStats Instance;
     private PlayerMovement player;
 
+    public float MaxHealth = 100;
+    public float CurrentHealth { get; set; }
     public float stamina { get; set; }
     public float maxStamina { get; set; }
     public float hunger { get; set; }
     public float maxHunger { get; set; }
-    public float CurrentHealth { get; set; }
+    public float armor { get; set; }
+    public int speed { get; set; }
 
     private bool healing;
     private float staminaRegenRate = 15f;
@@ -22,7 +25,6 @@ public class PlayerStats : MonoBehaviour
     private float healingDrainMultiplier = 2f;
     private float healingRate = 5f;
 
-    public float MaxHealth = 100;
     public float DamageMultiplier = 1f;
 
     bool IsDead;
@@ -31,7 +33,7 @@ public class PlayerStats : MonoBehaviour
     public UnityAction<float> OnHealed;
     public UnityAction OnDie;
 
-    public bool Running;
+
     public bool Invincible { get; set; }
     private void Awake()
     {
@@ -52,14 +54,13 @@ public class PlayerStats : MonoBehaviour
     // Update is called once per frame
     private void Update()
     {
-        Running = player.isRunning;
         Stamina();
         Hunger();
         Healing();
     }
     private void Stamina()
     {
-        if (!Running)
+        if (!player.isRunning)
         {
             if (this.stamina < 100f && this.hunger > 0f)
             {
@@ -70,6 +71,12 @@ public class PlayerStats : MonoBehaviour
                 }
                 this.stamina += this.staminaRegenRate * Time.deltaTime * num;
             }
+        }
+
+        if (this.stamina == 0f && player.isRunning)
+        {
+            this.stamina = 0;
+
         }
         if (this.stamina <= 0f)
         {
@@ -83,12 +90,12 @@ public class PlayerStats : MonoBehaviour
         {
             return;
         }
-        float num = 0.5f;
+        float num = 0.2f;
         if (this.healing)
         {
             num *= this.healingDrainMultiplier;
         }
-        if (this.Running)
+        if (this.player.isRunning)
         {
             num *= this.staminaDrainMultiplier;
         }
@@ -108,6 +115,14 @@ public class PlayerStats : MonoBehaviour
         this.CurrentHealth += num;
     }
 
+    public void Eat(ItemStats item)
+    {
+
+    }
+    public void Armor(ItemStats item)
+    {
+
+    }
     public void Heal(float healAmount)
     {
         float healthBefore = CurrentHealth;
@@ -121,6 +136,7 @@ public class PlayerStats : MonoBehaviour
             OnHealed?.Invoke(trueHealAmount);
         }
     }
+
     public void Damage(float damage)
     {
         if (Invincible)
@@ -176,5 +192,13 @@ public class PlayerStats : MonoBehaviour
             IsDead = true;
             OnDie?.Invoke();
         }
+    }
+    public bool CanRun()
+    {
+        return this.stamina > 0f;
+    }
+    public bool Weak()
+    {
+        return this.stamina == 100f;
     }
 }

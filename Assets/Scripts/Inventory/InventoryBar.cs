@@ -9,7 +9,7 @@ using TMPro;
 public class InventoryBar : MonoBehaviour, IEventSystemHandler,IPointerEnterHandler, IPointerExitHandler
 {
     [HideInInspector]
-    public InventoryItem currentItem;
+    public ItemStats currentItem;
     public RawImage slot;
     public Color idle;
     public Color hover;
@@ -23,13 +23,13 @@ public class InventoryBar : MonoBehaviour, IEventSystemHandler,IPointerEnterHand
 		balo
 	}
 
-	public InventoryItem spawnItem;
+	public ItemStats spawnItem;
 
 	private void Start()
 	{
 		if (this.spawnItem)
 		{
-			this.currentItem = ScriptableObject.CreateInstance<InventoryItem>();
+			this.currentItem = ScriptableObject.CreateInstance<ItemStats>();
 			this.currentItem.Get(this.spawnItem, this.spawnItem.amount);
 		}
 		this.UpdateCell();

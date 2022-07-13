@@ -6,16 +6,16 @@ public class HitNumber : MonoBehaviour
 
 	private void Awake()
 	{
-		base.Invoke("StartFade", 1.5f);
+		base.Invoke("StartFade", 1f);
 		this.defaultScale = base.transform.localScale * 0.5f;
 		this.text = base.GetComponentInChildren<TextMeshProUGUI>();
 		float num = 0.5f;
-		this.dir = new Vector3(Random.Range(-num, num), Random.Range(0.75f, 1.25f), Random.Range(-num, num));
+		this.dir = new Vector3(Random.Range(-num, num), Random.Range(1f, 2f), Random.Range(-num, num));
 	}
 
 	private void Update()
 	{
-		this.speed = Mathf.Lerp(this.speed, 0.2f, Time.deltaTime * 10f);
+		this.speed = Mathf.Lerp(this.speed, 0.1f, Time.deltaTime * 20f);
 		base.transform.position += (this.dir + this.hitDir) * Time.deltaTime * this.speed;
 		base.transform.localScale = Vector3.Lerp(base.transform.localScale, this.defaultScale * 0.5f, Time.deltaTime * 0.3f);
 	}

@@ -7,13 +7,13 @@ public class ItemManager : MonoBehaviour
     public static ItemManager Instance;
 
 	public Dictionary<int, GameObject> list;
-	public Dictionary<int, InventoryItem> allItems;
+	public Dictionary<int, ItemStats> allItems;
 
 	public GameObject dropItem;
 	public GameObject debug;
 	public bool attatchDebug;
 
-	public InventoryItem[] allScriptableItems;
+	public ItemStats[] allScriptableItems;
 
 	public static int currentId;
 
@@ -21,7 +21,7 @@ public class ItemManager : MonoBehaviour
 	{
 		ItemManager.Instance = this;
 		this.list = new Dictionary<int, GameObject>();
-		this.allItems = new Dictionary<int, InventoryItem>();
+		this.allItems = new Dictionary<int, ItemStats>();
 		this.InitAllItems();
 		this.InitAllDropTables();
 	}
@@ -51,9 +51,9 @@ public class ItemManager : MonoBehaviour
     {
         
     }
-    public InventoryItem GetItemByName(string name)
+    public ItemStats GetItemByName(string name)
     {
-        foreach (InventoryItem inventoryItem in this.allItems.Values)
+        foreach (ItemStats inventoryItem in this.allItems.Values)
         {
             if (inventoryItem.name == name)
             {
@@ -66,7 +66,7 @@ public class ItemManager : MonoBehaviour
 	public void DropItem(int fromClient, int itemId, int amount, int objectID)
 	{
 		GameObject gameObject = UnityEngine.Object.Instantiate<GameObject>(this.dropItem);
-		InventoryItem inventoryItem = ScriptableObject.CreateInstance<InventoryItem>();
+		ItemStats inventoryItem = ScriptableObject.CreateInstance<ItemStats>();
 		inventoryItem.Get(this.allItems[itemId], amount);
 		Item component = gameObject.GetComponent<Item>();
 		component.item = inventoryItem;

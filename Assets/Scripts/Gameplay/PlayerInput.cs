@@ -36,11 +36,17 @@ public class PlayerInput : MonoBehaviour
                 Debug.Log("Da bam chuot phai");
                 HotBar.Instance.DropItem();
             }
+            if (Input.GetMouseButtonDown(0))
+            {
+                UseBar.Instance.Use();
+
+            }
         }
 
         // Player ch?t load l?i game 
         if (PlayerHealth.CurrentHealth <= 0)
         {
+
             if (Input.GetKeyDown(KeyCode.Space))
             {
                 Scene scene = SceneManager.GetActiveScene();

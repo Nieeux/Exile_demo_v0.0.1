@@ -12,8 +12,8 @@ GameObject:
   - component: {fileID: 1628560349357739059}
   - component: {fileID: 8364216918085200151}
   - component: {fileID: 7673783651058378874}
-  m_Layer: 0
-  m_Name: Cube
+  m_Layer: 6
+  m_Name: Bridge
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -28,7 +28,7 @@ Transform:
   m_GameObject: {fileID: 1488263626713029027}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 100, z: 1}
+  m_LocalScale: {x: 20, y: 1.5, z: 200}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -62,7 +62,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 5e75947c41bb02b46a948db8c65c1795, type: 2}
+  - {fileID: 2100000, guid: bf1964f16c1f97247bc9a10edd76f9c5, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

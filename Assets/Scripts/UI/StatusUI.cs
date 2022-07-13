@@ -2,6 +2,7 @@
 using UnityEngine.UI;
 using TMPro;
 using UnityEngine.EventSystems;
+using UnityEngine.SceneManagement;
 
 public class StatusUI : MonoBehaviour
 {
@@ -12,6 +13,7 @@ public class StatusUI : MonoBehaviour
     public Image stamina;
     public Image hunger;
 
+    public GameObject GameOver;
     public TextMeshProUGUI HealthNumber;
     public TextMeshProUGUI StaminaNumber;
     public TextMeshProUGUI HungerNumber;
@@ -21,17 +23,24 @@ public class StatusUI : MonoBehaviour
     public Transform playerCam;
     public PlayerStats Player;
 
-    public static PauseMenu Instance;
+    public static StatusUI Instance;
     public GameObject MenuRoot;
     public Camera ZoomUI;
     private float ViewZoom = 60;
     public float SpeedZoom = 20f;
     public bool ShowMenu;
 
+    public void Awake()
+    {
+        StatusUI.Instance = this;
+
+    }
+
     void Start()
     {
         MenuRoot.SetActive(false);
         StatusNumber.SetActive(false);
+        GameOver.SetActive(false);
     }
     void Update()
     {
@@ -52,7 +61,15 @@ public class StatusUI : MonoBehaviour
         {
             SetPauseMenuActivation(!MenuRoot.activeSelf);
         }
-
+        if (PlayerStats.Instance.CurrentHealth <= 0)
+        {
+            ClosePauseMenu();        
+            if (Input.GetKeyDown(KeyCode.Space))
+            {
+                Scene scene = SceneManager.GetActiveScene();
+                SceneManager.LoadScene(scene.name);
+            }
+        }
         FillBarStatus();
 
         if (ShowMenu == true)
@@ -102,7 +119,8 @@ public class StatusUI : MonoBehaviour
     }
     public void ClosePauseMenu()
     {
-        SetPauseMenuActivation(false);
+        GameOver.SetActive(true);
+        SetPauseMenuActivation(true);
     }
     void SetPauseMenuActivation(bool active)
     {
@@ -128,20 +146,6 @@ public class StatusUI : MonoBehaviour
             WeaponController.Instance.canFire = true;
             ViewZoom = 60;
             //AudioUtility.SetMasterVolume(1);
-        }
-    }
-    void OnGUI()
-    {
-        GUI.color = Color.red;
-        //GUI.DrawTexture(new Rect(Screen.width / 2 - 3, Screen.height / 2 - 3, 6, 6), crosshairTexture);
-
-        if (Player.CurrentHealth <= 0)
-        {
-            GUI.Label(new Rect(Screen.width / 2 - 3, Screen.height / 2 - 3, 250, 25), "Game Over");
-        }
-        else
-        {
-            //GUI.DrawTexture(new Rect(Screen.width / 2 - 3, Screen.height / 2 - 3, 6, 6), crosshairTexture);
         }
     }
 }

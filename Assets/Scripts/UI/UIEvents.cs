@@ -20,7 +20,7 @@ public class UIEvents : MonoBehaviour
 
 	}
 
-	public void AddPickup(InventoryItem item)
+	public void AddPickup(ItemStats item)
 	{
 		HotBar.Instance.UpdateHotbar();
 		GameObject gameObject = UnityEngine.Object.Instantiate<GameObject>(this.pickupPrefab, this.pickupParent);
@@ -28,7 +28,7 @@ public class UIEvents : MonoBehaviour
 		gameObject.transform.SetSiblingIndex(0);
 	}
 
-	public void PlaceInInventory(InventoryItem item)
+	public void PlaceInInventory(ItemStats item)
 	{
 
 	}

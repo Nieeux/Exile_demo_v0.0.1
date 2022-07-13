@@ -13,7 +13,7 @@ public class PickedupUI : MonoBehaviour
 
 	private float desiredPad;
 
-	private float fadeStart = 3f;
+	private float fadeStart = 2f;
 
 	private float fadeTime = 1f;
 
@@ -21,12 +21,13 @@ public class PickedupUI : MonoBehaviour
 
 	private void Awake()
 	{
-
-		this.layout = base.GetComponent<HorizontalLayoutGroup>();
 		/*
+		this.layout = base.GetComponent<HorizontalLayoutGroup>();
+
 		this.desiredPad = (float)this.layout.padding.left;
 		this.layout.padding.left = -300;
 		this.padLeft = (float)this.layout.padding.left;
+
 		*/
 		base.Invoke("StartFade", this.fadeStart);
 
@@ -44,7 +45,7 @@ public class PickedupUI : MonoBehaviour
 		UnityEngine.Object.Destroy(base.gameObject);
 	}
 
-	public void SetItem(InventoryItem i)
+	public void SetItem(ItemStats i)
 	{
 		if (i.amount < 1)
 		{

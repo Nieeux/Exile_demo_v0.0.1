@@ -15,19 +15,22 @@ public class PlayerMovement : MonoBehaviour
     public float walkingSpeed = 5f;
     public float runSpeed = 8f;
     public float crouchSpeed = 2f;
+
     public float currentSpeed;
     public bool IsMoving;
-    PlayerStats health;
+    public bool isRunning;
+    PlayerStats Stats;
 
     [Header("Crouch")]
     [Tooltip("Ratio (0-1) of the character height where the camera will be at")]
-    public float CameraHeightRatio = 0.9f;
+    public float CameraHeightRatio = 0f;
     [Tooltip("Height of character when crouching")]
     public float CapsuleHeightCrouching = 0.9f;
     [Tooltip("Height of character when standing")]
     public float CapsuleHeightStanding = 1.8f;
     [Tooltip("Speed of crouching transitions")]
     public float CrouchingSharpness = 10f;
+    public float m_TargetCharacterHeight;
 
     [Header("HeadBob")]
     public AnimationCurve xCurve;
@@ -41,12 +44,11 @@ public class PlayerMovement : MonoBehaviour
     Vector3 moveDirection = Vector3.zero;
     Vector2 rotation = Vector2.zero;
     public float rotationX = 0;
-    float m_TargetCharacterHeight;
+
 
     public UnityAction<bool> OnStanceChanged;
     public bool IsGrounded { get; private set; }
     public bool IsCrouching { get; private set; }
-    public bool isRunning { get; private set; }
     public bool IsDead { get; private set; }
 
     PlayerWeaponManager WeaponsManager;
@@ -64,8 +66,8 @@ public class PlayerMovement : MonoBehaviour
         characterController = GetComponent<CharacterController>();
         WeaponsManager = GetComponent<PlayerWeaponManager>();
         InputHandler = GetComponent<PlayerInput>();
-        health = GetComponent<PlayerStats>();
-        health.OnDie += OnDie;
+        Stats = GetComponent<PlayerStats>();
+        Stats.OnDie += OnDie;
         rotation.y = transform.eulerAngles.y;
 
         // force the crouch state to false when starting
@@ -76,6 +78,7 @@ public class PlayerMovement : MonoBehaviour
 
     void Update()
     {
+
         //Input
         if (InputHandler.GetCrouchInputDown())
         {
@@ -86,9 +89,10 @@ public class PlayerMovement : MonoBehaviour
 
         if (characterController)
         {
-            isRunning = Input.GetKey(KeyCode.LeftShift);
-            currentSpeed = isRunning && canMove ? runSpeed : walkingSpeed;
-            currentSpeed = IsCrouching && canMove ? crouchSpeed : currentSpeed;
+            
+            isRunning = Input.GetKey(KeyCode.LeftShift) && IsMoving && Stats.CanRun() ;
+            currentSpeed = isRunning && IsMoving ? runSpeed : walkingSpeed;
+            currentSpeed = IsCrouching && IsMoving ? crouchSpeed : currentSpeed;
         }
         if (characterController.isGrounded)
         {
@@ -139,20 +143,13 @@ public class PlayerMovement : MonoBehaviour
         if (force)
         {
             characterController.height = m_TargetCharacterHeight;
-            characterController.center = Vector3.up * characterController.height * 0.5f;
-            cameraCrouching.transform.localPosition = Vector3.up * m_TargetCharacterHeight * CameraHeightRatio;
-            //m_Actor.AimPoint.transform.localPosition = characterController.center;
+
         }
         // Update smooth height
         else if (characterController.height != m_TargetCharacterHeight)
         {
-            // resize the capsule and adjust camera position
             characterController.height = Mathf.Lerp(characterController.height, m_TargetCharacterHeight,
                 CrouchingSharpness * Time.deltaTime);
-            characterController.center = Vector3.up * characterController.height * 0.5f;
-            cameraCrouching.transform.localPosition = Vector3.Lerp(cameraCrouching.transform.localPosition,
-                Vector3.up * m_TargetCharacterHeight * CameraHeightRatio, CrouchingSharpness * Time.deltaTime);
-            //m_Actor.AimPoint.transform.localPosition = characterController.center;
         }
     }
 

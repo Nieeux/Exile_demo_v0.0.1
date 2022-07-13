@@ -14,7 +14,7 @@ public class WeaponController : MonoBehaviour
     public AudioClip fireAudio;
     public AudioClip reloadAudio;
 
-    public InventoryItem GunStats;
+    public ItemStats GunStats;
     ItemStatsGenerator StatsGenerator;
 
     float nextFireTime = 0;

@@ -7,7 +7,7 @@ public class PickupWeapon : MonoBehaviour, Interactable, SharedObject
 {
 	public WeaponController WeaponPrefab;
 
-	public InventoryItem item;
+	public ItemStats item;
 
 	public int id;
 
@@ -22,7 +22,7 @@ public class PickupWeapon : MonoBehaviour, Interactable, SharedObject
     }
     public void Interact()
 	{
-		InventoryItem inventoryItem = WeaponController.Instance.GunStats;
+		ItemStats inventoryItem = WeaponController.Instance.GunStats;
 		if (PlayerWeaponManager.Instance.AddWeapon(WeaponPrefab, inventoryItem))
 		{
 			// Handle auto-switching to weapon if no weapons currently
@@ -50,7 +50,7 @@ public class PickupWeapon : MonoBehaviour, Interactable, SharedObject
 
 	public void RemoveObject()
 	{
-		InventoryItem inventoryItem = WeaponController.Instance.GunStats;
+		ItemStats inventoryItem = WeaponController.Instance.GunStats;
 		PlayerWeaponManager.Instance.RemoveWeapon(WeaponPrefab, inventoryItem);
 		//UnityEngine.Object.Destroy(base.gameObject);
 		ResourceManager.Instance.RemoveInteractItem(this.id);

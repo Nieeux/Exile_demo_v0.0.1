@@ -35,7 +35,7 @@ public class Inventory : MonoBehaviour
 			this.cells.Add(item);
 		}
 	}
-	public bool CanPickup(InventoryItem i)
+	public bool CanPickup(ItemStats i)
 	{
 		if (i == null)
 		{
@@ -119,9 +119,9 @@ public class Inventory : MonoBehaviour
 	}
 
 
-	public int AddItemToInventory(InventoryItem item)
+	public int AddItemToInventory(ItemStats item)
 	{
-		InventoryItem inventoryItem = ScriptableObject.CreateInstance<InventoryItem>();
+		ItemStats inventoryItem = ScriptableObject.CreateInstance<ItemStats>();
 		inventoryItem.Get(item, item.amount);
 		InventoryBar inventoryCell = null;
 		foreach (InventoryBar inventoryCell2 in this.cells)
@@ -160,7 +160,7 @@ public class Inventory : MonoBehaviour
 	}
 
 
-	public void DropItemIntoWorld(InventoryItem item)
+	public void DropItemIntoWorld(ItemStats item)
 	{
 		if (item == null)
 		{
@@ -184,7 +184,7 @@ public class Inventory : MonoBehaviour
 	public void UseMoney(int amount)
 	{
 		int num = 0;
-		InventoryItem itemByName = ItemManager.Instance.GetItemByName("Money");
+		ItemStats itemByName = ItemManager.Instance.GetItemByName("Money");
 		foreach (InventoryBar inventoryCell in this.cells)
 		{
 			if (!(inventoryCell.currentItem == null) && inventoryCell.currentItem.Compare(itemByName))
@@ -204,7 +204,7 @@ public class Inventory : MonoBehaviour
 		}
 	}
 
-	public bool HasItem(InventoryItem requirement)
+	public bool HasItem(ItemStats requirement)
 	{
 		int num = 0;
 		foreach (InventoryBar inventoryCell in this.cells)
@@ -221,7 +221,7 @@ public class Inventory : MonoBehaviour
 		return num >= requirement.amount;
 	}
 
-	public void RemoveItem(InventoryItem requirement)
+	public void RemoveItem(ItemStats requirement)
 	{
 		int num = 0;
 		foreach (InventoryBar inventoryCell in this.cells)

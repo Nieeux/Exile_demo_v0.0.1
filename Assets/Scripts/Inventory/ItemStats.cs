@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [CreateAssetMenu]
-public class InventoryItem : ScriptableObject
+public class ItemStats : ScriptableObject
 {
 	[Header("Main")]
 
@@ -28,6 +28,8 @@ public class InventoryItem : ScriptableObject
 
 	public float fireRate;
 
+	public float Critical;
+
 	public float CurrentDurability;
 
 	public float Durability;
@@ -46,7 +48,7 @@ public class InventoryItem : ScriptableObject
 
 	public AudioClip reloadAudio;
 
-	public InventoryItem.ItemRare Rare;
+	public ItemStats.ItemRare Rare;
 
 	//public ItemBuff[] buffs;
 
@@ -65,11 +67,15 @@ public class InventoryItem : ScriptableObject
 
 	public float scale = 1f;
 
-	public InventoryItem.ItemType type;
+	public ItemStats.ItemType type;
 
 	public GameObject prefab;
 
-	public void Get(InventoryItem item, int amount)
+	[Header("Buff")]
+
+	public ScriptableObject[] BuffInfo;
+
+	public void Get(ItemStats item, int amount)
 	{
 		this.id = item.id;
 		this.name = item.name;
@@ -96,6 +102,7 @@ public class InventoryItem : ScriptableObject
 		this.rotationOffset = item.rotationOffset;
 		this.positionOffset = item.positionOffset;
 		this.scale = item.scale;
+		this.BuffInfo = item.BuffInfo;
 	}
 	/*
 	public void GetRandom(InventoryItem item)
@@ -110,7 +117,7 @@ public class InventoryItem : ScriptableObject
 		this.stats = item.stats;
 	}
 	*/
-	public void GetWeapon(InventoryItem item, float amount)
+	public void GetWeapon(ItemStats item, float amount)
 	{
 		this.id = item.id;
 		this.name = item.name;
@@ -123,6 +130,7 @@ public class InventoryItem : ScriptableObject
 		this.GunDamage = item.GunDamage;
 		this.singleFire = item.singleFire;
 		this.fireRate = item.fireRate;
+		this.Critical = item.Critical;
 		this.CurrentDurability = amount;
 		this.Durability = item.Durability;
 		this.Magazine = item.Magazine;
@@ -138,9 +146,10 @@ public class InventoryItem : ScriptableObject
 		this.rotationOffset = item.rotationOffset;
 		this.positionOffset = item.positionOffset;
 		this.scale = item.scale;
+		this.BuffInfo = item.BuffInfo;
 	}
 
-	public bool Compare(InventoryItem other)
+	public bool Compare(ItemStats other)
 	{
 		return !(other == null) && this.id == other.id;
 	}

@@ -22,6 +22,7 @@ MonoBehaviour:
   max: 1
   GunDamage: 100
   fireRate: 0.1
+  Critical: 0.1
   CurrentDurability: 100
   Durability: 100
   CurrentMagazine: 30

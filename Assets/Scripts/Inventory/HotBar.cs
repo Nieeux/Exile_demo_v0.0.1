@@ -5,14 +5,15 @@ using UnityEngine;
 public class HotBar : MonoBehaviour
 {
 	public static HotBar Instance;
-
-	private int currentActive;
-
+	public float pad = 0;
+	public int currentActive;
+	public bool Select;
 	public Inventory inventory;
 	private InventoryBar[] Bars;
 	private InventoryBar[] inventoryBars;
-	public InventoryItem currentItem;
-	public DetectItem playerToDrop;
+	public ItemStats currentItem;
+	public Transform CamDrop;
+
 
 
 	private void Start()
@@ -20,7 +21,7 @@ public class HotBar : MonoBehaviour
 		HotBar.Instance = this;
 		this.inventoryBars = this.inventory.hotkeysTransform.GetComponentsInChildren<InventoryBar>();
 		this.Bars = base.GetComponentsInChildren<InventoryBar>();
-		this.Bars[this.currentActive].slot.color = this.Bars[this.currentActive].hover;
+		//this.Bars[this.currentActive].slot.color = this.Bars[this.currentActive].hover;
 		this.UpdateHotbar();
 		base.Invoke("UpdateHotbar", 1f);
 	}
@@ -34,35 +35,32 @@ public class HotBar : MonoBehaviour
 				this.currentActive = i - 1;
 				Debug.Log("da bam");
 				this.UpdateHotbar();
-				
 			}
 		}
-		
 	}
-	private IEnumerator TurnOffBar()
-    {
-		yield return new WaitForSeconds(1f);
-		this.Bars[this.currentActive].slot.color = this.Bars[this.currentActive].idle;
-		currentItem = null;
-		yield break;
 
-	}
 	public void UpdateHotbar()
 	{
-		//StartCoroutine(TurnOffBar());
 		if (this.inventoryBars[this.currentActive].currentItem != this.currentItem)
 		{
 			this.currentItem = this.inventoryBars[this.currentActive].currentItem;
-
 			if (UseBar.Instance)
 			{
-				//UseBar.Instance.SetWeapon(this.currentItem);
+				UseBar.Instance.SelectItem(this.currentItem);
+				if (UseBar.Instance.SelectItem(this.currentItem))
+                {
+					Select = true;
+				}
+                else
+                {
+					Select = false;
+				}
 			}
-
 		}
 		for (int i = 0; i < this.Bars.Length; i++)
 		{
-			if (i == this.currentActive)
+			//dung o inventory da chon && dang select 
+			if (i == this.currentActive && Select == true)
 			{
 				this.Bars[i].slot.color = this.Bars[i].hover;
 				
@@ -70,6 +68,7 @@ public class HotBar : MonoBehaviour
 			else
 			{
 				this.Bars[i].slot.color = this.Bars[i].idle;
+
 			}
 		}
 		for (int j = 0; j < this.Bars.Length; j++)
@@ -85,7 +84,8 @@ public class HotBar : MonoBehaviour
 
 		if (currentItem != null)
         {
-			PickupItem pickup = Instantiate(currentItem.prefab, playerToDrop.DetectCamera.transform.position + (playerToDrop.DetectCamera.transform.forward), Quaternion.identity).GetComponent<PickupItem>();
+			//PickupItem pickup = Instantiate(currentItem.prefab, playerToDrop.DetectCamera.transform.position + (playerToDrop.DetectCamera.transform.forward), Quaternion.identity).GetComponent<PickupItem>();
+			PickupItem pickup = Instantiate(currentItem.prefab, CamDrop.transform.position, Quaternion.identity).GetComponent<PickupItem>();
 			pickup.GetComponentInChildren<SharedObject>().SetId(ResourceManager.Instance.GetNextId());
 			this.inventoryBars[this.currentActive].RemoveItem();
 			this.UpdateHotbar();
@@ -93,6 +93,15 @@ public class HotBar : MonoBehaviour
 
 	}
 
+	public void Removeitem()
+	{
+
+		if (currentItem != null)
+		{
+			this.inventoryBars[this.currentActive].RemoveItem();
+			this.UpdateHotbar();
+		}
+	}
 	public void UseItem(int n)
 	{
 		this.currentItem.amount -= n;

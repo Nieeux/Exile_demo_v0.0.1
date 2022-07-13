@@ -5,7 +5,7 @@ using UnityEngine;
 public class Item : MonoBehaviour
 {
 
-	public InventoryItem item { get; set; }
+	public ItemStats item { get; set; }
 
 	private void Awake()
 	{

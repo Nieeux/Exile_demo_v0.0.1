@@ -24,6 +24,7 @@ public class ActiveEvent : MonoBehaviour, SharedObject
             Debug.Log("Da trigger");
             //id++;
         }
+
     }
 
     private IEnumerator SpawnEnemy(float interval, GameObject enemyPrefab)
@@ -40,6 +41,7 @@ public class ActiveEvent : MonoBehaviour, SharedObject
         npc.es = this;
         EnemiesSpawned++;
     }
+
     public void SetId(int id)
     {
         this.id = id;
