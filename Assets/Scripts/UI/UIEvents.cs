@@ -22,7 +22,6 @@ public class UIEvents : MonoBehaviour
 
 	public void AddPickup(ItemStats item)
 	{
-		HotBar.Instance.UpdateHotbar();
 		GameObject gameObject = UnityEngine.Object.Instantiate<GameObject>(this.pickupPrefab, this.pickupParent);
 		gameObject.GetComponent<PickedupUI>().SetItem(item);
 		gameObject.transform.SetSiblingIndex(0);

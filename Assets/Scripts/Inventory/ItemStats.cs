@@ -22,6 +22,16 @@ public class ItemStats : ScriptableObject
 
 	public int max;
 
+	[Header("Food")]
+
+	public float heal;
+
+	public float hunger;
+
+	public float stamina;
+
+	public ScriptableObject[] BuffFood;
+
 	[Header("Gun")]
 
 	public float GunDamage;
@@ -73,9 +83,9 @@ public class ItemStats : ScriptableObject
 
 	[Header("Buff")]
 
-	public ScriptableObject[] BuffInfo;
+	public ScriptableObject[] BuffWeapon;
 
-	public void Get(ItemStats item, int amount)
+	public void Getitem(ItemStats item, int amount)
 	{
 		this.id = item.id;
 		this.name = item.name;
@@ -85,15 +95,6 @@ public class ItemStats : ScriptableObject
 		this.amount = amount;
 		this.max = item.max;
 
-		this.singleFire = item.singleFire;
-		this.fireRate = item.fireRate;
-		this.CurrentDurability = item.CurrentDurability;
-		this.Durability = item.Durability;
-		this.Magazine = item.Magazine;
-		this.CurrentMagazine = item.CurrentMagazine;
-		this.ReloadTime = item.ReloadTime;
-		this.bulletPrefab = item.bulletPrefab;
-
 		this.sprite = item.sprite;
 		this.material = item.material;
 		this.mesh = item.mesh;
@@ -102,7 +103,6 @@ public class ItemStats : ScriptableObject
 		this.rotationOffset = item.rotationOffset;
 		this.positionOffset = item.positionOffset;
 		this.scale = item.scale;
-		this.BuffInfo = item.BuffInfo;
 	}
 	/*
 	public void GetRandom(InventoryItem item)
@@ -117,15 +117,11 @@ public class ItemStats : ScriptableObject
 		this.stats = item.stats;
 	}
 	*/
-	public void GetWeapon(ItemStats item, float amount)
+	public void Getweapon(ItemStats item, float amount)
 	{
 		this.id = item.id;
 		this.name = item.name;
 		this.description = item.description;
-
-		this.stackable = item.stackable;
-		this.amount = item.amount;
-		this.max = item.max;
 
 		this.GunDamage = item.GunDamage;
 		this.singleFire = item.singleFire;
@@ -146,7 +142,7 @@ public class ItemStats : ScriptableObject
 		this.rotationOffset = item.rotationOffset;
 		this.positionOffset = item.positionOffset;
 		this.scale = item.scale;
-		this.BuffInfo = item.BuffInfo;
+		this.BuffWeapon = item.BuffWeapon;
 	}
 
 	public bool Compare(ItemStats other)
@@ -160,6 +156,10 @@ public class ItemStats : ScriptableObject
 			return "";
 		}
 		return this.amount.ToString();
+	}
+	public string GetName()
+	{
+		return this.name.ToString();
 	}
 
 	[System.Serializable]

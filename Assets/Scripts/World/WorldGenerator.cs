@@ -4,13 +4,14 @@ using System.Collections.Generic;
 
 public class WorldGenerator : MonoBehaviour {
 
-	public const float maxViewDst = 400;
+	public const float maxViewDst = 240;
 	public Transform viewer;
 	public Material material;
 
 	public static Vector2 viewerPosition;
 	int chunksVisibleInViewDst;
-	int chunkSize = 240;
+	int chunkSize = 120;
+	public GameObject Ground;
 
 	public ZoneGenerator.WeightedSpawn[] structurePrefabs;
 
@@ -28,8 +29,8 @@ public class WorldGenerator : MonoBehaviour {
 	private Vector3[] placeableObjectSizes;
 	public Vector3[] PlaceableObjectSizes { get { return placeableObjectSizes; } }
 
-	Dictionary<Vector2, Terrainchunk> terrainChunkDictionary = new Dictionary<Vector2, Terrainchunk>();
-	List<Terrainchunk> terrainChunksVisibleLastUpdate = new List<Terrainchunk>();
+	Dictionary<Vector2, terrain> terrainChunkDictionary = new Dictionary<Vector2, terrain>();
+	List<terrain> terrainChunksVisibleLastUpdate = new List<terrain>();
 
 	void Start() {
 		chunksVisibleInViewDst = Mathf.RoundToInt(maxViewDst / chunkSize);
@@ -61,7 +62,9 @@ public class WorldGenerator : MonoBehaviour {
 						terrainChunksVisibleLastUpdate.Add (terrainChunkDictionary [viewedChunkCoord]);
 					}
 				} else {
-					terrainChunkDictionary.Add (viewedChunkCoord, new Terrainchunk (viewedChunkCoord, chunkSize, maxViewDst, transform, viewer, material));
+
+					terrainChunkDictionary.Add (viewedChunkCoord, new terrain (viewedChunkCoord, chunkSize, maxViewDst, transform, viewer, material));
+
 				}
 
 			}

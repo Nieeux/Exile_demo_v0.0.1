@@ -10,8 +10,7 @@ public class Inventory : MonoBehaviour
 {
 	public static Inventory Instance;
 
-	public List<InventoryBar> cells;
-	public Transform hotkeysTransform;
+	public List<InventoryCells> cells;
 	public Transform inventoryParent;
 
 	public static readonly float throwForce = 700f;
@@ -29,8 +28,8 @@ public class Inventory : MonoBehaviour
 	//Tim o inventory
 	private void FillCellList()
 	{
-		this.cells = new List<InventoryBar>();
-		foreach (InventoryBar item in this.inventoryParent.GetComponentsInChildren<InventoryBar>())
+		this.cells = new List<InventoryCells>();
+		foreach (InventoryCells item in this.inventoryParent.GetComponentsInChildren<InventoryCells>())
 		{
 			this.cells.Add(item);
 		}
@@ -44,11 +43,11 @@ public class Inventory : MonoBehaviour
 		int num = i.amount;
 		if (this.IsInventoryFull())
 		{
-			using (List<InventoryBar>.Enumerator enumerator = this.cells.GetEnumerator())
+			using (List<InventoryCells>.Enumerator enumerator = this.cells.GetEnumerator())
 			{
 				while (enumerator.MoveNext())
 				{
-					InventoryBar inventoryCell = enumerator.Current;
+					InventoryCells inventoryCell = enumerator.Current;
 					if (inventoryCell != null && inventoryCell.currentItem.id == i.id)
 					{
 						num -= inventoryCell.currentItem.max - inventoryCell.currentItem.amount;
@@ -67,7 +66,7 @@ public class Inventory : MonoBehaviour
 
 	public void UpdateAllCells()
 	{
-		foreach (InventoryBar inventoryCell in this.cells)
+		foreach (InventoryCells inventoryCell in this.cells)
 		{
 			inventoryCell.UpdateCell();
 		}
@@ -82,7 +81,7 @@ public class Inventory : MonoBehaviour
 	public void CheckInventoryAlmostFull()
 	{
 		int num = 0;
-		using (List<InventoryBar>.Enumerator enumerator = this.cells.GetEnumerator())
+		using (List<InventoryCells>.Enumerator enumerator = this.cells.GetEnumerator())
 		{
 			while (enumerator.MoveNext())
 			{
@@ -105,7 +104,7 @@ public class Inventory : MonoBehaviour
 	public bool IsInventoryFull()
 	{
 		Debug.Log("check full");
-		using (List<InventoryBar>.Enumerator enumerator = this.cells.GetEnumerator())
+		using (List<InventoryCells>.Enumerator enumerator = this.cells.GetEnumerator())
 		{
 			while (enumerator.MoveNext())
 			{
@@ -122,9 +121,9 @@ public class Inventory : MonoBehaviour
 	public int AddItemToInventory(ItemStats item)
 	{
 		ItemStats inventoryItem = ScriptableObject.CreateInstance<ItemStats>();
-		inventoryItem.Get(item, item.amount);
-		InventoryBar inventoryCell = null;
-		foreach (InventoryBar inventoryCell2 in this.cells)
+		inventoryItem.Getitem(item, item.amount);
+		InventoryCells inventoryCell = null;
+		foreach (InventoryCells inventoryCell2 in this.cells)
 		{
 			if (inventoryCell2.currentItem == null)
 			{
@@ -171,7 +170,7 @@ public class Inventory : MonoBehaviour
 	public int GetMoney()
 	{
 		int num = 0;
-		foreach (InventoryBar inventoryCell in this.cells)
+		foreach (InventoryCells inventoryCell in this.cells)
 		{
 			if (!(inventoryCell.currentItem == null) && inventoryCell.currentItem.name == "Money")
 			{
@@ -185,7 +184,7 @@ public class Inventory : MonoBehaviour
 	{
 		int num = 0;
 		ItemStats itemByName = ItemManager.Instance.GetItemByName("Money");
-		foreach (InventoryBar inventoryCell in this.cells)
+		foreach (InventoryCells inventoryCell in this.cells)
 		{
 			if (!(inventoryCell.currentItem == null) && inventoryCell.currentItem.Compare(itemByName))
 			{
@@ -207,7 +206,7 @@ public class Inventory : MonoBehaviour
 	public bool HasItem(ItemStats requirement)
 	{
 		int num = 0;
-		foreach (InventoryBar inventoryCell in this.cells)
+		foreach (InventoryCells inventoryCell in this.cells)
 		{
 			if (!(inventoryCell.currentItem == null) && inventoryCell.currentItem.Compare(requirement))
 			{
@@ -224,7 +223,7 @@ public class Inventory : MonoBehaviour
 	public void RemoveItem(ItemStats requirement)
 	{
 		int num = 0;
-		foreach (InventoryBar inventoryCell in this.cells)
+		foreach (InventoryCells inventoryCell in this.cells)
 		{
 			if (!(inventoryCell.currentItem == null) && inventoryCell.currentItem.Compare(requirement))
 			{

@@ -54,16 +54,17 @@ public class PlayerWeaponManager : MonoBehaviour
 
     public float dropForwardForce, dropUpwardForce;
 
+    private void Awake()
+    {
+        PlayerWeaponManager.Instance = this;
+    }
+
     void Start()
     {
         //ActiveWeaponIndex = -1;
         m_WeaponSwitchState = WeaponSwitchState.Down;
         OnSwitchedToWeapon += OnWeaponSwitched;
         InputHandler = GetComponent<PlayerInput>();
-    }
-    private void Awake()
-    {
-        PlayerWeaponManager.Instance = this;
     }
 
     // Update is called once per frame

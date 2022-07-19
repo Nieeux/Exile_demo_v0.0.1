@@ -7,6 +7,7 @@ using UnityEngine.EventSystems;
 
 public class WeaponUI : MonoBehaviour, IPointerEnterHandler, IEventSystemHandler, IPointerExitHandler
 {
+    public static WeaponUI Instance;
     public CanvasGroup CanvasGroup;
     public Image WeaponImage;
     WeaponController m_Weapon;
@@ -31,11 +32,11 @@ public class WeaponUI : MonoBehaviour, IPointerEnterHandler, IEventSystemHandler
     public TextMeshProUGUI TextMagazine;
     public TextMeshProUGUI TextDurability;
 
-
     public int WeaponUIIndex { get; set; }
+
     private void Awake()
     {
-       
+        WeaponUI.Instance = this;
     }
     void Start()
     {
@@ -45,8 +46,8 @@ public class WeaponUI : MonoBehaviour, IPointerEnterHandler, IEventSystemHandler
     // Update is called once per frame
     void Update()
     {
-        WeaponStatus.SetActive(false);
-        if (StatusUI.Instance.ShowMenu == true)
+
+        if (StatusUI.Instance.IsShowStatus == true)
         {
             WeaponStatus.SetActive(true);
             ActiveWeapon = m_Weapon;
@@ -57,6 +58,7 @@ public class WeaponUI : MonoBehaviour, IPointerEnterHandler, IEventSystemHandler
         }
         else
         {
+            WeaponStatus.SetActive(false);
             bool isActiveWeapon = m_Weapon == PlayerWeaponManager.Instance.GetActiveWeapon();
             CanvasGroup.alpha = Mathf.Lerp(CanvasGroup.alpha, isActiveWeapon ? 1f : UnselectedOpacity, Time.deltaTime * 10);
             transform.localScale = Vector3.Lerp(transform.localScale, isActiveWeapon ? Vector3.one : UnselectedScale, Time.deltaTime * 10);
@@ -66,56 +68,19 @@ public class WeaponUI : MonoBehaviour, IPointerEnterHandler, IEventSystemHandler
         }
     }
 
-    private void LateUpdate()
+    public void UpdateStatsWeapon()
     {
+        this.TextDamage.text = m_Weapon.GunStats.GunDamage.ToString("00");
 
+        this.TextFireRate.text = m_Weapon.GunStats.fireRate.ToString("0.0");
 
-    }
-    private void UpdateStatsWeapon()
-    {
-        Textdamage();
-        TextfireRate();
-        Textcritical();
-        Textmagazine();
-        Textdurability();
-    }
+        this.TextCritical.text = m_Weapon.GunStats.Critical.ToString("0.0");
 
-    private void Textdamage()
-    {
-        string text = "";
-        float num = m_Weapon.GunStats.GunDamage;
-        text = string.Format("{0:0.}", num);
-        this.TextDamage.text = text;
-    }
-    private void TextfireRate()
-    {
-        string text = "";
-        float num = m_Weapon.GunStats.fireRate;
-        text = string.Format("{0:0.0}", num);
-        this.TextFireRate.text = text;
-    }
-    private void Textcritical()
-    {
-        string text = "";
-        float num = m_Weapon.GunStats.Critical;
-        text = string.Format("{0:0.0}", num);
-        this.TextCritical.text = text;
-    }
-    private void Textmagazine()
-    {
-        string text = "";
-        float num = m_Weapon.GunStats.Magazine;
-        text = string.Format("{0:0.}", num);
-        this.TextMagazine.text = text;
+        this.TextMagazine.text = m_Weapon.GunStats.Magazine.ToString("00");
+
+        this.TextDurability.text = m_Weapon.GunStats.CurrentDurability.ToString("00");
     }
 
-    private void Textdurability()
-    {
-        string text = "";
-        float num = m_Weapon.GunStats.CurrentDurability;
-        text = string.Format("{0:0.}", num);
-        this.TextDurability.text = text;
-    }
     public void Initialize(WeaponController weapon, int weaponIndex)
     {
         m_Weapon = weapon;
@@ -124,12 +89,12 @@ public class WeaponUI : MonoBehaviour, IPointerEnterHandler, IEventSystemHandler
         WeaponName.text = weapon.GunStats.name;
 
     }
-    public void UpdateAmmo(WeaponController weapon)
+    private void UpdateAmmo(WeaponController weapon)
     {
         m_Weapon = weapon;
         AmmoUI.text = string.Concat(weapon.GunStats.CurrentMagazine);
     }
-    public void DurabilityBar(WeaponController weapon)
+    private void DurabilityBar(WeaponController weapon)
     {
         m_Weapon = weapon;
         Durability.fillAmount = weapon.GunStats.CurrentDurability / weapon.GunStats.Durability;

@@ -6,62 +6,63 @@ using UnityEngine.SceneManagement;
 
 public class StatusUI : MonoBehaviour
 {
-    //public Texture crosshairTexture;
-
+    public static StatusUI Instance;
+    [Header("Bar Status")]
     public Image HealthBar;
     public Image HurtBar;
     public Image stamina;
     public Image hunger;
 
-    public GameObject GameOver;
+    [Header("Number Status")]
+    public GameObject NumberStatus;
     public TextMeshProUGUI HealthNumber;
     public TextMeshProUGUI StaminaNumber;
     public TextMeshProUGUI HungerNumber;
-    public GameObject StatusNumber;
+
 
     private float HurtSpeed = 0.002f;
-    public Transform playerCam;
     public PlayerStats Player;
 
-    public static StatusUI Instance;
-    public GameObject MenuRoot;
+    public GameObject GameOver;
+    public GameObject PauseStatus;
+    public GameObject PauseMenu;
     public Camera ZoomUI;
-    private float ViewZoom = 60;
+    public float ViewZoom = 60;
     public float SpeedZoom = 20f;
-    public bool ShowMenu;
+    public bool IsShowStatus;
+    public bool IsPause { get; set; }
 
-    public void Awake()
+    private void Awake()
     {
+        FillBarStatus();
         StatusUI.Instance = this;
 
     }
 
-    void Start()
+    private void Start()
     {
-        MenuRoot.SetActive(false);
-        StatusNumber.SetActive(false);
+        PauseMenu.SetActive(false);
+        PauseStatus.SetActive(false);
+        NumberStatus.SetActive(false);
         GameOver.SetActive(false);
     }
-    void Update()
+    private void Update()
     {
         ZoomUI.fieldOfView = Mathf.Lerp(ZoomUI.fieldOfView, ViewZoom, Time.deltaTime * SpeedZoom);
+        stamina.fillAmount = Player.stamina / Player.maxStamina;
+        hunger.fillAmount = Player.hunger / Player.maxHunger;
 
-        if (!MenuRoot.activeSelf && Input.GetMouseButtonDown(0))
+        if (Input.GetButtonDown("Status") && !PauseMenu.activeSelf)
         {
-            Cursor.lockState = CursorLockMode.Locked;
-            Cursor.visible = false;
+            SetStatusActivation(!PauseStatus.activeSelf);
         }
-        if (Input.GetKeyDown(KeyCode.Escape))
+        if (Input.GetKeyDown(KeyCode.Escape) && !PauseStatus.activeSelf)
         {
-            Cursor.lockState = CursorLockMode.None;
-            Cursor.visible = true;
+            Pause(!PauseMenu.activeSelf);
         }
 
-        if (Input.GetButtonDown("Pause Menu") || (MenuRoot.activeSelf) && Input.GetButtonDown("Cancel"))
-        {
-            SetPauseMenuActivation(!MenuRoot.activeSelf);
-        }
-        if (PlayerStats.Instance.CurrentHealth <= 0)
+        //Load lai game khi Player chet
+        if (Player.CurrentHealth <= 0)
         {
             ClosePauseMenu();        
             if (Input.GetKeyDown(KeyCode.Space))
@@ -70,14 +71,19 @@ public class StatusUI : MonoBehaviour
                 SceneManager.LoadScene(scene.name);
             }
         }
-        FillBarStatus();
 
-        if (ShowMenu == true)
+        //Update thanh mau khi HP Player khac MaxHP
+        if (Player.CurrentHealth != Player.MaxHealth)
         {
-            Healthnumber();
-            staminaNumber();
-            hungerNumber();
+            Debug.Log("UpdateHealth");
+            FillBarStatus();
         }
+
+        if (IsShowStatus == true)
+        {
+            StatsNumber();  
+        }
+
     }
 
     private void FillBarStatus()
@@ -90,63 +96,90 @@ public class StatusUI : MonoBehaviour
         else
         {
             HurtBar.fillAmount = HealthBar.fillAmount;
-        }
-
-        stamina.fillAmount = Player.stamina / Player.maxStamina;
-        hunger.fillAmount = Player.hunger / Player.maxHunger;
+        }   
     }
-    private void Healthnumber()
+
+    private void StatsNumber()
     {
         string text = "";
         float num = Player.CurrentHealth;
         float num2 = Player.MaxHealth;
         text += string.Format("Máu {0:0.} | {1:0.}", num, num2);
         this.HealthNumber.text = text;
+
+        this.StaminaNumber.text = Player.stamina.ToString("Lực 00");
+        this.HungerNumber.text = Player.hunger.ToString("Đói 00");
     }
-    private void staminaNumber()
+    private void Healthnumber()
     {
+      
+        /*
         string text = "";
-        float num = Player.stamina;
-        text += string.Format("Lực {0:0.}", num);
-        this.StaminaNumber.text = text;
+        float num = Player.CurrentHealth;
+        float num2 = Player.MaxHealth;
+        text += string.Format("Máu {0:0.} | {1:0.}", num, num2);
+        this.HealthNumber.text = text;
+        */
     }
-    private void hungerNumber()
-    {
-        string text = "";
-        float num = Player.hunger;
-        text += string.Format("Đói {0:0.}", num);
-        this.HungerNumber.text = text;
-    }
-    public void ClosePauseMenu()
+
+    private void ClosePauseMenu()
     {
         GameOver.SetActive(true);
-        SetPauseMenuActivation(true);
+        SetStatusActivation(true);
     }
-    void SetPauseMenuActivation(bool active)
+    private void SetStatusActivation(bool active)
     {
-        StatusNumber.SetActive(active);
-        MenuRoot.SetActive(active);
-        ShowMenu = active;
+        NumberStatus.SetActive(active);
+        PauseStatus.SetActive(active);
+        IsShowStatus = active;
 
-        if (MenuRoot.activeSelf)
+        if (PauseStatus.activeSelf)
         {
             Cursor.lockState = CursorLockMode.None;
             Cursor.visible = true;
             PlayerMovement.Instance.canMove = false;
             WeaponController.Instance.canFire = false;
             ViewZoom = 90;
+            //WeaponUI.Instance.UpdateStatsWeapon();
             //AudioUtility.SetMasterVolume(VolumeWhenMenuOpen);
             EventSystem.current.SetSelectedGameObject(null);
+        }
+        else
+        {
+            LockCursor();
+        }
+
+    }
+    private void Pause(bool active)
+    {
+        PauseMenu.SetActive(active);
+        IsPause = active;
+
+        if (PauseMenu.activeSelf)
+        {
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
+            PlayerMovement.Instance.canMove = false;
+            Time.timeScale = 0;
         }
         else
         {
             Cursor.lockState = CursorLockMode.Locked;
             Cursor.visible = false;
             PlayerMovement.Instance.canMove = true;
-            WeaponController.Instance.canFire = true;
-            ViewZoom = 60;
-            //AudioUtility.SetMasterVolume(1);
+            Time.timeScale = 1;
         }
+
+    }
+    private bool LockCursor()
+    {
+        Debug.Log("Turnoff");
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
+        PlayerMovement.Instance.canMove = true;
+        WeaponController.Instance.canFire = true;
+        ViewZoom = 60;
+        return this;
     }
 }
 

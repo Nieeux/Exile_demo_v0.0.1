@@ -16,7 +16,7 @@ public class ItemStatsGenerator : MonoBehaviour
     {
         ItemStatsGenerator.Instance = this;
         ItemStats inventoryItem = ScriptableObject.CreateInstance<ItemStats>();
-        inventoryItem.GetWeapon(this.item, this.Durability);
+        inventoryItem.Getweapon(this.item, this.Durability);
         itemChange = inventoryItem;
     }
 

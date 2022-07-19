@@ -65,25 +65,7 @@ public class ItemManager : MonoBehaviour
 
 	public void DropItem(int fromClient, int itemId, int amount, int objectID)
 	{
-		GameObject gameObject = UnityEngine.Object.Instantiate<GameObject>(this.dropItem);
-		ItemStats inventoryItem = ScriptableObject.CreateInstance<ItemStats>();
-		inventoryItem.Get(this.allItems[itemId], amount);
-		Item component = gameObject.GetComponent<Item>();
-		component.item = inventoryItem;
-		gameObject.AddComponent<BoxCollider>();
-		Vector3 position = GameManager.players[fromClient].transform.position;
-		Transform transform = GameManager.players[fromClient].transform;
-		Vector3 normalized = (transform.forward + Vector3.up * 0.35f).normalized;
-		gameObject.transform.position = position;
-		gameObject.GetComponent<Rigidbody>().AddForce(normalized * Inventory.throwForce);
-		if (this.attatchDebug)
-		{
-			GameObject gameObject2 = UnityEngine.Object.Instantiate<GameObject>(this.debug, gameObject.transform);
-			gameObject2.GetComponent<DebugObject>().text = string.Concat(objectID);
-			gameObject2.transform.localPosition = Vector3.up * 1.25f;
-		}
-		gameObject.GetComponent<Item>().objectID = objectID;
-		this.list.Add(objectID, gameObject);
+
 	}
 	public bool PickupItem(int objectID)
 	{

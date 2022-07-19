@@ -7,12 +7,12 @@ public class ZoneGenerator : MonoBehaviour
 
 	private List<GameObject> structures;
 	protected Randomly randomGen;
-	public int nShrines = 10;
+	public int nShrines = 2;
 	private Vector3[] shrines;
 
 	public bool dontAddToResourceManager;
 
-	private Vector3 terrainSize = new Vector3(240, 1, 240);
+	private Vector3 terrainSize = new Vector3(120, 1, 120);
 	public Vector3 TerrainSize { get { return terrainSize; } }
 
 	public WorldGenerator TerrainController;
@@ -49,14 +49,14 @@ public class ZoneGenerator : MonoBehaviour
 
             Vector3 startPoint = RandomPointAboveTerrain();
 			startPoint.y = 200f;
-			Debug.DrawLine(startPoint, startPoint + Vector3.down * 500f, Color.red, 50f);
+			//Debug.DrawLine(startPoint, startPoint + Vector3.down * 500f, Color.red, 50f);
 			RaycastHit hit;
 			if (Physics.Raycast(startPoint, Vector3.down, out hit, 500f) && hit.transform.gameObject.layer == LayerMask.NameToLayer("Ground"))
 			{
 				this.shrines[i] = hit.point;
 				num++;
 				GameObject gameObject = this.FindObjectToSpawn(this.TerrainController.structurePrefabs, this.totalWeight, this.randomGen);
-				GameObject gameObject2 = Object.Instantiate<GameObject>(gameObject, hit.point, gameObject.transform.rotation);
+				GameObject gameObject2 = Object.Instantiate<GameObject>(gameObject, hit.point, gameObject.transform.rotation, transform);
 				this.structures.Add(gameObject2);
 				this.Process(gameObject2, hit);
 			}

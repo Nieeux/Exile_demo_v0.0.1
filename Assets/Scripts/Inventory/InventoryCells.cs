@@ -6,17 +6,21 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using TMPro;
 
-public class InventoryBar : MonoBehaviour, IEventSystemHandler,IPointerEnterHandler, IPointerExitHandler
+public class InventoryCells : MonoBehaviour, IEventSystemHandler,IPointerEnterHandler, IPointerExitHandler
 {
     [HideInInspector]
     public ItemStats currentItem;
-    public RawImage slot;
-    public Color idle;
+    public RawImage Equip;
+	public RawImage Select;
+	public Color idle;
     public Color hover;
-    public TextMeshProUGUI amount;
-    public Image itemImage;
+	public Color EquipColor;
+	public TextMeshProUGUI amount;
+	public TextMeshProUGUI Name;
+	public Image itemImage;
+	public bool equipAble;
 
-	public InventoryBar.CellType cellType;
+	public InventoryCells.CellType cellType;
 	public enum CellType
 	{
 		Inventory,
@@ -30,7 +34,7 @@ public class InventoryBar : MonoBehaviour, IEventSystemHandler,IPointerEnterHand
 		if (this.spawnItem)
 		{
 			this.currentItem = ScriptableObject.CreateInstance<ItemStats>();
-			this.currentItem.Get(this.spawnItem, this.spawnItem.amount);
+			this.currentItem.Getitem(this.spawnItem, this.spawnItem.amount);
 		}
 		this.UpdateCell();
 	}
@@ -40,6 +44,7 @@ public class InventoryBar : MonoBehaviour, IEventSystemHandler,IPointerEnterHand
 		if (this.currentItem == null)
 		{
 			this.amount.text = "";
+			this.Name.text = "";
 			this.itemImage.sprite = null;
 			this.itemImage.color = Color.clear;
 			Debug.Log("CellNull");
@@ -47,6 +52,7 @@ public class InventoryBar : MonoBehaviour, IEventSystemHandler,IPointerEnterHand
 		else
 		{
 			this.amount.text = this.currentItem.GetAmount();
+			this.Name.text = this.currentItem.GetName();
 			this.itemImage.sprite = this.currentItem.sprite;
 			this.itemImage.color = Color.white;
 		}
@@ -71,6 +77,10 @@ public class InventoryBar : MonoBehaviour, IEventSystemHandler,IPointerEnterHand
 	{
 		this.currentItem = null;
 		this.UpdateCell();
+	}
+	public bool EquipAble()
+	{
+		return equipAble = true;
 	}
 	public void OnPointerEnter(PointerEventData eventData)
 	{

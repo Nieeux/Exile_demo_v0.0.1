@@ -37,6 +37,7 @@ public class Terrainchunk
 		// gán code PlaceObjects
 		this.zoneGenerator = this.meshObject.AddComponent<ZoneGenerator>();
 		this.placeObjects = this.meshObject.AddComponent<PlaceObjects>();
+
 		// kích ho?t PlaceObjects
 		this.zoneGenerator.Spawn = true;
 		this.placeObjects.Spawn = true;

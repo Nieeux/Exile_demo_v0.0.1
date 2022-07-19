@@ -61,7 +61,7 @@ public class PlayerMovement : MonoBehaviour
     }
 
 
-    void Start()
+    private void Start()
     {
         characterController = GetComponent<CharacterController>();
         WeaponsManager = GetComponent<PlayerWeaponManager>();
@@ -76,7 +76,7 @@ public class PlayerMovement : MonoBehaviour
 
     }
 
-    void Update()
+    private void Update()
     {
 
         //Input

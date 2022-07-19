@@ -20,7 +20,7 @@ public class AnimationWeaponUIStatus : MonoBehaviour
 
     void Update()
     {
-        if (StatusUI.Instance.ShowMenu == true)
+        if (StatusUI.Instance.IsShowStatus == true)
         {
             this.padBottom = Mathf.Lerp( this.padBottom, 300, Time.deltaTime * 10f);
             this.padSpacing = Mathf.Lerp(this.padSpacing, 70, Time.deltaTime * 10f);

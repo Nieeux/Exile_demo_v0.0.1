@@ -6,7 +6,7 @@ public class WeaponUIManager : MonoBehaviour
 {
     public RectTransform WeaponPanel;
     public GameObject WeaponPanelPrefab;
-    List<WeaponUI> weaponUI = new List<WeaponUI>();
+    public List<WeaponUI> weaponUI = new List<WeaponUI>();
     void Start()
     {
         WeaponController activeWeapon = PlayerWeaponManager.Instance.GetActiveWeapon();

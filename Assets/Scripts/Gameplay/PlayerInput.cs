@@ -8,8 +8,9 @@ public class PlayerInput : MonoBehaviour
     public static PlayerInput Instance;
     public PlayerStats PlayerHealth;
     public PlayerWeaponManager WeaponManager;
+    bool m_FireInputWasHeld;
 
-    void Start()
+    private void Start()
     {
         PlayerInput.Instance = this;
         this.WeaponManager = base.GetComponent<PlayerWeaponManager>();
@@ -17,7 +18,7 @@ public class PlayerInput : MonoBehaviour
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
     }
-    void Update()
+    private void Update()
     {
         if (CanProcessInput())
         {
@@ -27,10 +28,14 @@ public class PlayerInput : MonoBehaviour
                 Debug.Log("Pickup");
                 // neu item ton tai va chua full do
                 if (currentInteractable != null && !Inventory.Instance.IsInventoryFull())
+                    
                 {
                     currentInteractable.Interact();
                 }
             }
+        }
+        if (!CanProcessInput())
+        {
             if (Input.GetMouseButtonDown(1))
             {
                 Debug.Log("Da bam chuot phai");
@@ -38,7 +43,7 @@ public class PlayerInput : MonoBehaviour
             }
             if (Input.GetMouseButtonDown(0))
             {
-                UseBar.Instance.Use();
+                HotBar.Instance.Use();
 
             }
         }
@@ -58,7 +63,46 @@ public class PlayerInput : MonoBehaviour
     {
         return Cursor.lockState == CursorLockMode.Locked;
     }
+    public bool GetFireInputSingle()
+    {
+        return GetFireInputHeld() && !m_FireInputWasHeld;
+    }
 
+    public bool GetFireInputAuto()
+    {
+        return !GetFireInputHeld() && m_FireInputWasHeld;
+    }
+    public bool GetFireInputHeld()
+    {
+        if (CanProcessInput())
+        {
+            return Input.GetMouseButton(0);
+        }
+
+        return false;
+    }
+    /*
+    public int GetSelectWeaponInput()
+    {
+        if (CanProcessInput())
+        {
+            if (Input.GetKeyDown(KeyCode.Alpha1))
+                return 1;
+            else if (Input.GetKeyDown(KeyCode.Alpha2))
+                return 2;
+            else if (Input.GetKeyDown(KeyCode.Alpha3))
+                return 3;
+            else if (Input.GetKeyDown(KeyCode.Alpha4))
+                return 4;
+            else if (Input.GetKeyDown(KeyCode.Alpha5))
+                return 5;
+            else
+                return 0;
+        }
+
+        return 0;
+    }
+    */
     public int GetSwitchWeaponInput()
     {
         if (CanProcessInput())

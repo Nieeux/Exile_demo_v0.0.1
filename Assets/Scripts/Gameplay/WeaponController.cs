@@ -30,6 +30,8 @@ public class WeaponController : MonoBehaviour
     public AudioClip ChangeWeaponSfx;
     AudioSource m_ShootAudioSource;
 
+    PlayerInput InputHandler;
+
     public UnityAction onDamaged;
     public Interactable WeaponIndex { get; private set; }
 
@@ -41,11 +43,13 @@ public class WeaponController : MonoBehaviour
     void Awake()
     {
         
-        this.player = base.GetComponentInParent<PlayerMovement>();
+        
         //GunStats.CurrentMagazine = GunStats.Magazine;
     }
     void Start()
     {
+        this.player = base.GetComponentInParent<PlayerMovement>();
+        InputHandler = GetComponent<PlayerInput>();
         this.StatsGenerator = GetComponent<ItemStatsGenerator>();
 
         this.WeaponIndex = GetComponent<PickupWeapon>();

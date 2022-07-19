@@ -6,7 +6,6 @@ public class PlaceObjects : MonoBehaviour
 {
 
     public WorldGenerator TerrainController;
-    //public Randomly randomGen;
     public bool Spawn;
 
     void Start()
@@ -19,8 +18,10 @@ public class PlaceObjects : MonoBehaviour
         }
     }
 
+
     public void Place()
     {
+        Debug.Log("Place");
         //this.randomGen = new Randomly(NoiseSettings.seed);
         int numObjects = 1;
         for (int i = 0; i < numObjects; i++)
@@ -29,6 +30,7 @@ public class PlaceObjects : MonoBehaviour
             //float z = (float)(this.randomGen.NextDouble() * 2.0 - 1.0) * 240 / 2f;
             //Vector3 startPoint = new Vector3(x, 0f, z);
             Vector3 startPoint = RandomPointAboveTerrain();
+            startPoint.y = 10f;
             int prefabType = Random.Range(0, TerrainController.PlaceableObjects.Length);
 
             // Raycast neu gap Ground thi spawn
@@ -39,7 +41,7 @@ public class PlaceObjects : MonoBehaviour
                 RaycastHit boxHit;
                 if (Physics.BoxCast(startPoint, TerrainController.PlaceableObjectSizes[prefabType], Vector3.down, out boxHit, orientation) && boxHit.transform.gameObject.layer == LayerMask.NameToLayer("Ground"))
                 {
-                    Instantiate(TerrainController.PlaceableObjects[prefabType], new Vector3(startPoint.x, hit.point.y, startPoint.z), orientation);
+                    Instantiate(TerrainController.PlaceableObjects[prefabType], new Vector3(startPoint.x, hit.point.y, startPoint.z), orientation, transform);
                         //tao doi tuong va truy cap RandomEvents
                     //TriggerArea spawnZone = Instantiate(TerrainController.PlaceableObjects[prefabType], new Vector3(startPoint.x, hit.point.y, startPoint.z), orientation, transform).GetComponent<TriggerArea>();
                         //Set id cho RandomEvents

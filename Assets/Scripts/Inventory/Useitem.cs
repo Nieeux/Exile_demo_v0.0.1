@@ -3,17 +3,18 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
-public class UseBar : MonoBehaviour
+public class Useitem : MonoBehaviour
 {
-    public GameObject NoticeBoard;
-    public static UseBar Instance;
+    public static Useitem Instance;
+
     public ItemStats currentItem;
+
     public bool Select;
 
     private void Awake()
     {
-        NoticeBoard.SetActive(false);
-        UseBar.Instance = this;
+
+        Useitem.Instance = this;
         this.SelectItem(null);
     }
 
@@ -27,14 +28,20 @@ public class UseBar : MonoBehaviour
             return false;
         }
 
-        PlayerWeaponManager.Instance.CloseWeapon();
-        NoticeBoard.SetActive(true);
+
+
+        //PlayerWeaponManager.Instance.CloseWeapon();
         /*
-        GameObject Item = Instantiate(currentItem.prefab,transform);
+        
+        ItemContainer.SetActive(true);
+
+        GameObject Item = Instantiate(currentItem.prefab, ItemContainer.transform);
         Item.GetComponent<Rigidbody>().isKinematic = true;
-        transform.localRotation = Quaternion.Euler(item.rotationOffset);
-        transform.localPosition = item.positionOffset;
+        ItemContainer.transform.localRotation = Quaternion.Euler(item.rotationOffset);
+        ItemContainer.transform.localPosition = item.positionOffset;
         */
+
+
         return true;
 
     }
@@ -42,8 +49,9 @@ public class UseBar : MonoBehaviour
     {
         if (currentItem == null)
         {
-            PlayerWeaponManager.Instance.ShowWeapon();
-            NoticeBoard.SetActive(false);
+            //PlayerWeaponManager.Instance.ShowWeapon();
+
+
         }
 
     }
@@ -63,11 +71,12 @@ public class UseBar : MonoBehaviour
         Debug.Log("UsedItem");
         if (this.currentItem.type == ItemStats.ItemType.Food)
         {
-            HotBar.Instance.Removeitem();
+            HotBar.Instance.UseItem(1);
             PlayerStats.Instance.Heal(50);
         }
         if (this.currentItem.type == ItemStats.ItemType.Equipment)
         {
+            HotBar.Instance.EquipItem(currentItem);
 
         }
         if (this.currentItem.type == ItemStats.ItemType.Item)

@@ -16,19 +16,32 @@ MonoBehaviour:
   id: 6
   name: "\u0110\u1ED9ng c\u01A1"
   description: 
-  resourceDamage: 1
-  attackDamage: 1
-  attackSpeed: 1
-  attackRange: 0
   stackable: 1
   amount: 1
   max: 1
-  sprite: {fileID: 0}
+  heal: 0
+  hunger: 0
+  stamina: 0
+  BuffFood: []
+  GunDamage: 0
+  fireRate: 0
+  Critical: 0
+  CurrentDurability: 0
+  Durability: 0
+  CurrentMagazine: 0
+  Magazine: 0
+  singleFire: 0
+  ReloadTime: 0
+  bulletPrefab: {fileID: 0}
+  fireAudio: {fileID: 0}
+  reloadAudio: {fileID: 0}
+  Rare: 0
+  sprite: {fileID: 21300000, guid: d0044f3921330ee4dba7066ff7aeaf9e, type: 3}
   material: {fileID: 0}
   mesh: {fileID: 0}
   rotationOffset: {x: 0, y: 0, z: 0}
   positionOffset: {x: 0, y: 0, z: 0}
   scale: 1
-  type: 0
+  type: 2
   prefab: {fileID: 2841471369595137429, guid: 0984ad953a367e143a516a551c6534ce, type: 3}
-  tag: 0
+  BuffWeapon: []
