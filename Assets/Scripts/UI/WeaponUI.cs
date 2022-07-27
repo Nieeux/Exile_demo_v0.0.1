@@ -86,7 +86,7 @@ public class WeaponUI : MonoBehaviour, IPointerEnterHandler, IEventSystemHandler
         m_Weapon = weapon;
         WeaponUIIndex = weaponIndex;
         WeaponImage.sprite = weapon.GunStats.sprite;
-        WeaponName.text = weapon.GunStats.name;
+        WeaponName.text = weapon.GunStats.nameViet;
 
     }
     private void UpdateAmmo(WeaponController weapon)
@@ -102,11 +102,11 @@ public class WeaponUI : MonoBehaviour, IPointerEnterHandler, IEventSystemHandler
     }
     public void OnPointerEnter(PointerEventData eventData)
     {
-        ItemInfo.Instance.SetText(m_Weapon.GunStats.name + "\n<size=70%>" + m_Weapon.GunStats.description, true);
+        ItemInfo.Instance.SetText(m_Weapon.GunStats.nameViet + "\n<size=70%>" + m_Weapon.GunStats.description);
     }
 
     public void OnPointerExit(PointerEventData eventData)
     {
-        ItemInfo.Instance.Fade(0f, 0.2f);
+        ItemInfo.Instance.OnDisable();
     }
 }

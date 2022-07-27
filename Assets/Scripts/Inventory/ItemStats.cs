@@ -13,6 +13,8 @@ public class ItemStats : ScriptableObject
 
 	public new string name;
 
+	public string nameViet;
+
 	public string description;
 
 	[Header("Inventory details")]
@@ -89,6 +91,7 @@ public class ItemStats : ScriptableObject
 	{
 		this.id = item.id;
 		this.name = item.name;
+		this.nameViet = item.nameViet;
 		this.description = item.description;
 
 		this.stackable = item.stackable;
@@ -121,6 +124,7 @@ public class ItemStats : ScriptableObject
 	{
 		this.id = item.id;
 		this.name = item.name;
+		this.nameViet = item.nameViet;
 		this.description = item.description;
 
 		this.GunDamage = item.GunDamage;
@@ -159,7 +163,7 @@ public class ItemStats : ScriptableObject
 	}
 	public string GetName()
 	{
-		return this.name.ToString();
+		return this.nameViet.ToString();
 	}
 
 	[System.Serializable]

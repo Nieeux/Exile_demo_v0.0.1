@@ -13,8 +13,9 @@ MonoBehaviour:
   m_Name: MayNhanTin
   m_EditorClassIdentifier: 
   important: 0
-  id: 4
-  name: "M\xE1y nh\u1EAFn tin"
+  id: 12
+  name: maynhantin
+  nameViet: "M\xE1y nh\u1EAFn tin"
   description: 
   stackable: 1
   amount: 1

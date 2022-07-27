@@ -28,7 +28,7 @@ public class PlayerInput : MonoBehaviour
                 Debug.Log("Pickup");
                 // neu item ton tai va chua full do
                 if (currentInteractable != null && !Inventory.Instance.IsInventoryFull())
-                    
+                     //&& !Inventory.Instance.IsInventoryFull()
                 {
                     currentInteractable.Interact();
                 }
@@ -81,6 +81,7 @@ public class PlayerInput : MonoBehaviour
 
         return false;
     }
+
     /*
     public int GetSelectWeaponInput()
     {
@@ -103,6 +104,7 @@ public class PlayerInput : MonoBehaviour
         return 0;
     }
     */
+
     public int GetSwitchWeaponInput()
     {
         if (CanProcessInput())

@@ -13,8 +13,9 @@ MonoBehaviour:
   m_Name: DongCo
   m_EditorClassIdentifier: 
   important: 0
-  id: 6
-  name: "\u0110\u1ED9ng c\u01A1"
+  id: 14
+  name: dongco
+  nameViet: "\u0110\u1ED9ng c\u01A1"
   description: 
   stackable: 1
   amount: 1

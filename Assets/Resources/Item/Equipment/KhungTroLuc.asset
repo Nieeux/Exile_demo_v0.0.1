@@ -13,8 +13,9 @@ MonoBehaviour:
   m_Name: KhungTroLuc
   m_EditorClassIdentifier: 
   important: 0
-  id: 5
-  name: "Khung tr\u1EE3 l\u1EF1c"
+  id: 10
+  name: khungtroluc
+  nameViet: "Khung tr\u1EE3 l\u1EF1c"
   description: 
   stackable: 1
   amount: 1

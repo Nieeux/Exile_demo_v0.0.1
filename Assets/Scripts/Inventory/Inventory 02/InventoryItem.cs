@@ -23,8 +23,8 @@ public class InventoryItem : MonoBehaviour
     public Transform CamDrop;
 
     public UnityAction<Item> OnSwitchedToItem;
-    public UnityAction<Item, int> OnAddedItem;
-    public UnityAction<Item, int> OnRemovedItem;
+    public UnityAction<Item> OnAddedItem;
+    public UnityAction<Item> OnRemovedItem;
 
     public int ActiveItemIndex { get; private set; }
 
@@ -187,7 +187,7 @@ public class InventoryItem : MonoBehaviour
 
                 if (OnAddedItem != null)
                 {
-                    OnAddedItem.Invoke(weaponInstance, i);
+                    OnAddedItem.Invoke(weaponInstance);
                 }
 
                 return true;
@@ -313,7 +313,7 @@ public class InventoryItem : MonoBehaviour
                 ItemSlots = ItemSlots.OrderBy(element => element == null).ToArray();
                 if (OnRemovedItem != null)
                 {
-                    OnRemovedItem.Invoke(weaponInstance, i);
+                    OnRemovedItem.Invoke(weaponInstance);
                 }
 
                 Destroy(weaponInstance.gameObject);

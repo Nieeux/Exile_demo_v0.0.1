@@ -18,7 +18,9 @@ public class WeaponController : MonoBehaviour
     ItemStatsGenerator StatsGenerator;
 
     float nextFireTime = 0;
-    public bool canFire = true;
+    public bool canFire = false;
+    public bool AiEquip = false;
+    public bool reloading;
     public Rigidbody rb;
     public BoxCollider coll;
 
@@ -48,6 +50,7 @@ public class WeaponController : MonoBehaviour
     }
     void Start()
     {
+
         this.player = base.GetComponentInParent<PlayerMovement>();
         InputHandler = GetComponent<PlayerInput>();
         this.StatsGenerator = GetComponent<ItemStatsGenerator>();
@@ -65,24 +68,30 @@ public class WeaponController : MonoBehaviour
 
     void Update()
     {
+
         if (GunStats == null)
         {
             GunStats = StatsGenerator.itemChange;
         }
 
-        if (Input.GetMouseButtonDown(0) && singleFire)
+        if (canFire == true && AiEquip == false)
         {
-            Fire();
- 
+            Debug.DrawRay(firePoint.transform.position, firePoint.transform.forward, Color.green);
+            if (Input.GetMouseButtonDown(0) && singleFire)
+            {
+                Fire();
+
+            }
+            if (Input.GetMouseButton(0) && !singleFire)
+            {
+                Fire();
+            }
+            if (Input.GetKeyDown(KeyCode.R) && canFire)
+            {
+                StartCoroutine(Reload(true));
+            }
         }
-        if (Input.GetMouseButton(0) && !singleFire)
-        {
-            Fire();
-        }
-        if (Input.GetKeyDown(KeyCode.R) && canFire)
-        {
-            StartCoroutine(Reload());
-        }
+
 
         /*
         // Check Enemy đã vào tầm chưa?
@@ -104,7 +113,7 @@ public class WeaponController : MonoBehaviour
         //foreach(InventoryItem GunStats in GunStats)
 
     }
-    void Fire()
+    public void Fire()
     {
         if (canFire)
         {
@@ -115,22 +124,24 @@ public class WeaponController : MonoBehaviour
                 if (GunStats.CurrentMagazine > 0)
                 {
                     //Point fire point at the current center of Camera
-                    Vector3 firePointPointerPosition = player.playerCamera.transform.position + player.playerCamera.transform.forward * 100;
+                    Vector3 firePointPointerPosition = firePoint.transform.position + firePoint.transform.forward * 100;
+
                     RaycastHit hit;
-                    if (Physics.Raycast(player.playerCamera.transform.position, player.playerCamera.transform.forward, out hit, 100))
+                    if (Physics.Raycast(firePoint.transform.position, firePoint.transform.forward, out hit, 100))
                     {
                         firePointPointerPosition = hit.point;
                     }
                     firePoint.LookAt(firePointPointerPosition);
                     //Fire
                     Bullet bulletObject = Instantiate(GunStats.bulletPrefab, firePoint.position, firePoint.rotation).GetComponent<Bullet>();
-                    bulletObject.DamageBullet = GunStats.GunDamage;
+                    bulletObject.BulletDamage = GunStats.GunDamage;
+                    bulletObject.BulletCrit = GunStats.Critical;
                     // giam Durability khi ban
                     GunStats.CurrentDurability -= 0.5f;
 
                     WeaponAnimation.Instance.RecoilAni();
                     PlayerWeaponManager.Instance.RecoilFire();
-                    //HelmetScript.Instance.RecoilHUD();
+                    //UIBob.Instance.RecoilHUD();
 
                     GunStats.CurrentMagazine--;
                     audioSource.clip = fireAudio;
@@ -138,13 +149,48 @@ public class WeaponController : MonoBehaviour
                 }
                 else
                 {
-                    StartCoroutine(Reload());
+                    StartCoroutine(Reload(true));
                 }
             }
         }
     }
-    IEnumerator Reload()
+    public void AiFire()
     {
+        if (canFire)
+        {
+            if (Time.time > nextFireTime)
+            {
+                nextFireTime = Time.time + GunStats.fireRate;
+
+                if (GunStats.CurrentMagazine > 0)
+                {
+                    float inaccuracy = 0.2f;
+                    Vector3 firePointPointerPosition = firePoint.transform.position + firePoint.transform.forward * 100;
+
+                    firePointPointerPosition += Random.insideUnitSphere * inaccuracy;
+                    firePoint.LookAt(firePointPointerPosition);
+                    //Fire
+                    Bullet bulletObject = Instantiate(GunStats.bulletPrefab, firePoint.position, firePoint.rotation).GetComponent<Bullet>();
+                    bulletObject.BulletDamage = GunStats.GunDamage;
+                    bulletObject.BulletCrit = GunStats.Critical;
+                    // giam Durability khi ban
+                    GunStats.CurrentDurability -= 0.5f;
+                    //UIBob.Instance.RecoilHUD();
+
+                    GunStats.CurrentMagazine--;
+                    audioSource.clip = fireAudio;
+                    audioSource.Play();
+                }
+                else
+                {
+                    StartCoroutine(Reload(true));
+                }
+            }
+        }
+    }
+    IEnumerator Reload(bool Reloading)
+    {
+        reloading = Reloading;
         canFire = false;
 
         audioSource.clip = reloadAudio;
@@ -153,13 +199,14 @@ public class WeaponController : MonoBehaviour
         yield return new WaitForSeconds(GunStats.ReloadTime);
 
         GunStats.CurrentMagazine = GunStats.Magazine;
-
+        reloading = false;
         canFire = true;
     }
 
     public void ShowWeapon(bool show)
     {
         WeaponRoot.SetActive(show);
+        canFire = show;
         //enabled = (show);
         if (show && ChangeWeaponSfx)
         {

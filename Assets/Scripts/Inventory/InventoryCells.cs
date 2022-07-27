@@ -78,7 +78,7 @@ public class InventoryCells : MonoBehaviour, IEventSystemHandler,IPointerEnterHa
 		this.currentItem = null;
 		this.UpdateCell();
 	}
-	public bool EquipAble()
+	public bool EquipItem()
 	{
 		return equipAble = true;
 	}
@@ -87,8 +87,8 @@ public class InventoryCells : MonoBehaviour, IEventSystemHandler,IPointerEnterHa
 		this.SetColor(this.hover);
 		if (this.currentItem)
 		{
-			string text = this.currentItem.name + "\n<size=70%>" + this.currentItem.description;
-			ItemInfo.Instance.SetText(text, false);
+			string text = this.currentItem.nameViet + "\n<size=70%>" + this.currentItem.description;
+			ItemInfo.Instance.SetText(text);
 			return;
 		}
 	}
@@ -96,6 +96,6 @@ public class InventoryCells : MonoBehaviour, IEventSystemHandler,IPointerEnterHa
 	public void OnPointerExit(PointerEventData eventData)
 	{
 		this.SetColor(this.idle);
-		ItemInfo.Instance.Fade(0f, 0.2f);
+		ItemInfo.Instance.OnDisable();
 	}
 }

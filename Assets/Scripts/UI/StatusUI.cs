@@ -3,10 +3,12 @@ using UnityEngine.UI;
 using TMPro;
 using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
+using System.Collections;
 
 public class StatusUI : MonoBehaviour
 {
     public static StatusUI Instance;
+    public bool TakingDamage;
     [Header("Bar Status")]
     public Image HealthBar;
     public Image HurtBar;
@@ -20,7 +22,8 @@ public class StatusUI : MonoBehaviour
     public TextMeshProUGUI HungerNumber;
 
 
-    private float HurtSpeed = 0.002f;
+    public float HurtSpeed = 0.01f;
+    public float damageFillTimeRemap;
     public PlayerStats Player;
 
     public GameObject GameOver;
@@ -75,7 +78,6 @@ public class StatusUI : MonoBehaviour
         //Update thanh mau khi HP Player khac MaxHP
         if (Player.CurrentHealth != Player.MaxHealth)
         {
-            Debug.Log("UpdateHealth");
             FillBarStatus();
         }
 
@@ -91,6 +93,8 @@ public class StatusUI : MonoBehaviour
         HealthBar.fillAmount = Player.CurrentHealth / Player.MaxHealth;
         if (HurtBar.fillAmount > HealthBar.fillAmount)
         {
+            //yield return new WaitForSeconds(0.4f);
+            //yield return AniamteFill();
             HurtBar.fillAmount -= HurtSpeed;
         }
         else
@@ -98,6 +102,40 @@ public class StatusUI : MonoBehaviour
             HurtBar.fillAmount = HealthBar.fillAmount;
         }   
     }
+    /*
+    private IEnumerator AniamteFill()
+    {
+        TakingDamage = false;
+        float timer = 0.0f;
+        float form = HurtBar.fillAmount;
+        float to = HealthBar.fillAmount;
+
+        float difference = form - to;
+        float duration = difference / HurtSpeed;
+
+        while (true)
+        {
+            if(HurtSpeed <= 0.0f)
+            {
+                timer = 1.0f;
+            }
+            else
+            {
+                timer += Time.deltaTime / duration;
+            }
+            float remappedTimer = 2;
+            HurtBar.fillAmount = Mathf.Lerp(form, to, remappedTimer);
+
+            if (timer >= 1.0f)
+            {
+                break;
+            }
+            yield return null;
+        }
+
+    }
+    */
+
 
     private void StatsNumber()
     {

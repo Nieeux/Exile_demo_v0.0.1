@@ -15,6 +15,7 @@ public class PlayerMovement : MonoBehaviour
     public float walkingSpeed = 5f;
     public float runSpeed = 8f;
     public float crouchSpeed = 2f;
+    public int jumps = 1;
 
     public float currentSpeed;
     public bool IsMoving;
@@ -96,6 +97,8 @@ public class PlayerMovement : MonoBehaviour
         }
         if (characterController.isGrounded)
         {
+            //this.jumps = EquipAble.Instance.DoubleJumps(null);
+
             Vector3 forward = transform.TransformDirection(Vector3.forward);
             Vector3 right = transform.TransformDirection(Vector3.right);
             // di chuyen

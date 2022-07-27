@@ -12,7 +12,7 @@ public class ItemUIManager : MonoBehaviour
         Item activeWeapon = InventoryItem.Instance.GetActiveItem();
         if (activeWeapon)
         {
-            AddWeapon(activeWeapon, InventoryItem.Instance.ActiveItemIndex);
+            AddWeapon(activeWeapon);
             ChangeWeapon(activeWeapon);
         }
 
@@ -20,22 +20,22 @@ public class ItemUIManager : MonoBehaviour
         InventoryItem.Instance.OnRemovedItem += RemoveWeapon;
         InventoryItem.Instance.OnSwitchedToItem += ChangeWeapon;
     }
-    void AddWeapon(Item newWeapon, int weaponIndex)
+    void AddWeapon(Item newWeapon)
     {
         GameObject ammoCounterInstance = Instantiate(ItemPanelPrefab, ItemPanel);
         ItemUI newAmmoCounter = ammoCounterInstance.GetComponent<ItemUI>();
 
-        newAmmoCounter.Initialize(newWeapon, weaponIndex);
+        newAmmoCounter.Initialize(newWeapon);
 
         ItemUI.Add(newAmmoCounter);
     }
 
-    void RemoveWeapon(Item newWeapon, int weaponIndex)
+    void RemoveWeapon(Item newWeapon)
     {
         int foundCounterIndex = -1;
         for (int i = 0; i < ItemUI.Count; i++)
         {
-            if (ItemUI[i].WeaponUIIndex == weaponIndex)
+            if (ItemUI[i].item == newWeapon)
             {
                 foundCounterIndex = i;
                 Destroy(ItemUI[i].gameObject);

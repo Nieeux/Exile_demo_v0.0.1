@@ -10,7 +10,7 @@ public class ItemUI : MonoBehaviour, IPointerEnterHandler, IEventSystemHandler, 
     public CanvasGroup CanvasGroup;
     public Image WeaponImage;
     private bool ActiveWeapon;
-    Item item;
+    public Item item;
     public GameObject SelectItem;
     [Tooltip("Scale when weapon not selected")]
     public Vector3 UnselectedScale = Vector3.one * 0.8f;
@@ -19,7 +19,6 @@ public class ItemUI : MonoBehaviour, IPointerEnterHandler, IEventSystemHandler, 
     public float UnselectedOpacity = 0.5f;
 
     public TextMeshProUGUI WeaponName;
-    public int WeaponUIIndex { get; set; }
     void Start()
     {
         
@@ -38,21 +37,20 @@ public class ItemUI : MonoBehaviour, IPointerEnterHandler, IEventSystemHandler, 
         SelectItem.SetActive(isActiveWeapon);
 
     }
-    public void Initialize(Item i, int weaponIndex)
+    public void Initialize(Item i)
     {
         item = i;
-        WeaponUIIndex = weaponIndex;
         WeaponImage.sprite = i.ItemStats.sprite;
         WeaponName.text = i.ItemStats.name;
 
     }
     public void OnPointerEnter(PointerEventData eventData)
     {
-        ItemInfo.Instance.SetText(item.ItemStats.name + "\n<size=70%>" + item.ItemStats.description, true);
+        ItemInfo.Instance.SetText(item.ItemStats.name + "\n<size=70%>" + item.ItemStats.description);
     }
 
     public void OnPointerExit(PointerEventData eventData)
     {
-        ItemInfo.Instance.Fade(0f, 0.2f);
+        ItemInfo.Instance.OnDisable();
     }
 }

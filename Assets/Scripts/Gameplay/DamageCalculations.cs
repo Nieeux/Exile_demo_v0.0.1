@@ -8,32 +8,40 @@ public class DamageCalculations : MonoBehaviour
 
     private static Vector2 randomDamageRange = new Vector2(0.7f, 1f);
 
+    public static float Criterate;
+
     private void Awake()
     {
         DamageCalculations.Instance = this;
     }
+    public void Update()
+    {
+        
+    }
     public DamageCalculations.DamageResult GetDamage()
     {
         float dmg = Random.Range(DamageCalculations.randomDamageRange.x, DamageCalculations.randomDamageRange.y);
-        bool crit = Random.Range(0f, 1f) < 0.1f;
-        if (crit)
+        bool ItCrit = Random.Range(0f, 1f) < EquipAble.Instance.Critical();
+
+        if (ItCrit)
         {
             dmg *= 2f;
         }
-        return new DamageCalculations.DamageResult(dmg, crit);
+        return new DamageCalculations.DamageResult(dmg, ItCrit);
     }
 
 
     public class DamageResult
     {
-        public float damageMultiplier;
-        public bool crit;
+        public float damageMultiplier;     
+        public bool ItCrit;
         public float AmmoPiercing;
 
         public DamageResult(float damage, bool crit)
         {
             this.damageMultiplier = damage;
-            this.crit = crit;
+            this.ItCrit = crit;
+
             //this.AmmoPiercing = AmmoPiercing;
         }
     }

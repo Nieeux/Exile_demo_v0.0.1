@@ -30,7 +30,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 367534550845903707}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.020999968, z: 3.396}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -86,9 +86,9 @@ MonoBehaviour:
   fireAudio: {fileID: 8300000, guid: 57370f17c98a2154cba34219e83859fb, type: 3}
   reloadAudio: {fileID: 8300000, guid: f02e7563c10830748a7719d342d27800, type: 3}
   GunStats: {fileID: 0}
-  canFire: 1
+  canFire: 0
   rb: {fileID: 367534550845903711}
-  coll: {fileID: 0}
+  coll: {fileID: 367534550845903710}
   WeaponRoot: {fileID: 367534550845903707}
   ChangeWeaponSfx: {fileID: 0}
 --- !u!82 &367534550845903709

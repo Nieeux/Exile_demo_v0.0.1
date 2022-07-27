@@ -11,15 +11,6 @@ public class PickupWeapon : MonoBehaviour, Interactable, SharedObject
 
 	public int id;
 
-
-	private void Awake()
-	{
-
-	}
-    private void Start()
-    {
-        
-    }
     public void Interact()
 	{
 		ItemStats inventoryItem = WeaponController.Instance.GunStats;
@@ -58,7 +49,7 @@ public class PickupWeapon : MonoBehaviour, Interactable, SharedObject
 
 	public string GetName()
 	{
-		return "E | " + this.WeaponPrefab.GunStats.name;
+		return "E | " + this.WeaponPrefab.GunStats.nameViet;
 
 	}
 
@@ -80,5 +71,17 @@ public class PickupWeapon : MonoBehaviour, Interactable, SharedObject
 	public int GetId()
 	{
 		return this.id;
+	}
+
+    private void OnTriggerEnter(Collider other)
+    {
+		Debug.Log("trigger Ai pickup");
+		AIController AIPickup = other.GetComponent<AIController>();
+		if(AIPickup != null)
+        {
+			AIPickup.AiEquip(WeaponPrefab);
+			Destroy(gameObject);
+
+		}
 	}
 }

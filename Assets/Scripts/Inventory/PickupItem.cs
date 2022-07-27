@@ -24,6 +24,7 @@ public class PickupItem : MonoBehaviour, Interactable, SharedObject
 		Inventory.Instance.AddItemToInventory(inventoryItem);
 		//ClientSend.PickupInteract(this.id);
 		this.RemoveObject();
+
 		/*
 		ItemStats inventoryItem = Item.Instance.ItemStats;
 		if (InventoryItem.Instance.AddWeapon(ItemPrefab, inventoryItem))
@@ -65,7 +66,7 @@ public class PickupItem : MonoBehaviour, Interactable, SharedObject
 
 	public string GetName()
 	{
-		return "E| " + this.item.name;
+		return "E | " + this.item.nameViet;
 
 	}
 

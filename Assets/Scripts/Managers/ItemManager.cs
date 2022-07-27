@@ -6,39 +6,68 @@ public class ItemManager : MonoBehaviour
 {
     public static ItemManager Instance;
 
-	public Dictionary<int, GameObject> list;
-	public Dictionary<int, ItemStats> allItems;
+	public Dictionary<int, ItemStats> AllItems;
+	public Dictionary<int, ItemStats> AllWeapons;
+	public Dictionary<int, ItemStats> AllEquipments;
+	public Dictionary<string, int> GetNameEquipments;
 
-	public GameObject dropItem;
-	public GameObject debug;
-	public bool attatchDebug;
+	public ItemStats[] Items;
+	public ItemStats[] Weapons;
+	public ItemStats[] Equipments;
 
-	public ItemStats[] allScriptableItems;
 
 	public static int currentId;
 
 	private void Awake()
 	{
 		ItemManager.Instance = this;
-		this.list = new Dictionary<int, GameObject>();
-		this.allItems = new Dictionary<int, ItemStats>();
-		this.InitAllItems();
-		this.InitAllDropTables();
+		this.AllItems = new Dictionary<int, ItemStats>();
+		this.AllWeapons = new Dictionary<int, ItemStats>();
+		this.AllEquipments = new Dictionary<int, ItemStats>();
+		this.GetNameEquipments = new Dictionary<string, int>();
+		this.GetAllItems();
+		this.GetAllEquipments();
+		this.GetAllWeapon();
+
 	}
-	private void InitAllItems()
+	private void GetAllItems()
 	{
-		for (int i = 0; i < this.allScriptableItems.Length; i++)
+		for (int i = 0; i < this.Items.Length; i++)
 		{
-			this.allScriptableItems[i].id = i;
-			this.allItems.Add(i, this.allScriptableItems[i]);
+			this.Items[i].id = i;
+			this.AllItems.Add(i, this.Items[i]);
 		}
 	}
 
-	private void InitAllDropTables()
+	private void GetAllWeapon()
 	{
-
+		for (int i = 0; i < this.Weapons.Length; i++)
+		{
+			this.Weapons[i].id = i;
+			this.AllWeapons.Add(i, this.Weapons[i]);
+		}
 	}
 
+	private void GetAllEquipments()
+	{
+		for (int i = 0; i < this.Equipments.Length; i++)
+		{
+			this.Equipments[i].id = i;
+			this.AllEquipments.Add(i, this.Equipments[i]);
+
+		}
+	}
+	private int AddEquipments(ItemStats[] Equipments, int id)
+	{
+		foreach (ItemStats Equipment in Equipments)
+		{
+			this.AllEquipments.Add(id, Equipment);
+			this.GetNameEquipments.Add(Equipment.name, id);
+			Equipment.id = id;
+			id++;
+		}
+		return id;
+	}
 	void Start()
     {
         
@@ -53,7 +82,7 @@ public class ItemManager : MonoBehaviour
     }
     public ItemStats GetItemByName(string name)
     {
-        foreach (ItemStats inventoryItem in this.allItems.Values)
+        foreach (ItemStats inventoryItem in this.AllItems.Values)
         {
             if (inventoryItem.name == name)
             {
@@ -63,14 +92,4 @@ public class ItemManager : MonoBehaviour
         return null;
     }
 
-	public void DropItem(int fromClient, int itemId, int amount, int objectID)
-	{
-
-	}
-	public bool PickupItem(int objectID)
-	{
-		UnityEngine.Object.Destroy(this.list[objectID]);
-		this.list.Remove(objectID);
-		return true;
-	}
 }

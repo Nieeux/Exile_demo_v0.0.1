@@ -13,15 +13,20 @@ MonoBehaviour:
   m_Name: PM-40
   m_EditorClassIdentifier: 
   important: 0
-  id: 10
+  id: 1
   name: PM-40
+  nameViet: PM-40
   description: 
   stackable: 0
   amount: 1
   max: 1
+  heal: 0
+  hunger: 0
+  stamina: 0
+  BuffFood: []
   GunDamage: 20
   fireRate: 0.3
-  Critical: 0.1
+  Critical: 0.3
   CurrentDurability: 100
   Durability: 100
   CurrentMagazine: 14
@@ -40,4 +45,4 @@ MonoBehaviour:
   scale: 1
   type: 0
   prefab: {fileID: 367534550845903707, guid: 5a2ec5af6b9e0ff49be315c204ca4d1e, type: 3}
-  BuffInfo: []
+  BuffWeapon: []

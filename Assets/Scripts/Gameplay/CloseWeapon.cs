@@ -49,7 +49,6 @@ public class CloseWeapon : MonoBehaviour
         {
             if (pad > 0)
             {
-                Debug.Log("CloseWeapon");
                 defuTransform();
             }
         }

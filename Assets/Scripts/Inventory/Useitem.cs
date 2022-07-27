@@ -18,43 +18,18 @@ public class Useitem : MonoBehaviour
         this.SelectItem(null);
     }
 
-    public bool SelectItem(ItemStats item)
+    public void SelectItem(ItemStats item)
     {
 
         this.StopUse();
         this.currentItem = item;
         if (item == null)
         {
-            return false;
-        }
-
-
-
-        //PlayerWeaponManager.Instance.CloseWeapon();
-        /*
-        
-        ItemContainer.SetActive(true);
-
-        GameObject Item = Instantiate(currentItem.prefab, ItemContainer.transform);
-        Item.GetComponent<Rigidbody>().isKinematic = true;
-        ItemContainer.transform.localRotation = Quaternion.Euler(item.rotationOffset);
-        ItemContainer.transform.localPosition = item.positionOffset;
-        */
-
-
-        return true;
-
-    }
-    private void Update()
-    {
-        if (currentItem == null)
-        {
-            //PlayerWeaponManager.Instance.ShowWeapon();
-
-
+            return;
         }
 
     }
+
 
 
     private void StopUse()
@@ -68,7 +43,6 @@ public class Useitem : MonoBehaviour
         {
             return;
         }
-        Debug.Log("UsedItem");
         if (this.currentItem.type == ItemStats.ItemType.Food)
         {
             HotBar.Instance.UseItem(1);
@@ -76,7 +50,6 @@ public class Useitem : MonoBehaviour
         }
         if (this.currentItem.type == ItemStats.ItemType.Equipment)
         {
-            HotBar.Instance.EquipItem(currentItem);
 
         }
         if (this.currentItem.type == ItemStats.ItemType.Item)

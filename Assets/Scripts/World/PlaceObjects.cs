@@ -21,7 +21,6 @@ public class PlaceObjects : MonoBehaviour
 
     public void Place()
     {
-        Debug.Log("Place");
         //this.randomGen = new Randomly(NoiseSettings.seed);
         int numObjects = 1;
         for (int i = 0; i < numObjects; i++)

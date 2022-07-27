@@ -13,14 +13,19 @@ MonoBehaviour:
   m_Name: QuaTeo
   m_EditorClassIdentifier: 
   important: 0
-  id: 1
-  name: "Qu\u1EA3 T\xE9o"
+  id: 7
+  name: quateo
+  nameViet: "Qu\u1EA3 T\xE9o"
   description: "M\u1ED9t lo\u1EA1i qu\u1EA3 m\xE1y t\u1EA1o c\xF3 gi\xE1 tr\u1ECB
     dinh d\u01B0\u1EE1ng th\u1EA5p nh\u01B0ng s\u1EBD gi\xFAp b\u1EA1n t\u1EC9nh
     t\xE1o"
   stackable: 1
   amount: 1
   max: 1
+  heal: 0
+  hunger: 0
+  stamina: 0
+  BuffFood: []
   GunDamage: 0
   fireRate: 0
   Critical: 0
@@ -42,3 +47,4 @@ MonoBehaviour:
   scale: 1
   type: 1
   prefab: {fileID: 2841471369595137429, guid: bbcaef54a3fab0444b82c88f04cf5c6b, type: 3}
+  BuffWeapon: []

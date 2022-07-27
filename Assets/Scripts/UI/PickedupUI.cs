@@ -13,7 +13,7 @@ public class PickedupUI : MonoBehaviour
 
 	private float desiredPad;
 
-	private float fadeStart = 2f;
+	private float fadeStart = 3f;
 
 	private float fadeTime = 1f;
 
@@ -47,14 +47,8 @@ public class PickedupUI : MonoBehaviour
 
 	public void SetItem(ItemStats i)
 	{
-		if (i.amount < 1)
-		{
-			this.icon.sprite = null;
-			this.item.text = "Inventory full";
-			return;
-		}
 		this.icon.sprite = i.sprite;
-		this.item.text = string.Format("{0}x {1}", i.amount, i.name);
+		this.item.text = string.Format("{0}x {1}", i.amount, i.nameViet);
 	}
 
 	public void Update()

@@ -117,9 +117,9 @@ MonoBehaviour:
   fireAudio: {fileID: 8300000, guid: 57370f17c98a2154cba34219e83859fb, type: 3}
   reloadAudio: {fileID: 8300000, guid: f02e7563c10830748a7719d342d27800, type: 3}
   GunStats: {fileID: 0}
-  canFire: 1
+  canFire: 0
   rb: {fileID: 8078425582575817914}
-  coll: {fileID: 0}
+  coll: {fileID: 8665244739356450696}
   WeaponRoot: {fileID: 7474613660059752366}
   ChangeWeaponSfx: {fileID: 0}
 --- !u!82 &7474613660059752364
