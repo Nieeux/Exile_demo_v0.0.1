@@ -72,6 +72,7 @@ public class PlayerWeaponManager : MonoBehaviour
     {
         WeaponController activeWeapon = GetActiveWeapon();
         index = ActiveWeaponIndex;
+
         //Recoil sung
         targetRotation = Vector3.Lerp(targetRotation, Vector3.zero, returnSpeed * Time.deltaTime);
         currentRotation = Vector3.Slerp(currentRotation, targetRotation, snappiness * Time.fixedDeltaTime);
@@ -80,7 +81,7 @@ public class PlayerWeaponManager : MonoBehaviour
         // weapon switch handling
         if (ActiveWeaponIndex != -1 && (activeWeapon == null || !activeWeapon.IsCharging) && (m_WeaponSwitchState == WeaponSwitchState.Up || m_WeaponSwitchState == WeaponSwitchState.Down))
         {
-            int switchWeaponInput = InputHandler.GetSwitchWeaponInput();
+            int switchWeaponInput = InputHandler.GetSwitchWeapon();
             if (switchWeaponInput != 0)
             {
                 bool switchUp = switchWeaponInput > 0;
@@ -91,7 +92,7 @@ public class PlayerWeaponManager : MonoBehaviour
         //Drop Weapon
         if (activeWeapon != null)
         {
-            if (InputHandler.DropWeaponInput())
+            if (InputHandler.GetDropWeapon())
             {
                 Debug.Log("DropWeapon");
                 Interactable weaponIndex = activeWeapon.WeaponIndex;
@@ -216,8 +217,8 @@ public class PlayerWeaponManager : MonoBehaviour
                 weaponInstance.rb.isKinematic = true;
 
                 // tao thuoc tinh moi cho Weapon
-                ItemStats inventoryItem = weaponPrefab.GunStats;
-                weaponInstance.GunStats = inventoryItem;
+                weaponInstance.GunStats = item;
+                weaponInstance.GetComponent<PickupWeapon>().item = item;
 
                 // Set owner to this gameObject so the weapon can alter projectile/damage logic accordingly
                 weaponInstance.Owner = gameObject;
@@ -341,7 +342,7 @@ public class PlayerWeaponManager : MonoBehaviour
             newWeapon.ShowWeapon(true);
         }
     }
-    public bool RemoveWeapon(WeaponController weaponInstance, ItemStats item)
+    public bool DropWeapon(WeaponController weaponInstance, ItemStats item)
     {
         // Look through our slots for that weapon
         for (int i = 0; i < WeaponSlots.Length; i++)
@@ -357,9 +358,51 @@ public class PlayerWeaponManager : MonoBehaviour
                 }
                 Destroy(weaponInstance.gameObject);
                 WeaponController Instance = Instantiate(weaponInstance.GunStats.prefab, CamDrop.transform.position, Quaternion.identity).GetComponent<WeaponController>();
-                ItemStats inventoryItem = weaponInstance.GunStats;
-                Instance.GunStats = inventoryItem;
+                Instance.GunStats = item;
+                Instance.GetComponent<PickupWeapon>().item = item;
 
+                Instance.canFire = false;
+                Instance.rb.velocity = GetComponent<CharacterController>().velocity;
+                Instance.rb.AddForce(transform.forward * dropForwardForce, ForceMode.Impulse);
+                Instance.rb.AddForce(transform.up * dropUpwardForce, ForceMode.Impulse);
+
+                //Add random rotation
+                float random = Random.Range(-1f, 1f);
+                Instance.rb.AddTorque(new Vector3(random, random, random) * 10);
+
+
+                // Handle case of removing active weapon (switch to next weapon)
+                if (i == ActiveWeaponIndex)
+                {
+                    SwitchWeapon(true);
+                }
+
+                return true;
+            }
+        }
+
+        return false;
+    }
+    public bool BrokeWeapon(WeaponController weaponInstance, ItemStats item)
+    {
+        // Look through our slots for that weapon
+        for (int i = 0; i < WeaponSlots.Length; i++)
+        {
+            // when weapon found, remove it
+            if (WeaponSlots[i] == weaponInstance)
+            {
+                WeaponSlots[i] = null;
+
+                if (OnRemovedWeapon != null)
+                {
+                    OnRemovedWeapon.Invoke(weaponInstance, i);
+                }
+                Destroy(weaponInstance.gameObject);
+                WeaponController Instance = Instantiate(weaponInstance.GunStats.prefab, CamDrop.transform.position, Quaternion.identity).GetComponent<WeaponController>();
+                Instance.GunStats = null;
+                Instance.GetComponent<PickupWeapon>().item = null;
+
+                Instance.canFire = false;
                 Instance.rb.velocity = GetComponent<CharacterController>().velocity;
                 Instance.rb.AddForce(transform.forward * dropForwardForce, ForceMode.Impulse);
                 Instance.rb.AddForce(transform.up * dropUpwardForce, ForceMode.Impulse);

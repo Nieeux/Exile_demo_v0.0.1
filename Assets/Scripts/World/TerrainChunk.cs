@@ -6,7 +6,7 @@ public class Terrainchunk
 	public Vector2 coord;
 
 	GameObject meshObject;
-	ZoneGenerator zoneGenerator;
+	StructureGenerator zoneGenerator;
 	PlaceObjects placeObjects;
 	Vector2 position;
 	Bounds bounds;
@@ -35,7 +35,7 @@ public class Terrainchunk
 		renderer = meshObject.GetComponent<Renderer>();
 		renderer.material = material;
 		// gán code PlaceObjects
-		this.zoneGenerator = this.meshObject.AddComponent<ZoneGenerator>();
+		this.zoneGenerator = this.meshObject.AddComponent<StructureGenerator>();
 		this.placeObjects = this.meshObject.AddComponent<PlaceObjects>();
 
 		// kích ho?t PlaceObjects

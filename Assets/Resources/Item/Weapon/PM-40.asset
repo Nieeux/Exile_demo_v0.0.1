@@ -24,7 +24,7 @@ MonoBehaviour:
   hunger: 0
   stamina: 0
   BuffFood: []
-  GunDamage: 20
+  GunDamage: 15
   fireRate: 0.3
   Critical: 0.3
   CurrentDurability: 100
@@ -33,10 +33,22 @@ MonoBehaviour:
   Magazine: 14
   singleFire: 0
   ReloadTime: 1
-  bulletPrefab: {fileID: 4696296699401721060, guid: 4ac93e5b76843f743916331815ea1a24, type: 3}
+  bulletPrefab: {fileID: 4696296699401721060, guid: f249a1bd70a86df4496bbfc3e3e9c120, type: 3}
+  AllBulletPrefab:
+  - {fileID: 4696296699401721060, guid: 9ca158238cfddc2449df8582ad40e56e, type: 3}
+  - {fileID: 4696296699401721060, guid: 4ac93e5b76843f743916331815ea1a24, type: 3}
+  - {fileID: 4696296699401721060, guid: f249a1bd70a86df4496bbfc3e3e9c120, type: 3}
   fireAudio: {fileID: 0}
   reloadAudio: {fileID: 0}
-  Rare: 0
+  Rare: 1
+  punchStrenght: 0.1
+  punchVibrato: 5
+  punchDuration: 0.15
+  punchDurationR: 0.15
+  punchElasticity: 0.5
+  randomness: 70
+  ShakeDuration: 1
+  ShakeStrenght: 1
   sprite: {fileID: 21300000, guid: 8ec7044eacfd6674ab1434bec32be147, type: 3}
   material: {fileID: 0}
   mesh: {fileID: 0}
@@ -45,4 +57,8 @@ MonoBehaviour:
   scale: 1
   type: 0
   prefab: {fileID: 367534550845903707, guid: 5a2ec5af6b9e0ff49be315c204ca4d1e, type: 3}
+  colorIndex: {r: 0, g: 0, b: 0, a: 0}
+  colorOriginal: {r: 1, g: 1, b: 1, a: 1}
+  colorUpgrade: {r: 0, g: 1, b: 1, a: 1}
+  colorAdvanced: {r: 1, g: 0, b: 0.3333335, a: 1}
   BuffWeapon: []

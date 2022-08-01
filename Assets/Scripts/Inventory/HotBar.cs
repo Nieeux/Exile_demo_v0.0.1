@@ -107,7 +107,7 @@ public class HotBar : MonoBehaviour
 		if (this.currentItem.type == ItemStats.ItemType.Equipment 
 			&& this.inventoryCells[this.BarSelect].equipAble == false)
 		{
-			EquipAble.Instance.Equipments(currentItem);
+			InventoryAble.Instance.Equipments(currentItem);
 			EquipItemUI(currentItem);
 
 		}
@@ -130,7 +130,7 @@ public class HotBar : MonoBehaviour
 		// Huy trang bi
         if (this.inventoryCells[this.BarSelect].EquipItem())
         {
-			EquipAble.Instance.Unequipments(currentItem);
+			InventoryAble.Instance.Unequipments(currentItem);
 			this.inventoryCells[this.BarSelect].equipAble = false;
 			this.inventoryCells[this.BarSelect].Equip.color = this.inventoryCells[this.BarSelect].idle;
 		}

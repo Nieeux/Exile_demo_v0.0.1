@@ -7,7 +7,7 @@ using System.Collections.Generic;
 public class DetectItem : MonoBehaviour
 {
     [Header("Detect Item")]
-    public Transform DetectCamera;
+    //public Transform DetectCamera;
     public GameObject interactUI;
     private Transform interactUi;
     private TextMeshProUGUI interactText;
@@ -20,6 +20,7 @@ public class DetectItem : MonoBehaviour
     public Texture bottomRightBorder;
 
     List<Collider> targets = new List<Collider>();
+
     public static DetectItem Instance;
 
     public Interactable currentInteractable { get; private set; }
@@ -36,10 +37,9 @@ public class DetectItem : MonoBehaviour
     }
     private void Update()
     {
-
         // Detect Item
         RaycastHit Hit;
-        if (Physics.Raycast(DetectCamera.transform.position, DetectCamera.transform.forward, out Hit, 3f) && Hit.transform.gameObject.layer == LayerMask.NameToLayer("Item"))
+        if (Physics.Raycast(transform.position, transform.forward, out Hit, 2f) && Hit.transform.gameObject.layer == LayerMask.NameToLayer("Item"))
         {
             targets.Add(Hit.collider);
             this.currentInteractable = Hit.collider.gameObject.GetComponent<Interactable>();

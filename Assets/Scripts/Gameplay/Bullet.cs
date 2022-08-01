@@ -1,5 +1,7 @@
 ﻿using System.Collections;
 using UnityEngine;
+using System;
+
 
 public class Bullet : MonoBehaviour
 {
@@ -7,6 +9,9 @@ public class Bullet : MonoBehaviour
     public float hitForce = 50f;
     public float destroyAfter = 3.5f;
 
+    public Bullet.AmmoType ammoType;
+
+    public GameObject bulletLight;
     float currentTime = 0;
     public float BulletDamage;
     public float BulletCrit;
@@ -22,7 +27,14 @@ public class Bullet : MonoBehaviour
 
     IEnumerator Start()
     {
-
+        if (ammoType == AmmoType.HighAmmo)
+        {
+            BulletDamage *= 2f;
+        }
+        if (ammoType == AmmoType.PiercingAmmo)
+        {
+            BulletDamage *= 1.5f;
+        }
         newPos = transform.position;
         oldPos = newPos;
 
@@ -61,6 +73,7 @@ public class Bullet : MonoBehaviour
     }
     public void OnHit(Collider collider)
     {
+        // Enemy gay damage cho Player
         if (collider.CompareTag("Player"))
         {
             PlayerStats damageablePlayer = collider.GetComponent<PlayerStats>();
@@ -71,13 +84,14 @@ public class Bullet : MonoBehaviour
                 float Damage = (int)(BulletDamage * damageMultiplier2);
 
                 damageablePlayer.Damage(Damage);
+                
             }
         }
-
+        // Player gay damage cho Enemy
         HitAble damageable = collider.GetComponent<HitAble>();
         if (damageable)
         {
-            DamageCalculations.DamageResult damageMultiplier = DamageCalculations.Instance.GetDamage();
+            InventoryAble.DamageResult damageMultiplier = InventoryAble.Instance.GetDamage();
             float damageMultiplier2 = damageMultiplier.damageMultiplier;
             bool crit = damageMultiplier.ItCrit;
             float Damage = (int)(BulletDamage * damageMultiplier2);
@@ -90,6 +104,7 @@ public class Bullet : MonoBehaviour
 
             damageable.Damage(Damage, (int)hitEffect, pos);
         }
+        Destroy(this.bulletLight);
 
 
     }
@@ -98,5 +113,12 @@ public class Bullet : MonoBehaviour
         hasHit = true;
         yield return new WaitForSeconds(0.5f);
         Destroy(gameObject);
+    }
+    [Serializable]
+    public enum AmmoType
+    {
+        NormalAmmo,
+        HighAmmo,
+        PiercingAmmo,
     }
 }

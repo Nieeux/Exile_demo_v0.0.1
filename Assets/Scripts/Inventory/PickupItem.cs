@@ -25,18 +25,7 @@ public class PickupItem : MonoBehaviour, Interactable, SharedObject
 		//ClientSend.PickupInteract(this.id);
 		this.RemoveObject();
 
-		/*
-		ItemStats inventoryItem = Item.Instance.ItemStats;
-		if (InventoryItem.Instance.AddWeapon(ItemPrefab, inventoryItem))
-		{
-			// Handle auto-switching to weapon if no weapons currently
-			if (InventoryItem.Instance.GetActiveItem() == null)
-			{
-				InventoryItem.Instance.SwitchItem(true);
-			}
-			Destroy(gameObject);
-		}
-		*/
+
 	}
 
 	public void LocalExecute()

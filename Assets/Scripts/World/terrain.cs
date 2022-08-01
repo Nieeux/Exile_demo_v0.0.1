@@ -7,7 +7,7 @@ public class terrain
 
 	GameObject meshObject;
 	GameObject terrian;
-	ZoneGenerator zoneGenerator;
+	StructureGenerator zoneGenerator;
 	Structure structure;
 	PlaceObjects placeObjects;
 	Vector2 position;
@@ -31,7 +31,7 @@ public class terrain
 		// gán code PlaceObjects
 		this.structure = this.terrian.AddComponent<Structure>();
 		this.placeObjects = this.terrian.AddComponent<PlaceObjects>();
-		this.zoneGenerator = this.terrian.AddComponent<ZoneGenerator>();
+		this.zoneGenerator = this.terrian.AddComponent<StructureGenerator>();
 
 		// kích ho?t PlaceObjects
 		this.structure.Spawn = true;

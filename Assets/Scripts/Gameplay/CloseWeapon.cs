@@ -22,36 +22,55 @@ public class CloseWeapon : MonoBehaviour
     public Vector3 defuRotation = new Vector3(0, 0, 0);
 
     Vector3 Rot;
-    void Start()
-    {
-        
-    }
 
+    [Header("WeaponBob")]
+    public float walkingBobbingSpeed = 14f;
+
+    public float RunningBobbingSpeed = 14f;
+
+    public float WalkbobbingAmount = 0.05f;
+
+    public float RunbobbingAmount = 0.05f;
+
+    private float defaultPosY;
+
+    private float timer;
+
+    public static CloseWeapon Instance;
+
+    private void Awake()
+    {
+        CloseWeapon.Instance = this;
+    }
+    private void Start()
+    {
+        this.defaultPosY = base.transform.localPosition.y;
+    }
     // Update is called once per frame
     void Update()
     {
-        /*
-        if (PlayerInput.Instance.GetRunningInputDown())
+        if (PlayerMovement.Instance.isRunning)
         {
-
-            Rot = Vector3.Slerp(Rot, RunRotation, rotationalRecoilSpeed * Time.deltaTime);
-            transform.localRotation = Quaternion.Euler(Rot);
-            transform.localPosition = Vector3.Slerp(transform.localPosition, RunPosition, rotationalRecoilSpeed * Time.deltaTime);
-        }
-        */
-
-        RaycastHit Hit;
-        if (Physics.Raycast(rotationPoint.transform.position, rotationPoint.transform.forward, out Hit, 1f, wall))
-        {
-            PutDownWeapons();
+            RunningWeapons();
         }
         else
         {
-            if (pad > 0)
+            RaycastHit Hit;
+            if (Physics.Raycast(rotationPoint.transform.position, rotationPoint.transform.forward, out Hit, 1f, wall))
             {
-                defuTransform();
+                PutDownWeapons();
+            }
+            else
+            {
+                if (pad > 0 && !PlayerMovement.Instance.isRunning)
+                {
+                    defuTransform();
+                }
             }
         }
+
+
+
 
     }
     private void PutDownWeapons()
@@ -69,5 +88,26 @@ public class CloseWeapon : MonoBehaviour
         transform.localPosition = Vector3.Slerp(transform.localPosition, defuPotation, rotationalRecoilSpeed * Time.deltaTime);
         return false;
     }
+    private void RunningWeapons()
+    {
+        this.pad = Mathf.Lerp(this.pad, 300, Time.deltaTime * 10f);
+        Rot = Vector3.Slerp(Rot, RunRotation, rotationalRecoilSpeed * Time.deltaTime);
+        transform.localRotation = Quaternion.Euler(Rot);
+        transform.localPosition = Vector3.Slerp(transform.localPosition, RunPosition, rotationalRecoilSpeed * Time.deltaTime);
+    }
+
+    public void WeaponBob()
+    {
+        if (PlayerMovement.Instance.isRunning)
+        {
+            this.timer += Time.deltaTime * this.RunningBobbingSpeed;
+            this.transform.localPosition = new Vector3(base.transform.localPosition.x, this.defaultPosY + Mathf.Sin(this.timer) * this.RunbobbingAmount, base.transform.localPosition.z);
+            return;
+        }
+        this.timer += Time.deltaTime * this.walkingBobbingSpeed; 
+        this.transform.localPosition = new Vector3(base.transform.localPosition.x, this.defaultPosY + Mathf.Sin(this.timer) * this.WalkbobbingAmount, base.transform.localPosition.z);
+    }
+
+
 
 }

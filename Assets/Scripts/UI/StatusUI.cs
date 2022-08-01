@@ -21,7 +21,6 @@ public class StatusUI : MonoBehaviour
     public TextMeshProUGUI StaminaNumber;
     public TextMeshProUGUI HungerNumber;
 
-
     public float HurtSpeed = 0.01f;
     public float damageFillTimeRemap;
     public PlayerStats Player;
@@ -33,13 +32,12 @@ public class StatusUI : MonoBehaviour
     public float ViewZoom = 60;
     public float SpeedZoom = 20f;
     public bool IsShowStatus;
-    public bool IsPause { get; set; }
+    public bool IsPause;
 
     private void Awake()
     {
         FillBarStatus();
         StatusUI.Instance = this;
-
     }
 
     private void Start()
@@ -175,8 +173,6 @@ public class StatusUI : MonoBehaviour
         {
             Cursor.lockState = CursorLockMode.None;
             Cursor.visible = true;
-            PlayerMovement.Instance.canMove = false;
-            WeaponController.Instance.canFire = false;
             ViewZoom = 90;
             //WeaponUI.Instance.UpdateStatsWeapon();
             //AudioUtility.SetMasterVolume(VolumeWhenMenuOpen);
@@ -184,7 +180,9 @@ public class StatusUI : MonoBehaviour
         }
         else
         {
-            LockCursor();
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
+            ViewZoom = 60;
         }
 
     }
@@ -197,27 +195,15 @@ public class StatusUI : MonoBehaviour
         {
             Cursor.lockState = CursorLockMode.None;
             Cursor.visible = true;
-            PlayerMovement.Instance.canMove = false;
             Time.timeScale = 0;
         }
         else
         {
             Cursor.lockState = CursorLockMode.Locked;
             Cursor.visible = false;
-            PlayerMovement.Instance.canMove = true;
             Time.timeScale = 1;
         }
 
-    }
-    private bool LockCursor()
-    {
-        Debug.Log("Turnoff");
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
-        PlayerMovement.Instance.canMove = true;
-        WeaponController.Instance.canFire = true;
-        ViewZoom = 60;
-        return this;
     }
 }
 

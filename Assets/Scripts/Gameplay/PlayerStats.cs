@@ -9,6 +9,7 @@ public class PlayerStats : MonoBehaviour
     private PlayerMovement player;
 
     public float MaxHealth = 100;
+    public float damage { get; set; }
     public float CurrentHealth { get; set; }
     public float stamina { get; set; }
     public float maxStamina { get; set; }
@@ -39,6 +40,7 @@ public class PlayerStats : MonoBehaviour
     {
         PlayerStats.Instance = this;
         this.player = base.GetComponent<PlayerMovement>();
+        this.damage = 50f;
         this.stamina = 100f;
         this.hunger = 100f;
         this.maxStamina = this.stamina;

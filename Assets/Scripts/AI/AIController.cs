@@ -6,7 +6,8 @@ using UnityEngine.Events;
 public class AIController : MonoBehaviour
 {
     public NavMeshAgent Agent;
-    public GameObject npcDeadPrefab;
+    public EnemyStats enemyStats;
+    public bool ondie;
     [Header("States")]
     public StateType IndexState;
     public StateType ChangeState;
@@ -19,8 +20,7 @@ public class AIController : MonoBehaviour
 
     public GameObject playerRef;
     public Transform target;
-    HitAble health;
-
+    public LayerMask GroundMask;
     public LayerMask targetMask;
     public LayerMask BlockTargetMask;
     public LayerMask CanHideMask;
@@ -32,7 +32,6 @@ public class AIController : MonoBehaviour
     public Transform WeaponSocket;
     public ItemStats AiWeapon;
     public WeaponController CurrentWeapon;
-    WeaponIK weaponIK;
 
     [Header("Hide")]
     public float radiusHide;
@@ -54,14 +53,26 @@ public class AIController : MonoBehaviour
 
     public AIStateMachine stateMachine;
     public Vector3 Targetposition;
+    public Vector3 SeeTargetFirtTime;
+
+    public bool walkPointSet;
+    public Vector3 walkPoint;
+
+    HitAble health;
+    WeaponIK weaponIK;
+    NavmeshGenerator navmeshGenerator;
 
     private void Start()
     {
+        AiGetWeaponStarter();
+        CurrentWeapon = GetComponentInChildren<WeaponController>();
+        CurrentWeapon.AiEquip = true;
+
         stateMachine = new AIStateMachine(this);
         stateMachine.RegisterState(new AI_Attack());
         stateMachine.RegisterState(new AI_AttackCover());
         stateMachine.RegisterState(new AI_Hide());
-        stateMachine.RegisterState(new AI_Search());
+        stateMachine.RegisterState(new AI_SearchTarget());
         stateMachine.RegisterState(new AI_Loot());
         stateMachine.RegisterState(new AI_Die());
 
@@ -72,6 +83,7 @@ public class AIController : MonoBehaviour
         health = GetComponent<HitAble>();
         Agent = GetComponent<NavMeshAgent>();
         weaponIK = GetComponent<WeaponIK>();
+        navmeshGenerator = GetComponent<NavmeshGenerator>();
         health.OnDie += OnDie;
         health.OnDamaged += OnDamaged;
         playerRef = GameObject.FindGameObjectWithTag("Player");
@@ -116,9 +128,9 @@ public class AIController : MonoBehaviour
             FieldOfViewCheck();
         }
     }
+
     public void TargetPosition()
     {
-
         float distanceToTarget = Vector3.Distance(transform.position, target.position);
         //Neu qua 30, Thi di ve huong truoc mat
         Vector3 directionToTarget = transform.position + transform.forward * 20;
@@ -131,6 +143,22 @@ public class AIController : MonoBehaviour
             Targetposition = target.transform.position;
         }
     }
+
+    public void seeTargetFirtTime()
+    {
+        float distanceToTarget = Vector3.Distance(transform.position, target.position);
+        //Neu qua 30, Thi di ve huong truoc mat
+        Vector3 directionToTarget = transform.position + transform.forward * 20;
+        if (distanceToTarget > 20)
+        {
+            SeeTargetFirtTime = directionToTarget;
+        }
+        else
+        {
+            SeeTargetFirtTime = target.transform.position;
+        }
+    }
+
     private void FieldOfViewCheck()
     {
         rangeChecks = Physics.OverlapSphere(transform.position, radius, targetMask);
@@ -166,17 +194,30 @@ public class AIController : MonoBehaviour
         Quaternion b = Quaternion.LookRotation(new Vector3(normalized.x, 0f, normalized.z));
         this.transform.rotation = Quaternion.Slerp(this.transform.rotation, b, Time.deltaTime * 5);
     }
+    public void AiGetWeaponStarter()
+    {
+        ItemStats RandomWeapon = ItemManager.Instance.GetRandomWeapons();
+        ItemManager.Instance.GetWeaponOriginal(RandomWeapon.id, base.transform.position, base.transform.rotation, WeaponSocket);
+        AiWeapon = RandomWeapon;
+    }
 
-    public void AiEquip(WeaponController weapon)
+    public void AiEquip(WeaponController weapon, ItemStats item)
     {
         WeaponController Weapon = Instantiate(weapon, WeaponSocket);
+        Weapon.GunStats = item;
+        Weapon.GetComponent<PickupWeapon>().item = item;
+
         CurrentWeapon = Weapon;
+
         Weapon.transform.localPosition = Vector3.zero;
         Weapon.transform.localRotation = Quaternion.identity;
+
         Weapon.coll.enabled = false;
         Weapon.rb.isKinematic = true;
         Weapon.AiEquip = true;
+
         AiWeapon = Weapon.GunStats;
+
         weaponIK.SetAimTransform(WeaponSocket);
     }
     public void ReadyAttack()
@@ -280,6 +321,15 @@ public class AIController : MonoBehaviour
             return Vector3.Distance(Agent.transform.position, A.transform.position).CompareTo(Vector3.Distance(Agent.transform.position, B.transform.position));
         }
     }
+
+    public void Reward()
+    {
+
+        int Moneys = Random.Range(enemyStats.minMoneyReward, enemyStats.maxMoneyReward);
+
+        InventoryAble.Instance.RewardMoney(Moneys);
+    }
+
     void OnDamaged(float damage)
     {
         onDamaged?.Invoke();
@@ -287,14 +337,16 @@ public class AIController : MonoBehaviour
 
     void OnDie()
     {
+        navmeshGenerator.DestroyNavMeshData();
         stateMachine.ChangesState(StateType.Die);
+        Reward();
         if (AiWeapon != null)
         {
             WeaponController Instance = Instantiate(AiWeapon.prefab, transform.position, Quaternion.identity).GetComponent<WeaponController>();
-            ItemStats inventoryItem = AiWeapon;
-            Instance.GunStats = inventoryItem;
+            Instance.GunStats = AiWeapon;
+            Instance.GetComponent<PickupWeapon>().item = AiWeapon;
         }
-        GameObject npcDead = Instantiate(npcDeadPrefab, transform.position, transform.rotation);
+        GameObject npcDead = Instantiate(enemyStats.DeadPrefab, transform.position, transform.rotation);
         npcDead.GetComponent<Rigidbody>().velocity = (-(target.position - transform.position).normalized * 8) + new Vector3(0, 5, 0);
         Destroy(gameObject);
 

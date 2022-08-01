@@ -20,7 +20,7 @@ public class PlayerInput : MonoBehaviour
     }
     private void Update()
     {
-        if (CanProcessInput())
+        if (LockState())
         {
             if (Input.GetButtonDown("Pickup"))
             {
@@ -33,8 +33,9 @@ public class PlayerInput : MonoBehaviour
                     currentInteractable.Interact();
                 }
             }
+
         }
-        if (!CanProcessInput())
+        if (!LockState())
         {
             if (Input.GetMouseButtonDown(1))
             {
@@ -59,22 +60,39 @@ public class PlayerInput : MonoBehaviour
             }
         }
     }
-    public bool CanProcessInput()
+
+    // Movement
+    public bool GetCrouch()
     {
-        return Cursor.lockState == CursorLockMode.Locked;
+        if (LockState())
+        {
+            return Input.GetButtonDown("Crouch");
+        }
+        return false;
     }
-    public bool GetFireInputSingle()
+    public bool GetRunning()
     {
-        return GetFireInputHeld() && !m_FireInputWasHeld;
+        if (LockState())
+        {
+            return Input.GetKey(KeyCode.LeftShift);
+        }
+        return false;
     }
 
-    public bool GetFireInputAuto()
+    // Use Weapon
+    public bool GetFireButtonDown()
     {
-        return !GetFireInputHeld() && m_FireInputWasHeld;
+        if (LockState())
+        {
+            return Input.GetMouseButtonDown(0);
+        }
+
+        return false;
     }
-    public bool GetFireInputHeld()
+
+    public bool GetFireButton()
     {
-        if (CanProcessInput())
+        if (LockState())
         {
             return Input.GetMouseButton(0);
         }
@@ -82,32 +100,9 @@ public class PlayerInput : MonoBehaviour
         return false;
     }
 
-    /*
-    public int GetSelectWeaponInput()
+    public int GetSwitchWeapon()
     {
-        if (CanProcessInput())
-        {
-            if (Input.GetKeyDown(KeyCode.Alpha1))
-                return 1;
-            else if (Input.GetKeyDown(KeyCode.Alpha2))
-                return 2;
-            else if (Input.GetKeyDown(KeyCode.Alpha3))
-                return 3;
-            else if (Input.GetKeyDown(KeyCode.Alpha4))
-                return 4;
-            else if (Input.GetKeyDown(KeyCode.Alpha5))
-                return 5;
-            else
-                return 0;
-        }
-
-        return 0;
-    }
-    */
-
-    public int GetSwitchWeaponInput()
-    {
-        if (CanProcessInput())
+        if (LockState())
         {
             if (Input.GetAxis("Mouse ScrollWheel") > 0f)
                 return -1;
@@ -117,31 +112,18 @@ public class PlayerInput : MonoBehaviour
         return 0;
     }
 
-    public bool DropWeaponInput()
+    public bool GetDropWeapon()
     {
-        if (CanProcessInput())
+        if (LockState())
         {
             return Input.GetButtonDown("Drop Weapon");
-            {
+        }
+        return false;
+    }
 
-            }
-        }
-        return false;
-    }
-    public bool GetCrouchInputDown()
+    // LockMouse
+    public bool LockState()
     {
-        if (CanProcessInput())
-        {
-            return Input.GetButtonDown("Crouch");
-        }
-        return false;
-    }
-    public bool GetRunningInputDown()
-    {
-        if (CanProcessInput())
-        {
-            return Input.GetKey(KeyCode.LeftShift);
-        }
-        return false;
+        return Cursor.lockState == CursorLockMode.Locked;
     }
 }

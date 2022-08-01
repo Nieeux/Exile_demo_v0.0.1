@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Random = System.Random;
 
 public class ItemStatsGenerator : MonoBehaviour
 {
@@ -8,21 +9,63 @@ public class ItemStatsGenerator : MonoBehaviour
 
     public ItemStats item;
 
-    public int Durability;
-
     public ItemStats itemChange;
 
-    void Start()
-    {
-        ItemStatsGenerator.Instance = this;
-        ItemStats inventoryItem = ScriptableObject.CreateInstance<ItemStats>();
-        inventoryItem.Getweapon(this.item, this.Durability);
-        itemChange = inventoryItem;
-    }
+	private Random random;
 
-    // Update is called once per frame
-    void Update()
+	public float Original;
+
+	public float Upgrade;
+
+	public float Advanced;
+
+	public float randomly;
+
+	private void Awake()
+	{
+		ItemStatsGenerator.Instance = this;
+		this.random = new Random();
+
+	}
+	void Start()
     {
 
-    }
+
+		GetRandomStatsWeapon(Original, Upgrade, Advanced);
+		GetRandomStatsWeapon();
+
+	}
+
+	public float GetRandomStatsWeapon(float Original, float Upgrade, float Advanced)
+	{
+		float num = Original + Upgrade + Advanced;
+		float num2 = (float)random.NextDouble();
+		if (num2 < Original / num)
+		{
+			return randomly = 1;
+		}
+		if (num2 < (Original + Upgrade) / num)
+		{
+			return randomly = 2;
+
+		}
+			return randomly = 3;
+	}
+	public void GetRandomStatsWeapon()
+    {
+		ItemStats inventoryItem = ScriptableObject.CreateInstance<ItemStats>();
+        if (randomly == 1)
+        {
+			inventoryItem.GetweaponOriginal(this.item);
+		}
+		if (randomly == 2)
+		{
+			inventoryItem.GetweaponUpgrade(this.item);
+		}
+		if (randomly == 3)
+		{
+			inventoryItem.GetweaponAdvanced(this.item);
+		}
+		itemChange = inventoryItem;
+	}
 }

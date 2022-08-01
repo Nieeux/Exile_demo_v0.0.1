@@ -1,9 +1,10 @@
 ﻿using System.Collections;
 using UnityEngine;
 using UnityEngine.Events;
+using DG.Tweening;
 using System.Collections.Generic;
 
-[RequireComponent(typeof(AudioSource), typeof(ItemStatsGenerator))]
+[RequireComponent(typeof(AudioSource))]
 public class WeaponController : MonoBehaviour
 {
     public static WeaponController Instance;
@@ -15,24 +16,21 @@ public class WeaponController : MonoBehaviour
     public AudioClip reloadAudio;
 
     public ItemStats GunStats;
-    ItemStatsGenerator StatsGenerator;
 
     float nextFireTime = 0;
+    public bool reloading;
     public bool canFire = false;
     public bool AiEquip = false;
-    public bool reloading;
+
+
     public Rigidbody rb;
     public BoxCollider coll;
 
     AudioSource audioSource;
 
-    private PlayerMovement player;
-
     public GameObject WeaponRoot;
     public AudioClip ChangeWeaponSfx;
     AudioSource m_ShootAudioSource;
-
-    PlayerInput InputHandler;
 
     public UnityAction onDamaged;
     public Interactable WeaponIndex { get; private set; }
@@ -44,21 +42,16 @@ public class WeaponController : MonoBehaviour
 
     void Awake()
     {
-        
-        
+        WeaponController.Instance = this;
+
         //GunStats.CurrentMagazine = GunStats.Magazine;
     }
     void Start()
     {
-
-        this.player = base.GetComponentInParent<PlayerMovement>();
-        InputHandler = GetComponent<PlayerInput>();
-        this.StatsGenerator = GetComponent<ItemStatsGenerator>();
-
         this.WeaponIndex = GetComponent<PickupWeapon>();
         rb = base.GetComponent<Rigidbody>();
         coll = base.GetComponent<BoxCollider>();
-        WeaponController.Instance = this;
+
 
         audioSource = GetComponent<AudioSource>();
         audioSource.playOnAwake = false;
@@ -69,24 +62,19 @@ public class WeaponController : MonoBehaviour
     void Update()
     {
 
-        if (GunStats == null)
-        {
-            GunStats = StatsGenerator.itemChange;
-        }
-
         if (canFire == true && AiEquip == false)
         {
-            Debug.DrawRay(firePoint.transform.position, firePoint.transform.forward, Color.green);
-            if (Input.GetMouseButtonDown(0) && singleFire)
+
+            if (PlayerInput.Instance.GetFireButtonDown() && singleFire)
             {
                 Fire();
 
             }
-            if (Input.GetMouseButton(0) && !singleFire)
+            if (PlayerInput.Instance.GetFireButton() && !singleFire)
             {
                 Fire();
             }
-            if (Input.GetKeyDown(KeyCode.R) && canFire)
+            if (Input.GetKeyDown(KeyCode.R) && canFire && GunStats.CurrentMagazine != GunStats.Magazine)
             {
                 StartCoroutine(Reload(true));
             }
@@ -113,7 +101,7 @@ public class WeaponController : MonoBehaviour
         //foreach(InventoryItem GunStats in GunStats)
 
     }
-    public void Fire()
+    private void Fire()
     {
         if (canFire)
         {
@@ -136,16 +124,25 @@ public class WeaponController : MonoBehaviour
                     Bullet bulletObject = Instantiate(GunStats.bulletPrefab, firePoint.position, firePoint.rotation).GetComponent<Bullet>();
                     bulletObject.BulletDamage = GunStats.GunDamage;
                     bulletObject.BulletCrit = GunStats.Critical;
-                    // giam Durability khi ban
-                    GunStats.CurrentDurability -= 0.5f;
 
-                    WeaponAnimation.Instance.RecoilAni();
+                    // giam Durability khi ban
+                    RecoilAni();
+
+
                     PlayerWeaponManager.Instance.RecoilFire();
                     //UIBob.Instance.RecoilHUD();
 
                     GunStats.CurrentMagazine--;
                     audioSource.clip = fireAudio;
                     audioSource.Play();
+
+                    GunStats.CurrentDurability -= 0.5f;
+                    if (GunStats.CurrentDurability <= 0)
+                    {
+                        canFire = false;
+                        base.Invoke("BrokenWeapon", 1f);
+
+                    }
                 }
                 else
                 {
@@ -153,6 +150,21 @@ public class WeaponController : MonoBehaviour
                 }
             }
         }
+    }
+    private void RecoilAni()
+    {
+        //Súng gi?t
+        Sequence s = DOTween.Sequence();
+        s.Append(transform.DOShakeRotation(GunStats.ShakeDuration, GunStats.ShakeStrenght, GunStats.punchVibrato, GunStats.randomness, true));
+        Sequence r = DOTween.Sequence();
+        r.Append(transform.DOPunchRotation(new Vector3(-20, 0, -10), GunStats.punchDurationR, GunStats.punchVibrato, GunStats.punchElasticity));
+        Sequence p = DOTween.Sequence();
+        p.Append(transform.DOPunchPosition(new Vector3(0, 0, -GunStats.punchStrenght), GunStats.punchDuration, GunStats.punchVibrato, GunStats.punchElasticity));
+
+    }
+    private void BrokenWeapon()
+    {
+        PlayerWeaponManager.Instance.BrokeWeapon(this, GunStats);
     }
     public void AiFire()
     {
@@ -191,7 +203,7 @@ public class WeaponController : MonoBehaviour
     IEnumerator Reload(bool Reloading)
     {
         reloading = Reloading;
-        canFire = false;
+        canFire = !Reloading;
 
         audioSource.clip = reloadAudio;
         audioSource.Play();
@@ -199,8 +211,8 @@ public class WeaponController : MonoBehaviour
         yield return new WaitForSeconds(GunStats.ReloadTime);
 
         GunStats.CurrentMagazine = GunStats.Magazine;
-        reloading = false;
-        canFire = true;
+        reloading = !Reloading;
+        canFire = Reloading;
     }
 
     public void ShowWeapon(bool show)

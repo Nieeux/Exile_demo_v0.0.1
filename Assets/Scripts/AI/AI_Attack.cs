@@ -12,6 +12,7 @@ public class AI_Attack : AIstate
     public void Enter(AIController agent)
     {
         agent.Agent.destination = agent.Targetposition;
+        agent.seeTargetFirtTime();
     }
 
     public void Update(AIController agent)
@@ -24,7 +25,7 @@ public class AI_Attack : AIstate
         }
         else
         {
-            //agent.stateMachine.ChangesState(StateType.Search);
+            agent.stateMachine.ChangesState(StateType.SearchTarget);
         }
 
     }

@@ -32,13 +32,6 @@ public class WeaponAnimation : MonoBehaviour
     public float ShakeDuration = 1;
     public float ShakeStrenght = 1;
 
-    [Header("Camera Shake")]
-    public Transform CameraShake;
-    public int ShakeVibrato = 1;
-    public float CameraShakeDuration = 1;
-    public float CameraShakeStrenght = 1;
-
-
     private void Start()
     {
 
@@ -79,15 +72,12 @@ public class WeaponAnimation : MonoBehaviour
     public void RecoilAni()
     {
         //Súng gi?t
-        Sequence c = DOTween.Sequence();
-        c.Append(CameraShake.DOShakeRotation(CameraShakeDuration, CameraShakeStrenght, ShakeVibrato, randomness, true));
         Sequence s = DOTween.Sequence();
         s.Append(transform.DOShakeRotation(ShakeDuration, ShakeStrenght, punchVibrato, randomness, true));
         Sequence r = DOTween.Sequence();
         r.Append(transform.DOPunchRotation(new Vector3(-20, 0, -10), punchDurationR, punchVibrato, punchElasticity));
         Sequence p = DOTween.Sequence();
         p.Append(transform.DOPunchPosition(new Vector3(0, 0, -punchStrenght), punchDuration, punchVibrato, punchElasticity));
-
     }
 
     private void CalculateSway()

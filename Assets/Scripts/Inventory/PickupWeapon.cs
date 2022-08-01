@@ -9,20 +9,25 @@ public class PickupWeapon : MonoBehaviour, Interactable, SharedObject
 
 	public ItemStats item;
 
+	public multiLanguage language;
+
 	public int id;
 
     public void Interact()
 	{
-		ItemStats inventoryItem = WeaponController.Instance.GunStats;
-		if (PlayerWeaponManager.Instance.AddWeapon(WeaponPrefab, inventoryItem))
+        if(item != null)
 		{
-			// Handle auto-switching to weapon if no weapons currently
-			if (PlayerWeaponManager.Instance.GetActiveWeapon() == null)
+			if (PlayerWeaponManager.Instance.AddWeapon(WeaponPrefab, item))
 			{
-				PlayerWeaponManager.Instance.SwitchWeapon(true);
+				// Handle auto-switching to weapon if no weapons currently
+				if (PlayerWeaponManager.Instance.GetActiveWeapon() == null)
+				{
+					PlayerWeaponManager.Instance.SwitchWeapon(true);
+				}
+				Destroy(gameObject);
 			}
-			Destroy(gameObject);
 		}
+
 	}
 
 	public void LocalExecute()
@@ -41,14 +46,17 @@ public class PickupWeapon : MonoBehaviour, Interactable, SharedObject
 
 	public void RemoveObject()
 	{
-		ItemStats inventoryItem = WeaponController.Instance.GunStats;
-		PlayerWeaponManager.Instance.RemoveWeapon(WeaponPrefab, inventoryItem);
+		PlayerWeaponManager.Instance.DropWeapon(WeaponPrefab, item);
 		//UnityEngine.Object.Destroy(base.gameObject);
 		ResourceManager.Instance.RemoveInteractItem(this.id);
 	}
 
 	public string GetName()
 	{
+		if (item == null)
+		{
+			return " " + language.MultiLanguage;
+		}
 		return "E | " + this.WeaponPrefab.GunStats.nameViet;
 
 	}
@@ -75,11 +83,10 @@ public class PickupWeapon : MonoBehaviour, Interactable, SharedObject
 
     private void OnTriggerEnter(Collider other)
     {
-		Debug.Log("trigger Ai pickup");
 		AIController AIPickup = other.GetComponent<AIController>();
 		if(AIPickup != null)
         {
-			AIPickup.AiEquip(WeaponPrefab);
+			AIPickup.AiEquip(WeaponPrefab, item);
 			Destroy(gameObject);
 
 		}

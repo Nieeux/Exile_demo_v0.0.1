@@ -40,7 +40,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7474613660059752365}
-  - component: {fileID: 765955542766939091}
   - component: {fileID: 895282751959186988}
   - component: {fileID: 7474613660059752354}
   - component: {fileID: 7474613660059752364}
@@ -70,21 +69,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &765955542766939091
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7474613660059752366}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dfd325e9105071343bc7a0659843268c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  item: {fileID: 11400000, guid: f16312497f8ae834c8205b5c073643ef, type: 2}
-  Durability: 100
-  itemChange: {fileID: 0}
 --- !u!114 &895282751959186988
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -99,6 +83,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   WeaponPrefab: {fileID: 7474613660059752354}
   item: {fileID: 11400000, guid: f16312497f8ae834c8205b5c073643ef, type: 2}
+  language: {fileID: 11400000, guid: 6ec016af42bf75a4984647059e44ac1f, type: 2}
   id: 1
 --- !u!114 &7474613660059752354
 MonoBehaviour:
@@ -116,8 +101,10 @@ MonoBehaviour:
   singleFire: 0
   fireAudio: {fileID: 8300000, guid: 57370f17c98a2154cba34219e83859fb, type: 3}
   reloadAudio: {fileID: 8300000, guid: f02e7563c10830748a7719d342d27800, type: 3}
-  GunStats: {fileID: 0}
+  GunStats: {fileID: 11400000, guid: f16312497f8ae834c8205b5c073643ef, type: 2}
+  reloading: 0
   canFire: 0
+  AiEquip: 0
   rb: {fileID: 8078425582575817914}
   coll: {fileID: 8665244739356450696}
   WeaponRoot: {fileID: 7474613660059752366}

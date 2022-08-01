@@ -10,6 +10,8 @@ public class WeaponUI : MonoBehaviour, IPointerEnterHandler, IEventSystemHandler
     public static WeaponUI Instance;
     public CanvasGroup CanvasGroup;
     public Image WeaponImage;
+    public Image VienImage;
+    public Image VienImage2;
     WeaponController m_Weapon;
     public Gradient GradientDurability;
     public Image Durability;
@@ -40,7 +42,11 @@ public class WeaponUI : MonoBehaviour, IPointerEnterHandler, IEventSystemHandler
     }
     void Start()
     {
-        
+        WeaponStatus.SetActive(false);
+        UpdateStatsWeapon();
+        this.WeaponImage.color = m_Weapon.GunStats.colorIndex;
+        this.VienImage.color = m_Weapon.GunStats.colorIndex;
+        this.VienImage2.color = m_Weapon.GunStats.colorIndex;
     }
 
     // Update is called once per frame
@@ -51,7 +57,9 @@ public class WeaponUI : MonoBehaviour, IPointerEnterHandler, IEventSystemHandler
         {
             WeaponStatus.SetActive(true);
             ActiveWeapon = m_Weapon;
-            UpdateStatsWeapon();
+
+            this.TextDurability.text = m_Weapon.GunStats.CurrentDurability.ToString("00");
+
             CanvasGroup.alpha = Mathf.Lerp(CanvasGroup.alpha, ActiveWeapon ? 1f : UnselectedOpacity, Time.deltaTime * 10);
             transform.localScale = Vector3.Lerp(transform.localScale, ActiveWeapon ? Vector3.one : UnselectedScale, Time.deltaTime * 10);
 
@@ -78,7 +86,6 @@ public class WeaponUI : MonoBehaviour, IPointerEnterHandler, IEventSystemHandler
 
         this.TextMagazine.text = m_Weapon.GunStats.Magazine.ToString("00");
 
-        this.TextDurability.text = m_Weapon.GunStats.CurrentDurability.ToString("00");
     }
 
     public void Initialize(WeaponController weapon, int weaponIndex)

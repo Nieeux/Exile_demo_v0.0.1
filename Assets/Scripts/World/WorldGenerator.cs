@@ -4,16 +4,17 @@ using System.Collections.Generic;
 
 public class WorldGenerator : MonoBehaviour {
 
-	public const float maxViewDst = 240;
+	public const float maxViewDst = 160;
+	//240
 	public Transform viewer;
 	public Material material;
 
 	public static Vector2 viewerPosition;
 	int chunksVisibleInViewDst;
-	int chunkSize = 120;
+	int chunkSize = 40;
 	public GameObject Ground;
 
-	public ZoneGenerator.WeightedSpawn[] structurePrefabs;
+	public StructureGenerator.WeightedSpawn[] structurePrefabs;
 
 	[SerializeField]
 	private Vector3 terrainSize = new Vector3(1, 1, 1);

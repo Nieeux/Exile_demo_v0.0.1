@@ -9,11 +9,6 @@ public class GameManager : MonoBehaviour
 	public static GameManager instance;
 	public GameObject resourceGen;
 
-	void Start()
-	{
-
-	}
-
 	private void Awake()
 	{
 		if (GameManager.instance == null)
@@ -24,19 +19,14 @@ public class GameManager : MonoBehaviour
 		{
 			Object.Destroy(this);
 		}
-		Application.targetFrameRate = 144;
+		//Application.targetFrameRate = 144;
 	}
-	public void Play()
-	{
-		SceneManager.LoadScene(1);
-	}
-	public void ExitGame()
-	{
-		Application.Quit(0);
-	}
-
 	public static int GetSeed()
 	{
 		return GameManager.worldSettings.Seed;
+	}
+    private void Start()
+    {
+		
 	}
 }

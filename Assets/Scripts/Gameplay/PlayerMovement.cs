@@ -81,17 +81,18 @@ public class PlayerMovement : MonoBehaviour
     {
 
         //Input
-        if (InputHandler.GetCrouchInputDown())
+        if (InputHandler.GetCrouch())
         {
             Debug.Log("Crouch");
             SetCrouchingState(!IsCrouching, false);
 
         }
 
+
         if (characterController)
         {
             
-            isRunning = Input.GetKey(KeyCode.LeftShift) && IsMoving && Stats.CanRun() ;
+            isRunning = Input.GetKey(KeyCode.LeftShift) && IsMoving && Stats.CanRun() && !IsCrouching;
             currentSpeed = isRunning && IsMoving ? runSpeed : walkingSpeed;
             currentSpeed = IsCrouching && IsMoving ? crouchSpeed : currentSpeed;
         }
@@ -116,9 +117,10 @@ public class PlayerMovement : MonoBehaviour
 
             IsMoving = moveDirection != Vector3.zero;
             //HeadBob
-            if (IsMoving)
+            if (IsMoving && ActiveMenu())
             {
-
+                HeadBob.Instance.Headbob();
+                CloseWeapon.Instance.WeaponBob();
             }
         }
 
@@ -127,15 +129,20 @@ public class PlayerMovement : MonoBehaviour
         // di chuyen character
         characterController.Move(moveDirection * Time.deltaTime);
 
-        // di chuyen camera
-        if (canMove)
-        {
-            rotationX += -Input.GetAxis("Mouse Y") * lookSpeed;
-            rotationX = Mathf.Clamp(rotationX, -lookXLimit, lookXLimit);
-            playerCamera.transform.localRotation = Quaternion.Euler(rotationX, 0, 0);
-            transform.rotation *= Quaternion.Euler(0, Input.GetAxis("Mouse X") * lookSpeed, 0);
 
+        // di chuyen camera
+        if (ActiveMenu())
+        {
+            if (canMove)
+            {
+                rotationX += -Input.GetAxis("Mouse Y") * lookSpeed;
+                rotationX = Mathf.Clamp(rotationX, -lookXLimit, lookXLimit);
+                playerCamera.transform.localRotation = Quaternion.Euler(rotationX, 0, 0);
+                transform.rotation *= Quaternion.Euler(0, Input.GetAxis("Mouse X") * lookSpeed, 0);
+
+            }
         }
+
         // crouching
 
         UpdateCharacterHeight(false);
@@ -168,12 +175,7 @@ public class PlayerMovement : MonoBehaviour
             // Detect obstructions
             if (!ignoreObstructions)
             {
-                Collider[] standingOverlaps = Physics.OverlapCapsule(
-                    GetCapsuleBottomHemisphere(),
-                    GetCapsuleTopHemisphere(CapsuleHeightStanding),
-                    characterController.radius,
-                    -1,
-                    QueryTriggerInteraction.Ignore);
+                Collider[] standingOverlaps = Physics.OverlapCapsule(GetCapsuleBottomHemisphere(),GetCapsuleTopHemisphere(CapsuleHeightStanding),characterController.radius, -1, QueryTriggerInteraction.Ignore);
                 foreach (Collider c in standingOverlaps)
                 {
                     if (c != characterController)
@@ -202,8 +204,14 @@ public class PlayerMovement : MonoBehaviour
     // Gets the center point of the top hemisphere of the character controller capsule    
     Vector3 GetCapsuleTopHemisphere(float atHeight)
     {
-        return transform.position + (transform.up * (atHeight - characterController.radius));
+        return transform.position + (transform.up * (1f - characterController.radius));
     }
+
+    public bool ActiveMenu()
+    {
+        return Cursor.lockState == CursorLockMode.Locked;
+    }
+
     void OnDie()
     {
         IsDead = true;

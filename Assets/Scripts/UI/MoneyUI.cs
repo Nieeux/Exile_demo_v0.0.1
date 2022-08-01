@@ -19,6 +19,6 @@ public class MoneyUI : MonoBehaviour
 
 	private void UpdateMoney()
 	{
-		this.money.text = string.Concat(Inventory.Instance.GetMoney());
+		this.money.text = InventoryAble.Instance.Moneys.ToString("0");
 	}
 }

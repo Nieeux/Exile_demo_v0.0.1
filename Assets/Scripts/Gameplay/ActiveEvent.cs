@@ -26,6 +26,18 @@ public class ActiveEvent : MonoBehaviour, SharedObject
         }
 
     }
+    private void OnTriggerExit(Collider other)
+    {
+        if (other.CompareTag("Player"))
+        {
+            StartCoroutine(SpawnEnemy(EnemyInterval, enemyPrefab));
+            player = FindObjectOfType<PlayerMovement>();
+            //EventManager.current.Randomevents(id);
+            Debug.Log("Da trigger");
+            //id++;
+        }
+
+    }
 
     private IEnumerator SpawnEnemy(float interval, GameObject enemyPrefab)
     {

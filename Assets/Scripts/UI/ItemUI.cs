@@ -27,10 +27,7 @@ public class ItemUI : MonoBehaviour, IPointerEnterHandler, IEventSystemHandler, 
     // Update is called once per frame
     void Update()
     {
-        if (!PlayerInput.Instance.CanProcessInput())
-        {
-            return;
-        }
+
         bool isActiveWeapon = item == InventoryItem.Instance.GetActiveItem();
         CanvasGroup.alpha = Mathf.Lerp(CanvasGroup.alpha, isActiveWeapon ? 1f : UnselectedOpacity, Time.deltaTime * 10);
         transform.localScale = Vector3.Lerp(transform.localScale, isActiveWeapon ? Vector3.one : UnselectedScale, Time.deltaTime * 10);

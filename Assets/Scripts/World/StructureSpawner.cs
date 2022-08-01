@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using Random = System.Random;
 
 public class StructureSpawner : MonoBehaviour
 {
@@ -9,7 +10,7 @@ public class StructureSpawner : MonoBehaviour
 
 		public StructureSpawner.WeightedSpawn[] structurePrefabs;
 		private List<GameObject> structures;
-		protected Randomly randomGen;
+		protected Random randomGen;
 		public int nShrines = 50;
 		private Vector3[] shrines;
 		private int mapChunkSize = 240;
@@ -31,7 +32,7 @@ public class StructureSpawner : MonoBehaviour
 		void Start()
 		{
 			this.structures = new List<GameObject>();
-			this.randomGen = new Randomly();
+			this.randomGen = new Random();
 			//this.randomGen = new Randomly(GameManager.GetSeed() + ResourceManager.GetNextGenOffset());
 			this.shrines = new Vector3[this.nShrines];
 			//this.mapChunkSize = TerrainGenerator.mapChunkSize;
@@ -69,7 +70,7 @@ public class StructureSpawner : MonoBehaviour
 		public virtual void Process(GameObject newStructure, RaycastHit hit)
 		{
 		}
-		public GameObject FindObjectToSpawn(StructureSpawner.WeightedSpawn[] structurePrefabs, float totalWeight, Randomly rand)
+		public GameObject FindObjectToSpawn(StructureSpawner.WeightedSpawn[] structurePrefabs, float totalWeight, Random rand)
 		{
 			float num = (float)rand.NextDouble();
 			float num2 = 0f;

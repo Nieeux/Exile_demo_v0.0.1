@@ -14,14 +14,11 @@ public class DamageCalculations : MonoBehaviour
     {
         DamageCalculations.Instance = this;
     }
-    public void Update()
-    {
-        
-    }
+
     public DamageCalculations.DamageResult GetDamage()
     {
         float dmg = Random.Range(DamageCalculations.randomDamageRange.x, DamageCalculations.randomDamageRange.y);
-        bool ItCrit = Random.Range(0f, 1f) < EquipAble.Instance.Critical();
+        bool ItCrit = Random.Range(0f, 1f) < 0.1f;
 
         if (ItCrit)
         {

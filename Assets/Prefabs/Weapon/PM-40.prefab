@@ -9,7 +9,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 367534550845903706}
-  - component: {fileID: 5583573357242508166}
   - component: {fileID: 367534550845903697}
   - component: {fileID: 367534550845903708}
   - component: {fileID: 367534550845903709}
@@ -39,21 +38,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &5583573357242508166
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 367534550845903707}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dfd325e9105071343bc7a0659843268c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  item: {fileID: 11400000, guid: 252471997f80ee94c91a69bb3f41744c, type: 2}
-  Durability: 100
-  itemChange: {fileID: 0}
 --- !u!114 &367534550845903697
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -68,6 +52,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   WeaponPrefab: {fileID: 367534550845903708}
   item: {fileID: 11400000, guid: 252471997f80ee94c91a69bb3f41744c, type: 2}
+  language: {fileID: 11400000, guid: 6ec016af42bf75a4984647059e44ac1f, type: 2}
   id: 1
 --- !u!114 &367534550845903708
 MonoBehaviour:
@@ -85,8 +70,10 @@ MonoBehaviour:
   singleFire: 0
   fireAudio: {fileID: 8300000, guid: 57370f17c98a2154cba34219e83859fb, type: 3}
   reloadAudio: {fileID: 8300000, guid: f02e7563c10830748a7719d342d27800, type: 3}
-  GunStats: {fileID: 0}
+  GunStats: {fileID: 11400000, guid: 252471997f80ee94c91a69bb3f41744c, type: 2}
+  reloading: 0
   canFire: 0
+  AiEquip: 0
   rb: {fileID: 367534550845903711}
   coll: {fileID: 367534550845903710}
   WeaponRoot: {fileID: 367534550845903707}
@@ -198,8 +185,8 @@ BoxCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 0.12, y: 0.21, z: 0.37}
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Size: {x: 0.12, y: 0.22, z: 0.37}
+  m_Center: {x: 0, y: -0.02, z: 0.03}
 --- !u!54 &367534550845903711
 Rigidbody:
   m_ObjectHideFlags: 0

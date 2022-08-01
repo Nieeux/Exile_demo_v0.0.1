@@ -1,10 +1,12 @@
 public enum StateType
 {
+    idle,
     Attack,
     AttackCover,
-    Search,
-    Hide,
+    SearchTarget,
+    SearchLoot,
     Loot,
+    Hide,
     Quit,
     Die,
 }
