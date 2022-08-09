@@ -28,7 +28,7 @@ public class EnemyMovementEditor : Editor
         if (AIenemy.canSee)
         {
             Handles.color = Color.red;
-            Handles.DrawLine(AIenemy.transform.position, AIenemy.playerRef.transform.position);
+            Handles.DrawLine(AIenemy.transform.position, AIenemy.target.transform.position);
         }
 
         //HIDE

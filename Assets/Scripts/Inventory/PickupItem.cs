@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-public class PickupItem : MonoBehaviour, Interactable, SharedObject
+public class PickupItem : MonoBehaviour, Interact, SharedId
 {
 	public Item ItemPrefab;
 
@@ -18,30 +18,19 @@ public class PickupItem : MonoBehaviour, Interactable, SharedObject
 
 	public void Interact()
 	{
+		if (!Inventory.Instance.IsInventoryFull())
+        {
+			ItemStats inventoryItem = ScriptableObject.CreateInstance<ItemStats>();
+			inventoryItem.Getitem(this.item, this.amount);
+			Inventory.Instance.AddItemToInventory(inventoryItem);
 
-		ItemStats inventoryItem = ScriptableObject.CreateInstance<ItemStats>();
-		inventoryItem.Getitem(this.item, this.amount);
-		Inventory.Instance.AddItemToInventory(inventoryItem);
-		//ClientSend.PickupInteract(this.id);
-		this.RemoveObject();
+			//ClientSend.PickupInteract(this.id);
+			this.RemoveObject();
+		}
+        else
+        {
 
-
-	}
-
-	public void LocalExecute()
-	{
-		ItemStats inventoryItem = ScriptableObject.CreateInstance<ItemStats>();
-		inventoryItem.Getitem(this.item, this.amount);
-		Inventory.Instance.AddItemToInventory(inventoryItem);
-	}
-
-	public void AllExecute()
-	{
-		this.RemoveObject();
-	}
-
-	public void ServerExecute(int fromClient)
-	{
+        }
 	}
 
 	public void RemoveObject()
@@ -56,7 +45,6 @@ public class PickupItem : MonoBehaviour, Interactable, SharedObject
 	public string GetName()
 	{
 		return "E | " + this.item.nameViet;
-
 	}
 
 	public bool IsStarted()

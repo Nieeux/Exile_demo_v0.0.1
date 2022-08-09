@@ -10,7 +10,7 @@ public class Bullet : MonoBehaviour
     public float destroyAfter = 3.5f;
 
     public Bullet.AmmoType ammoType;
-
+    public Color ammoTypeColor;
     public GameObject bulletLight;
     float currentTime = 0;
     public float BulletDamage;
@@ -91,7 +91,7 @@ public class Bullet : MonoBehaviour
         HitAble damageable = collider.GetComponent<HitAble>();
         if (damageable)
         {
-            InventoryAble.DamageResult damageMultiplier = InventoryAble.Instance.GetDamage();
+            Inventory.DamageResult damageMultiplier = Inventory.Instance.GetDamage();
             float damageMultiplier2 = damageMultiplier.damageMultiplier;
             bool crit = damageMultiplier.ItCrit;
             float Damage = (int)(BulletDamage * damageMultiplier2);

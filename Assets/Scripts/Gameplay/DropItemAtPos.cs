@@ -19,7 +19,8 @@ public class DropItemAtPos : MonoBehaviour
     void Dropitem()
     {
         ItemStats RandomWeapon = ItemManager.Instance.GetRandomWeapons();
-        ItemManager.Instance.DropWeaponAtPlace(RandomWeapon.id, base.transform.position);
+        Buff buff = ItemManager.Instance.GetBuff();
+        ItemManager.Instance.DropWeaponAtPlace(RandomWeapon.id, buff.id, base.transform.position);
         CurrentItem = RandomWeapon;
     }
 }

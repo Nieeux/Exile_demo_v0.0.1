@@ -1,26 +1,26 @@
 using UnityEngine;
 
-public class terrain
+public class Terrain
 {
-
+	public event System.Action<Terrain, bool> onVisibilityChanged;
 	public Vector2 coord;
 
 	GameObject meshObject;
 	GameObject terrian;
 	StructureGenerator zoneGenerator;
-	Structure structure;
+	GroundGenerator structure;
 	PlaceObjects placeObjects;
 	Vector2 position;
 	Bounds bounds;
 
 
 	float maxViewDst;
-	Transform viewer;
+	Transform player;
 
-	public terrain(Vector2 coord, int size, float maxviewDst, Transform parent, Transform viewer, Material material)
+	public Terrain(Vector2 coord, int size, float maxviewDst, Transform parent, Transform player, Material material)
 	{
 		position = coord * size;
-		this.viewer = viewer;
+		this.player = player;
 		maxViewDst = maxviewDst;
 		bounds = new Bounds(position, Vector2.one * size);
 		Vector3 positionV3 = new Vector3(position.x, 0, position.y);
@@ -29,13 +29,13 @@ public class terrain
 		terrian.transform.position = positionV3;
 		terrian.transform.parent = parent;
 		// gán code PlaceObjects
-		this.structure = this.terrian.AddComponent<Structure>();
-		this.placeObjects = this.terrian.AddComponent<PlaceObjects>();
+		this.structure = this.terrian.AddComponent<GroundGenerator>();
+		//this.placeObjects = this.terrian.AddComponent<PlaceObjects>();
 		this.zoneGenerator = this.terrian.AddComponent<StructureGenerator>();
 
 		// kích ho?t PlaceObjects
 		this.structure.Spawn = true;
-		this.placeObjects.Spawn = true;
+		//this.placeObjects.Spawn = true;
 		this.zoneGenerator.Spawn = true;
 
 
@@ -46,15 +46,26 @@ public class terrain
 	{
 		get
 		{
-			return new Vector2(viewer.position.x, viewer.position.z);
+			return new Vector2(player.position.x, player.position.z);
 		}
 	}
 
 	public void UpdateTerrainChunk()
 	{
+		bool wasVisible = IsVisible();
+
 		float viewerDstFromNearestEdge = Mathf.Sqrt(bounds.SqrDistance(viewerPosition));
 		bool visible = viewerDstFromNearestEdge <= maxViewDst;
-		SetVisible(visible);
+
+		if (wasVisible != visible)
+		{
+
+			SetVisible(visible);
+			if (onVisibilityChanged != null)
+			{
+				onVisibilityChanged(this, visible);
+			}
+		}
 	}
 
 

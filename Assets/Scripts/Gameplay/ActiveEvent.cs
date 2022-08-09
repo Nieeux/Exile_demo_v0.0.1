@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ActiveEvent : MonoBehaviour, SharedObject
+public class ActiveEvent : MonoBehaviour, SharedId
 {
     public GameObject enemyPrefab;
     public PlayerMovement player;
@@ -48,9 +48,9 @@ public class ActiveEvent : MonoBehaviour, SharedObject
         Vector3 position = base.transform.position + new Vector3(Random.Range(-1f, 1f) * 10f, 0f, Random.Range(-1f, 1f) * 10f);
         GameObject enemy = Instantiate(enemyPrefab, position, Quaternion.identity);
 
-        EnemyController npc = enemy.GetComponent<EnemyController>();
-        npc.playerTransform = player.transform;
-        npc.es = this;
+        //EnemyController npc = enemy.GetComponent<EnemyController>();
+        //npc.playerTransform = player.transform;
+        //npc.es = this;
         EnemiesSpawned++;
     }
 

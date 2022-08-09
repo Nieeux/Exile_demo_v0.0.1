@@ -13,20 +13,19 @@ MonoBehaviour:
   m_Name: KhungTroLuc
   m_EditorClassIdentifier: 
   important: 0
-  id: 10
+  id: 1
   name: khungtroluc
   nameViet: "Khung tr\u1EE3 l\u1EF1c"
   description: 
-  stackable: 1
+  stackable: 0
   amount: 1
   max: 1
   heal: 0
   hunger: 0
   stamina: 0
-  BuffFood: []
   GunDamage: 0
   fireRate: 0
-  Critical: 0
+  Weight: 0
   CurrentDurability: 0
   Durability: 0
   CurrentMagazine: 0
@@ -34,9 +33,20 @@ MonoBehaviour:
   singleFire: 0
   ReloadTime: 0
   bulletPrefab: {fileID: 0}
+  AllBulletPrefab: []
   fireAudio: {fileID: 0}
   reloadAudio: {fileID: 0}
   Rare: 0
+  buffs: []
+  punchStrenght: 0.2
+  punchVibrato: 5
+  punchDuration: 0.3
+  punchElasticity: 0.5
+  punchDurationR: 0.3
+  PunchR: {x: 0, y: 0, z: 0}
+  randomness: 70
+  ShakeDuration: 1
+  ShakeStrenght: 1
   sprite: {fileID: 21300000, guid: 8a4b13c7034b45446b96fd786ed9082b, type: 3}
   material: {fileID: 0}
   mesh: {fileID: 0}
@@ -45,4 +55,12 @@ MonoBehaviour:
   scale: 1
   type: 2
   prefab: {fileID: 2841471369595137429, guid: ffe8a0f1b374a4049923782c73dc73df, type: 3}
+  RareIndex: 
+  nameOriginal: 
+  nameUpgrade: 
+  nameAdvanced: 
+  colorIndex: {r: 0, g: 0, b: 0, a: 0}
+  colorOriginal: {r: 0, g: 0, b: 0, a: 0}
+  colorUpgrade: {r: 0, g: 0, b: 0, a: 0}
+  colorAdvanced: {r: 0, g: 0, b: 0, a: 0}
   BuffWeapon: []

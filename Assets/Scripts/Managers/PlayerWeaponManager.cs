@@ -17,10 +17,7 @@ public class PlayerWeaponManager : MonoBehaviour
     }
 
     public WeaponController[] WeaponSlots = new WeaponController[2];
-    public Transform DefaultWeaponPosition;
     public Transform WeaponContainer;
-    public Transform DownWeaponPosition;
-    public Transform CamDrop;
 
     public int ActiveWeaponIndex { get; private set; }
     public int index;
@@ -37,13 +34,22 @@ public class PlayerWeaponManager : MonoBehaviour
 
     public float WeaponSwitchDelay = 1f;
     PlayerInput InputHandler;
+    PlayerMovement playerMovement;
+    PlayerStats playerStats;
 
-    Vector3 m_WeaponMainLocalPosition;
+    public Vector3 DownPosition = new Vector3(0.124f, -0.12f, 0);
+    public Vector3 DownRotation = new Vector3(20, -40, 40);
+    public Vector3 defuRotation = new Vector3(0, 0, 0);
+    public Vector3 defuPosition = new Vector3(0, 0, 0);
+    Vector3 Rot;
+
+    private WeaponController brokeWeapon;
 
     [Header("Gun Recoil")]
     public Transform CameraRecoil;
     private Vector3 currentRotation;
     private Vector3 targetRotation;
+
 
     [SerializeField] private float recoilX;
     [SerializeField] private float recoilY;
@@ -51,6 +57,12 @@ public class PlayerWeaponManager : MonoBehaviour
 
     [SerializeField] private float snappiness;
     [SerializeField] private float returnSpeed;
+
+    [SerializeField] private float CrouchrecoilY;
+    [SerializeField] private float CrouchreturnSpeed;
+
+    [SerializeField] private float currentReturnSpeed;
+    [SerializeField] private float currentrecoilY;
 
     public float dropForwardForce, dropUpwardForce;
 
@@ -65,6 +77,8 @@ public class PlayerWeaponManager : MonoBehaviour
         m_WeaponSwitchState = WeaponSwitchState.Down;
         OnSwitchedToWeapon += OnWeaponSwitched;
         InputHandler = GetComponent<PlayerInput>();
+        playerMovement = GetComponent<PlayerMovement>();
+
     }
 
     // Update is called once per frame
@@ -73,8 +87,11 @@ public class PlayerWeaponManager : MonoBehaviour
         WeaponController activeWeapon = GetActiveWeapon();
         index = ActiveWeaponIndex;
 
+        currentReturnSpeed = playerMovement.isCrouching() ? CrouchreturnSpeed : returnSpeed;
+        currentrecoilY = playerMovement.isCrouching() ? CrouchrecoilY : recoilY;
         //Recoil sung
-        targetRotation = Vector3.Lerp(targetRotation, Vector3.zero, returnSpeed * Time.deltaTime);
+
+        targetRotation = Vector3.Lerp(targetRotation, Vector3.zero, currentReturnSpeed * Time.deltaTime);
         currentRotation = Vector3.Slerp(currentRotation, targetRotation, snappiness * Time.fixedDeltaTime);
         CameraRecoil.transform.localRotation = Quaternion.Euler(currentRotation);
 
@@ -95,7 +112,7 @@ public class PlayerWeaponManager : MonoBehaviour
             if (InputHandler.GetDropWeapon())
             {
                 Debug.Log("DropWeapon");
-                Interactable weaponIndex = activeWeapon.WeaponIndex;
+                Interact weaponIndex = activeWeapon.WeaponIndex;
                 weaponIndex.RemoveObject();
             }
         }
@@ -108,20 +125,21 @@ public class PlayerWeaponManager : MonoBehaviour
     }
     public void RecoilFire()
     {
-        targetRotation += new Vector3(recoilX, Random.Range(-recoilY, recoilY), Random.Range(-recoilZ, recoilZ));
+        targetRotation += new Vector3(recoilX, Random.Range(-currentrecoilY, currentrecoilY), Random.Range(-recoilZ, recoilZ));
     }
 
     private void LateUpdate()
     {
         UpdateWeaponSwitching();
         // Set final weapon socket position based on all the combined animation influences
-        WeaponContainer.localPosition = m_WeaponMainLocalPosition;
+       // m_WeaponMainLocalPosition = WeaponContainer.localPosition;
     }
 
     void UpdateWeaponSwitching()
     {
         // Calculate the time ratio (0 to 1) since weapon switch was triggered
         float switchingTimeFactor = 0f;
+
         if (WeaponSwitchDelay == 0f)
         {
             switchingTimeFactor = 1f;
@@ -173,13 +191,15 @@ public class PlayerWeaponManager : MonoBehaviour
         // Handle moving the weapon socket position for the animated weapon switching
         if (m_WeaponSwitchState == WeaponSwitchState.PutDownPrevious)
         {
-            m_WeaponMainLocalPosition = Vector3.Lerp(DefaultWeaponPosition.localPosition,
-                DownWeaponPosition.localPosition, switchingTimeFactor);
+            Rot = Vector3.Slerp(Rot, DownRotation, switchingTimeFactor);
+            WeaponContainer.localRotation = Quaternion.Euler(Rot);
+            WeaponContainer.localPosition = Vector3.Lerp(defuPosition, DownPosition, switchingTimeFactor);
         }
         else if (m_WeaponSwitchState == WeaponSwitchState.PutUpNew)
         {
-            m_WeaponMainLocalPosition = Vector3.Lerp(DownWeaponPosition.localPosition,
-                DefaultWeaponPosition.localPosition, switchingTimeFactor);
+            Rot = Vector3.Slerp(Rot, defuRotation, switchingTimeFactor);
+            WeaponContainer.localRotation = Quaternion.Euler(Rot);
+            WeaponContainer.localPosition = Vector3.Lerp(DownPosition, defuPosition, switchingTimeFactor);
         }
     }
     public void CloseWeapon()
@@ -195,9 +215,8 @@ public class PlayerWeaponManager : MonoBehaviour
         {
             SwitchWeapon(true);
         }
-
     }
-    //Add v? khí vào tay
+    //Add v? khï¿½ vï¿½o tay
     public bool AddWeapon(WeaponController weaponPrefab, ItemStats item)
     {
         // search our weapon slots for the first free one, assign the weapon to it, and return true if we found one. Return false otherwise
@@ -208,28 +227,29 @@ public class PlayerWeaponManager : MonoBehaviour
             {
                 // spawn the weapon prefab as child of the weapon socket
 
-                WeaponController weaponInstance = Instantiate(weaponPrefab, WeaponContainer);
-                weaponInstance.transform.localPosition = Vector3.zero;
-                weaponInstance.transform.localRotation = Quaternion.identity;
+                //weaponPrefab.transform.localPosition = WeaponContainer.localPosition;
+                weaponPrefab.transform.SetParent(WeaponContainer);
+                //WeaponController weaponInstance = Instantiate(weaponPrefab, WeaponContainer);
+                weaponPrefab.transform.localPosition = Vector3.zero;
+                weaponPrefab.transform.localRotation = Quaternion.identity;
                 //Tat collider
-                weaponInstance.coll.enabled = false;
+                weaponPrefab.coll.enabled = false;
 
-                weaponInstance.rb.isKinematic = true;
+                weaponPrefab.rb.isKinematic = true;
 
                 // tao thuoc tinh moi cho Weapon
-                weaponInstance.GunStats = item;
-                weaponInstance.GetComponent<PickupWeapon>().item = item;
+                //weaponInstance.GunStats = item;
+                //weaponInstance.GetComponent<PickupWeapon>().item = item;
 
-                // Set owner to this gameObject so the weapon can alter projectile/damage logic accordingly
-                weaponInstance.Owner = gameObject;
-                weaponInstance.SourcePrefab = weaponPrefab.gameObject;
-                weaponInstance.ShowWeapon(false);
+                // Add Inventory Able
+                //inventory.Equipments(item);
 
-                WeaponSlots[i] = weaponInstance;
+                weaponPrefab.ShowWeapon(false);
+                WeaponSlots[i] = weaponPrefab;
 
                 if (OnAddedWeapon != null)
                 {
-                    OnAddedWeapon.Invoke(weaponInstance, i);
+                    OnAddedWeapon.Invoke(weaponPrefab, i);
                 }
 
                 return true;
@@ -318,7 +338,6 @@ public class PlayerWeaponManager : MonoBehaviour
             // Handle case of switching to a valid weapon for the first time (simply put it up without putting anything down first)
             if (GetActiveWeapon() == null)
             {
-                m_WeaponMainLocalPosition = DownWeaponPosition.localPosition;
                 m_WeaponSwitchState = WeaponSwitchState.PutUpNew;
                 ActiveWeaponIndex = m_WeaponSwitchNewWeaponIndex;
 
@@ -356,21 +375,27 @@ public class PlayerWeaponManager : MonoBehaviour
                 {
                     OnRemovedWeapon.Invoke(weaponInstance, i);
                 }
-                Destroy(weaponInstance.gameObject);
-                WeaponController Instance = Instantiate(weaponInstance.GunStats.prefab, CamDrop.transform.position, Quaternion.identity).GetComponent<WeaponController>();
-                Instance.GunStats = item;
-                Instance.GetComponent<PickupWeapon>().item = item;
 
-                Instance.canFire = false;
-                Instance.rb.velocity = GetComponent<CharacterController>().velocity;
-                Instance.rb.AddForce(transform.forward * dropForwardForce, ForceMode.Impulse);
-                Instance.rb.AddForce(transform.up * dropUpwardForce, ForceMode.Impulse);
+                //Destroy(weaponInstance.gameObject);
+                //WeaponController Instance = Instantiate(weaponInstance.GunStats.prefab, CamDrop.transform.position, Quaternion.identity).GetComponent<WeaponController>();
+                //Instance.GunStats = item;
+                //Instance.GetComponent<PickupWeapon>().item = item;
 
+                weaponInstance.canFire = false;
+                weaponInstance.rb.isKinematic = false;
+                weaponInstance.GetComponent<Collider>().enabled = true;
+                weaponInstance.rb.velocity = GetComponent<CharacterController>().velocity;
+                weaponInstance.rb.AddForce(WeaponContainer.transform.forward * dropForwardForce, ForceMode.Impulse);
+                weaponInstance.rb.AddForce(WeaponContainer.transform.up * dropUpwardForce, ForceMode.Impulse);
+
+                //inventory.Unequipments(item);
                 //Add random rotation
                 float random = Random.Range(-1f, 1f);
-                Instance.rb.AddTorque(new Vector3(random, random, random) * 10);
+                weaponInstance.rb.AddTorque(new Vector3(random, random, random) * 10);
 
+                weaponInstance.transform.SetParent(null);
 
+                //OnHit(weaponInstance.GetComponent<Collider>());
                 // Handle case of removing active weapon (switch to next weapon)
                 if (i == ActiveWeaponIndex)
                 {
@@ -382,6 +407,25 @@ public class PlayerWeaponManager : MonoBehaviour
         }
 
         return false;
+    }
+    public void OnHit(Collider collider)
+    {
+        HitAble damageable = collider.GetComponent<HitAble>();
+        if (damageable)
+        {
+            Inventory.DamageResult damageMultiplier = Inventory.Instance.GetDamage();
+            float damageMultiplier2 = damageMultiplier.damageMultiplier;
+            bool crit = damageMultiplier.ItCrit;
+            float Damage = (int)(playerStats.damage * damageMultiplier2);
+            HitEffect hitEffect = HitEffect.AmmoNormal;
+            if (crit)
+            {
+                hitEffect = HitEffect.Crit;
+            }
+            Vector3 pos = collider.transform.position;
+
+            damageable.Damage(Damage, (int)hitEffect, pos);
+        }
     }
     public bool BrokeWeapon(WeaponController weaponInstance, ItemStats item)
     {
@@ -397,21 +441,18 @@ public class PlayerWeaponManager : MonoBehaviour
                 {
                     OnRemovedWeapon.Invoke(weaponInstance, i);
                 }
-                Destroy(weaponInstance.gameObject);
-                WeaponController Instance = Instantiate(weaponInstance.GunStats.prefab, CamDrop.transform.position, Quaternion.identity).GetComponent<WeaponController>();
-                Instance.GunStats = null;
-                Instance.GetComponent<PickupWeapon>().item = null;
+                //Destroy(weaponInstance.gameObject);
+                //WeaponController Instance = Instantiate(weaponInstance.GunStats.prefab, CamDrop.transform.position, Quaternion.identity).GetComponent<WeaponController>();
+                weaponInstance.GunStats = null;
+                weaponInstance.GetComponent<PickupWeapon>().item = null;
+                brokeWeapon = weaponInstance;
+                base.Invoke("StartFade", 5);
 
-                Instance.canFire = false;
-                Instance.rb.velocity = GetComponent<CharacterController>().velocity;
-                Instance.rb.AddForce(transform.forward * dropForwardForce, ForceMode.Impulse);
-                Instance.rb.AddForce(transform.up * dropUpwardForce, ForceMode.Impulse);
+                weaponInstance.canFire = false;
+                weaponInstance.rb.isKinematic = false;
+                weaponInstance.GetComponent<Collider>().enabled = true;
 
-                //Add random rotation
-                float random = Random.Range(-1f, 1f);
-                Instance.rb.AddTorque(new Vector3(random, random, random) * 10);
-
-
+                weaponInstance.transform.SetParent(null);
                 // Handle case of removing active weapon (switch to next weapon)
                 if (i == ActiveWeaponIndex)
                 {
@@ -424,4 +465,11 @@ public class PlayerWeaponManager : MonoBehaviour
 
         return false;
     }
+    private void StartFade()
+    {
+        brokeWeapon.rb.drag = 5;
+        brokeWeapon.coll.enabled = false;
+        Destroy(brokeWeapon.WeaponRoot, 2);
+    }
+
 }

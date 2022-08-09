@@ -102,6 +102,7 @@ MonoBehaviour:
   fireAudio: {fileID: 8300000, guid: 57370f17c98a2154cba34219e83859fb, type: 3}
   reloadAudio: {fileID: 8300000, guid: f02e7563c10830748a7719d342d27800, type: 3}
   GunStats: {fileID: 11400000, guid: f16312497f8ae834c8205b5c073643ef, type: 2}
+  WeaponAmmoType: {r: 0, g: 0, b: 0, a: 0}
   reloading: 0
   canFire: 0
   AiEquip: 0
@@ -121,7 +122,7 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 0}
   m_PlayOnAwake: 1
-  m_Volume: 1
+  m_Volume: 0.7
   m_Pitch: 1
   Loop: 0
   Mute: 0
@@ -130,7 +131,7 @@ AudioSource:
   Priority: 128
   DopplerLevel: 1
   MinDistance: 1
-  MaxDistance: 500
+  MaxDistance: 200
   Pan2D: 0
   rolloffMode: 0
   BypassEffects: 0

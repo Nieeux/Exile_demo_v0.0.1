@@ -8,8 +8,8 @@ public class NavmeshGenerator : MonoBehaviour
 {
     [SerializeField]
     private NavMeshSurface Surface;
-    [SerializeField]
-    private AIController Player;
+
+    public AIController Player;
     [SerializeField]
     private float UpdateRate = 0.1f;
     [SerializeField]
@@ -26,6 +26,7 @@ public class NavmeshGenerator : MonoBehaviour
 
     private void Awake()
     {
+        this.Surface = NavMeshSurface.Instance;
         NavMeshData = new NavMeshData();
         NavMesh.AddNavMeshData(NavMeshData);
         BuildNavMesh(false);
@@ -33,6 +34,7 @@ public class NavmeshGenerator : MonoBehaviour
     }
     private void Start()
     {
+       
         base.Invoke("BuildNavMeshStart", 1f);
     }
     private void BuildNavMeshStart()

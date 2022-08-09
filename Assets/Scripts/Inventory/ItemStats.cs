@@ -23,12 +23,11 @@ public class ItemStats : ScriptableObject
 	public float heal;
 	public float hunger;
 	public float stamina;
-	public ScriptableObject[] BuffFood;
 
 	[Header("Gun")]
 	public float GunDamage;
 	public float fireRate;
-	public float Critical;
+	public float Weight;
 	public float CurrentDurability;
 	public float Durability;
 	public int CurrentMagazine;
@@ -40,15 +39,16 @@ public class ItemStats : ScriptableObject
 	public GameObject[] AllBulletPrefab;
 	public AudioClip fireAudio;
 	public AudioClip reloadAudio;
-
 	public ItemStats.ItemRare Rare;
+	public List<Buff> buffs = new List<Buff>();
 
 	[Header("Weapon Recoil Animation")]
 	public float punchStrenght = .2f;
 	public int punchVibrato = 5;
 	public float punchDuration = .3f;
-	public float punchDurationR = .3f;
 	public float punchElasticity = .5f;
+	public float punchDurationR = .3f;
+	public Vector3 PunchR;
 
 	[Header("Weapon Shake")]
 	public float randomness = 70;
@@ -68,6 +68,12 @@ public class ItemStats : ScriptableObject
 	public float scale = 1f;
 	public ItemStats.ItemType type;
 	public GameObject prefab;
+
+	public string RareIndex;
+	public string nameOriginal;
+	public string nameUpgrade;
+	public string nameAdvanced;
+
 	public Color colorIndex;
 	public Color colorOriginal;
 	public Color colorUpgrade;
@@ -97,11 +103,6 @@ public class ItemStats : ScriptableObject
 		this.positionOffset = item.positionOffset;
 		this.scale = item.scale;
 	}
-	public void GetAmmoType(ItemStats item)
-	{
-		
-
-	}
 	public void Getweapon(ItemStats item)
 	{
 		//Main
@@ -114,7 +115,7 @@ public class ItemStats : ScriptableObject
 		this.GunDamage = item.GunDamage;
 		this.singleFire = item.singleFire;
 		this.fireRate = item.fireRate;
-		this.Critical = item.Critical;
+		this.Weight = item.Weight;
 		this.CurrentDurability = item.CurrentDurability;
 		this.Durability = item.Durability;
 		this.Magazine = item.Magazine;
@@ -122,6 +123,7 @@ public class ItemStats : ScriptableObject
 		this.ReloadTime = item.ReloadTime;
 		this.bulletPrefab = item.bulletPrefab;
 		this.AllBulletPrefab = item.AllBulletPrefab;
+		item.buffs = new List<Buff>();
 
 		//Weapon Recoil Animation
 		this.punchStrenght = item.punchStrenght;
@@ -159,20 +161,29 @@ public class ItemStats : ScriptableObject
 		this.GunDamage = item.GunDamage;
 		this.singleFire = item.singleFire;
 		this.fireRate = item.fireRate;
-		this.Critical = item.Critical;
+		this.Weight = item.Weight;
 		this.CurrentDurability = item.CurrentDurability;
 		this.Durability = item.Durability;
 		this.Magazine = item.Magazine;
 		this.CurrentMagazine = item.CurrentMagazine;
 		this.ReloadTime = item.ReloadTime;
 		this.AllBulletPrefab = item.AllBulletPrefab;
+		this.Rare = item.Rare = ItemRare.original;
+		item.buffs = new List<Buff>();
+
+		//ItemRare name
+		this.nameOriginal = item.nameOriginal;
+		this.nameUpgrade = item.nameUpgrade;
+		this.nameAdvanced = item.nameAdvanced;
+		this.RareIndex = item.nameOriginal;
 
 		//Weapon Recoil Animation
 		this.punchStrenght = item.punchStrenght;
 		this.punchVibrato = item.punchVibrato;
 		this.punchDuration = item.punchDuration;
-		this.punchDurationR = item.punchDurationR;
 		this.punchElasticity = item.punchElasticity;
+		this.punchDurationR = item.punchDurationR;
+		this.PunchR = item.PunchR;
 
 		//Weapon Shake
 		this.randomness = item.randomness;
@@ -220,20 +231,29 @@ public class ItemStats : ScriptableObject
 		this.GunDamage = item.GunDamage * 1.5f;
 		this.singleFire = item.singleFire;
 		this.fireRate = item.fireRate;
-		this.Critical = item.Critical;
+		this.Weight = item.Weight;
 		this.CurrentDurability = item.CurrentDurability;
 		this.Durability = item.Durability;
 		this.Magazine = item.Magazine;
 		this.CurrentMagazine = item.CurrentMagazine;
 		this.ReloadTime = item.ReloadTime;
 		this.AllBulletPrefab = item.AllBulletPrefab;
+		this.Rare = item.Rare = ItemRare.upgrade;
+		item.buffs = new List<Buff>();
+
+		//ItemRare name
+		this.nameOriginal = item.nameOriginal;
+		this.nameUpgrade = item.nameUpgrade;
+		this.nameAdvanced = item.nameAdvanced;
+		this.RareIndex = item.nameUpgrade;
 
 		//Weapon Recoil Animation
 		this.punchStrenght = item.punchStrenght;
 		this.punchVibrato = item.punchVibrato;
 		this.punchDuration = item.punchDuration;
-		this.punchDurationR = item.punchDurationR;
 		this.punchElasticity = item.punchElasticity;
+		this.punchDurationR = item.punchDurationR;
+		this.PunchR = item.PunchR;
 
 		//Weapon Shake
 		this.randomness = item.randomness;
@@ -274,20 +294,29 @@ public class ItemStats : ScriptableObject
 		this.GunDamage = item.GunDamage * 2f;
 		this.singleFire = item.singleFire;
 		this.fireRate = item.fireRate;
-		this.Critical = item.Critical;
-		this.CurrentDurability = item.CurrentDurability;
-		this.Durability = item.Durability;
-		this.Magazine = item.Magazine;
-		this.CurrentMagazine = item.CurrentMagazine;
+		this.Weight = item.Weight;
+		this.CurrentDurability = item.CurrentDurability * 2;
+		this.Durability = item.Durability * 2;
+		this.Magazine = item.Magazine * 2;
+		this.CurrentMagazine = item.CurrentMagazine * 2;
 		this.ReloadTime = item.ReloadTime;
 		this.AllBulletPrefab = item.AllBulletPrefab;
+		this.Rare = item.Rare = ItemRare.advanced;
+		item.buffs = new List<Buff>();
+
+		//ItemRare name
+		this.nameOriginal = item.nameOriginal;
+		this.nameUpgrade = item.nameUpgrade;
+		this.nameAdvanced = item.nameAdvanced;
+		this.RareIndex = item.nameAdvanced;
 
 		//Weapon Recoil Animation
 		this.punchStrenght = item.punchStrenght;
 		this.punchVibrato = item.punchVibrato;
 		this.punchDuration = item.punchDuration;
-		this.punchDurationR = item.punchDurationR;
 		this.punchElasticity = item.punchElasticity;
+		this.punchDurationR = item.punchDurationR;
+		this.PunchR = item.PunchR;
 
 		//Weapon Shake
 		this.randomness = item.randomness;
@@ -348,7 +377,6 @@ public class ItemStats : ScriptableObject
 	}
 	*/
 
-
 	public bool Compare(ItemStats other)
 	{
 		return !(other == null) && this.id == other.id;
@@ -361,6 +389,7 @@ public class ItemStats : ScriptableObject
 		}
 		return this.amount.ToString();
 	}
+
 	public string GetName()
 	{
 		return this.nameViet.ToString();

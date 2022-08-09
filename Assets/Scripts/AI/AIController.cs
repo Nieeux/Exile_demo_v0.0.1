@@ -5,9 +5,16 @@ using UnityEngine.Events;
 
 public class AIController : MonoBehaviour
 {
+    public enum EnemyRank
+    {
+        Easy,
+        Normal,
+        Hard,
+    }
+    [Header("Main")]
+    public EnemyRank enemyRank;
     public NavMeshAgent Agent;
     public EnemyStats enemyStats;
-    public bool ondie;
     [Header("States")]
     public StateType IndexState;
     public StateType ChangeState;
@@ -30,8 +37,9 @@ public class AIController : MonoBehaviour
     [Header("Equip")]
 
     public Transform WeaponSocket;
-    public ItemStats AiWeapon;
+    public ItemStats WeaponStats;
     public WeaponController CurrentWeapon;
+    private WeaponController brokeWeapon;
 
     [Header("Hide")]
     public float radiusHide;
@@ -64,9 +72,6 @@ public class AIController : MonoBehaviour
 
     private void Start()
     {
-        AiGetWeaponStarter();
-        CurrentWeapon = GetComponentInChildren<WeaponController>();
-        CurrentWeapon.AiEquip = true;
 
         stateMachine = new AIStateMachine(this);
         stateMachine.RegisterState(new AI_Attack());
@@ -80,6 +85,8 @@ public class AIController : MonoBehaviour
 
         target = PlayerMovement.Instance.transform;
 
+        PlayerStats.Instance.OnDie += PlayerOnDie;
+
         health = GetComponent<HitAble>();
         Agent = GetComponent<NavMeshAgent>();
         weaponIK = GetComponent<WeaponIK>();
@@ -92,7 +99,21 @@ public class AIController : MonoBehaviour
             GetComponent<Rigidbody>().isKinematic = true;
         }
 
+        if(enemyRank == EnemyRank.Easy)
+        {
+            StarterWeaponOriginal();
+        }
+        if (enemyRank == EnemyRank.Normal)
+        {
+            StarterWeaponUpgrade();
+        }
+        if (enemyRank == EnemyRank.Hard)
+        {
+            StarterWeaponAdvanced();
+        }
+
         StartCoroutine(FOVRoutine());
+
     }
 
     private void Update()
@@ -120,11 +141,12 @@ public class AIController : MonoBehaviour
 
     private IEnumerator FOVRoutine()
     {
-        WaitForSeconds wait = new WaitForSeconds(0.1f);
+        WaitForSeconds wait = new WaitForSeconds(0.5f);
 
         while (true)
         {
             yield return wait;
+            RespawnCheck();
             FieldOfViewCheck();
         }
     }
@@ -141,21 +163,6 @@ public class AIController : MonoBehaviour
         else
         {
             Targetposition = target.transform.position;
-        }
-    }
-
-    public void seeTargetFirtTime()
-    {
-        float distanceToTarget = Vector3.Distance(transform.position, target.position);
-        //Neu qua 30, Thi di ve huong truoc mat
-        Vector3 directionToTarget = transform.position + transform.forward * 20;
-        if (distanceToTarget > 20)
-        {
-            SeeTargetFirtTime = directionToTarget;
-        }
-        else
-        {
-            SeeTargetFirtTime = target.transform.position;
         }
     }
 
@@ -194,11 +201,45 @@ public class AIController : MonoBehaviour
         Quaternion b = Quaternion.LookRotation(new Vector3(normalized.x, 0f, normalized.z));
         this.transform.rotation = Quaternion.Slerp(this.transform.rotation, b, Time.deltaTime * 5);
     }
-    public void AiGetWeaponStarter()
+
+    public void StarterWeaponOriginal()
     {
         ItemStats RandomWeapon = ItemManager.Instance.GetRandomWeapons();
-        ItemManager.Instance.GetWeaponOriginal(RandomWeapon.id, base.transform.position, base.transform.rotation, WeaponSocket);
-        AiWeapon = RandomWeapon;
+        Buff buff = ItemManager.Instance.GetBuff();
+        ItemManager.Instance.getWeaponOriginal(RandomWeapon.id, buff.id, WeaponSocket.transform.position, WeaponSocket.transform.rotation, WeaponSocket);
+        CurrentWeapon = GetComponentInChildren<WeaponController>();
+
+        WeaponStats = CurrentWeapon.GunStats;
+        CurrentWeapon.coll.enabled = false;
+        CurrentWeapon.rb.isKinematic = true;
+        CurrentWeapon.AiEquip = true;
+        weaponIK.SetAimTransform(WeaponSocket);
+    }
+    public void StarterWeaponUpgrade()
+    {
+        ItemStats RandomWeapon = ItemManager.Instance.GetRandomWeapons();
+        Buff buff = ItemManager.Instance.GetBuff();
+        ItemManager.Instance.getWeaponUpgrade(RandomWeapon.id, buff.id, WeaponSocket.transform.position, WeaponSocket.transform.rotation, WeaponSocket);
+        CurrentWeapon = GetComponentInChildren<WeaponController>();
+
+        WeaponStats = CurrentWeapon.GunStats;
+        CurrentWeapon.coll.enabled = false;
+        CurrentWeapon.rb.isKinematic = true;
+        CurrentWeapon.AiEquip = true;
+        weaponIK.SetAimTransform(WeaponSocket);
+    }
+    public void StarterWeaponAdvanced()
+    {
+        ItemStats RandomWeapon = ItemManager.Instance.GetRandomWeapons();
+        Buff buff = ItemManager.Instance.GetBuff();
+        ItemManager.Instance.getweaponAdvanced(RandomWeapon.id, buff.id, WeaponSocket.transform.position, WeaponSocket.transform.rotation, WeaponSocket);
+        CurrentWeapon = GetComponentInChildren<WeaponController>();
+
+        WeaponStats = CurrentWeapon.GunStats;
+        CurrentWeapon.coll.enabled = false;
+        CurrentWeapon.rb.isKinematic = true;
+        CurrentWeapon.AiEquip = true;
+        weaponIK.SetAimTransform(WeaponSocket);
     }
 
     public void AiEquip(WeaponController weapon, ItemStats item)
@@ -216,10 +257,22 @@ public class AIController : MonoBehaviour
         Weapon.rb.isKinematic = true;
         Weapon.AiEquip = true;
 
-        AiWeapon = Weapon.GunStats;
+        WeaponStats = Weapon.GunStats;
 
         weaponIK.SetAimTransform(WeaponSocket);
     }
+
+    public void DropWeapon(ItemStats item)
+    {
+        if (WeaponStats != null)
+        {
+            WeaponController Weapon = Instantiate(item.prefab, transform.position, Quaternion.identity).GetComponent<WeaponController>();
+            Weapon.GunStats = item;
+            Weapon.GetComponent<PickupWeapon>().item = item;
+        }
+
+    }
+
     public void ReadyAttack()
     {
         weaponIK.SetTargetTransform(target);
@@ -322,12 +375,53 @@ public class AIController : MonoBehaviour
         }
     }
 
+    // Respawm
+    private void RespawnCheck()
+    {
+        if (!IsGrounded())
+        {
+            SpawnEnemy.Instance.enemyList.Remove(this);
+            navmeshGenerator.DestroyNavMeshData();
+            Destroy(gameObject);
+        }
+    }
+    bool IsGrounded()
+    {
+        return Physics.Raycast(transform.position, Vector3.down, 1f, GroundMask);
+    }
+
+
     public void Reward()
     {
 
         int Moneys = Random.Range(enemyStats.minMoneyReward, enemyStats.maxMoneyReward);
 
-        InventoryAble.Instance.RewardMoney(Moneys);
+        Inventory.Instance.RewardMoney(Moneys);
+    }
+
+    // BrokeWeapon
+    public void BrokeWeapon(ItemStats item)
+    {
+        if (WeaponStats.CurrentDurability <= 0 && WeaponStats != null)
+        {
+            WeaponController Weapon = Instantiate(item.prefab, transform.position, Quaternion.identity).GetComponent<WeaponController>();
+            Weapon.GunStats = null;
+            Weapon.GetComponent<PickupWeapon>().item = null;
+            brokeWeapon = Weapon;
+
+            Destroy(CurrentWeapon.WeaponRoot);
+            this.CurrentWeapon = null;
+            this.WeaponStats = null;
+            base.Invoke("StartFade", 5);
+        }
+
+    }
+
+    private void StartFade()
+    {
+        brokeWeapon.rb.drag = 5;
+        brokeWeapon.coll.enabled = false;
+        Destroy(brokeWeapon.WeaponRoot, 2);
     }
 
     void OnDamaged(float damage)
@@ -335,21 +429,21 @@ public class AIController : MonoBehaviour
         onDamaged?.Invoke();
     }
 
+    void PlayerOnDie()
+    {
+        stateMachine.ChangesState(StateType.idle);
+    }
+
     void OnDie()
     {
+        SpawnEnemy.Instance.enemyList.Remove(this);
+
         navmeshGenerator.DestroyNavMeshData();
         stateMachine.ChangesState(StateType.Die);
-        Reward();
-        if (AiWeapon != null)
-        {
-            WeaponController Instance = Instantiate(AiWeapon.prefab, transform.position, Quaternion.identity).GetComponent<WeaponController>();
-            Instance.GunStats = AiWeapon;
-            Instance.GetComponent<PickupWeapon>().item = AiWeapon;
-        }
+
         GameObject npcDead = Instantiate(enemyStats.DeadPrefab, transform.position, transform.rotation);
         npcDead.GetComponent<Rigidbody>().velocity = (-(target.position - transform.position).normalized * 8) + new Vector3(0, 5, 0);
         Destroy(gameObject);
-
 
     }
 }

@@ -5,20 +5,87 @@ using TMPro;
 
 public class MoneyUI : MonoBehaviour
 {
+	public static MoneyUI Instance;
+
 	public TextMeshProUGUI money;
+	//public TextMeshProUGUI Text;
+	public int CountFPS = 30;
+	public float Duration = 1f;
+	public string NumberFormat = "N0";
+	private int _value;
+	private Coroutine CountingCoroutine;
 
 	private void Awake()
 	{
-		base.InvokeRepeating("SlowUpdate", 0f, 1f);
+		MoneyUI.Instance = this;
 	}
 
-	private void SlowUpdate()
+	public int Value
 	{
-		this.UpdateMoney();
+		get
+		{
+			return _value;
+		}
+		set
+		{
+			UpdateText(value);
+			_value = value;
+		}
+	}
+	private void UpdateText(int newValue)
+	{
+		if (CountingCoroutine != null)
+		{
+			StopCoroutine(CountingCoroutine);
+		}
+
+		CountingCoroutine = StartCoroutine(CountText(newValue));
 	}
 
-	private void UpdateMoney()
+	private IEnumerator CountText(int newValue)
 	{
-		this.money.text = InventoryAble.Instance.Moneys.ToString("0");
+		WaitForSeconds Wait = new WaitForSeconds(1f / CountFPS);
+		int previousValue = _value;
+		int stepAmount;
+
+		if (newValue - previousValue < 0)
+		{
+			stepAmount = Mathf.FloorToInt((newValue - previousValue) / (CountFPS * Duration)); // newValue = -20, previousValue = 0. CountFPS = 30, and Duration = 1; (-20- 0) / (30*1) // -0.66667 (ceiltoint)-> 0
+		}
+		else
+		{
+			stepAmount = Mathf.CeilToInt((newValue - previousValue) / (CountFPS * Duration)); // newValue = 20, previousValue = 0. CountFPS = 30, and Duration = 1; (20- 0) / (30*1) // 0.66667 (floortoint)-> 0
+		}
+
+		if (previousValue < newValue)
+		{
+			while (previousValue < newValue)
+			{
+				previousValue += stepAmount;
+				if (previousValue > newValue)
+				{
+					previousValue = newValue;
+				}
+
+				money.SetText(previousValue.ToString(NumberFormat));
+
+				yield return Wait;
+			}
+		}
+		else
+		{
+			while (previousValue > newValue)
+			{
+				previousValue += stepAmount; // (-20 - 0) / (30 * 1) = -0.66667 -> -1              0 + -1 = -1
+				if (previousValue < newValue)
+				{
+					previousValue = newValue;
+				}
+
+				money.SetText(previousValue.ToString(NumberFormat));
+
+				yield return Wait;
+			}
+		}
 	}
 }

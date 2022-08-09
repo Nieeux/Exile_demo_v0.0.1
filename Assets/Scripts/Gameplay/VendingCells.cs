@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class VendingCells : MonoBehaviour, Interactable, SharedObject
+public class VendingCells : MonoBehaviour, Interact, SharedId
 {
     private int id;
 
@@ -27,7 +27,7 @@ public class VendingCells : MonoBehaviour, Interactable, SharedObject
 
     public void Interact()
     {
-        if (InventoryAble.Instance.GetMoney() < this.price)
+        if (Inventory.Instance.GetMoney() < this.price)
         {
             return;
         }
@@ -36,7 +36,7 @@ public class VendingCells : MonoBehaviour, Interactable, SharedObject
             return;
         }
         this.ready = false;
-        InventoryAble.Instance.UseMoney(this.price);
+        Inventory.Instance.UseMoney(this.price);
         weapon.GetComponent<Rigidbody>().isKinematic = false;
         weapon.transform.SetParent(null);
         RemoveObject();

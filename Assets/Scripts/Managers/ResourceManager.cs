@@ -39,7 +39,7 @@ public class ResourceManager : MonoBehaviour
 			for (int j = 0; j < trees[i].Count; j++)
 			{
 				GameObject gameObject = trees[i][j] = trees[i][j];
-				int id = gameObject.GetComponentInChildren<SharedObject>().GetId();
+				int id = gameObject.GetComponentInChildren<SharedId>().GetId();
 				this.AddObject(id, gameObject);
 			}
 		}
@@ -50,7 +50,7 @@ public class ResourceManager : MonoBehaviour
 		{
 			return false;
 		}
-		Interactable componentInChildren = this.list[id].GetComponentInChildren<Interactable>();
+		Interact componentInChildren = this.list[id].GetComponentInChildren<Interact>();
 		this.list.Remove(id);
 		componentInChildren.RemoveObject();
 		return true;

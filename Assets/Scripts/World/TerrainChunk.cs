@@ -36,11 +36,11 @@ public class Terrainchunk
 		renderer.material = material;
 		// gán code PlaceObjects
 		this.zoneGenerator = this.meshObject.AddComponent<StructureGenerator>();
-		this.placeObjects = this.meshObject.AddComponent<PlaceObjects>();
+		//this.placeObjects = this.meshObject.AddComponent<PlaceObjects>();
 
 		// kích ho?t PlaceObjects
 		this.zoneGenerator.Spawn = true;
-		this.placeObjects.Spawn = true;
+		//this.placeObjects.Spawn = true;
 
 		SetVisible(false);
 	}

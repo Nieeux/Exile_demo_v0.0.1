@@ -23,10 +23,9 @@ MonoBehaviour:
   heal: 0
   hunger: 0
   stamina: 0
-  BuffFood: []
   GunDamage: 15
   fireRate: 0.3
-  Critical: 0.3
+  Weight: 0
   CurrentDurability: 100
   Durability: 100
   CurrentMagazine: 14
@@ -41,11 +40,13 @@ MonoBehaviour:
   fireAudio: {fileID: 0}
   reloadAudio: {fileID: 0}
   Rare: 1
+  buffs: []
   punchStrenght: 0.1
   punchVibrato: 5
   punchDuration: 0.15
-  punchDurationR: 0.15
   punchElasticity: 0.5
+  punchDurationR: 0.15
+  PunchR: {x: -20, y: 0, z: -10}
   randomness: 70
   ShakeDuration: 1
   ShakeStrenght: 1
@@ -55,8 +56,12 @@ MonoBehaviour:
   rotationOffset: {x: 0, y: 0, z: 0}
   positionOffset: {x: 0, y: 0, z: 0}
   scale: 1
-  type: 0
+  type: 3
   prefab: {fileID: 367534550845903707, guid: 5a2ec5af6b9e0ff49be315c204ca4d1e, type: 3}
+  RareIndex: 
+  nameOriginal: "Nguy\xEAn b\u1EA3n"
+  nameUpgrade: "N\xE2ng c\u1EA5p"
+  nameAdvanced: "T\xE2n Ti\u1EBFn"
   colorIndex: {r: 0, g: 0, b: 0, a: 0}
   colorOriginal: {r: 1, g: 1, b: 1, a: 1}
   colorUpgrade: {r: 0, g: 1, b: 1, a: 1}

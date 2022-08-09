@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class PlaceObjects : MonoBehaviour
 {
-
+    /*
     public WorldGenerator TerrainController;
     public bool Spawn;
 
@@ -65,4 +65,5 @@ public class PlaceObjects : MonoBehaviour
             Random.Range(transform.position.x - TerrainController.TerrainSize.x / 2, transform.position.x + TerrainController.TerrainSize.x / 2),transform.position.y + TerrainController.TerrainSize.y * 2,
             Random.Range(transform.position.z - TerrainController.TerrainSize.z / 2, transform.position.z + TerrainController.TerrainSize.z / 2));
     }
+    */
 }

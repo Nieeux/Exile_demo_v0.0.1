@@ -7,13 +7,12 @@ public class StructureGenerator : MonoBehaviour
 	public float totalWeight { get; set; }
 
 	private List<GameObject> structures;
-	protected Random randomGen;
-	public int nShrines = 20;
+	protected Random randomly;
 	private Vector3[] shrines;
 
 	public bool dontAddToResourceManager;
 
-	private Vector3 terrainSize = new Vector3(120, 1, 120);
+	private Vector3 terrainSize = new Vector3(40, 1, 40);
 	public Vector3 TerrainSize { get { return terrainSize; } }
 
 	public WorldGenerator TerrainController;
@@ -28,12 +27,13 @@ public class StructureGenerator : MonoBehaviour
 		{
 			Place();
 		}
+		//Destroy(this);
 	}
 
 	public void CalculateWeight()
 	{
 		this.totalWeight = 0f;
-		foreach (WeightedSpawn weightedSpawn in this.TerrainController.structurePrefabs)
+		foreach (WeightedSpawn weightedSpawn in this.TerrainController.terrChoice)
 		{
 			this.totalWeight += weightedSpawn.weight;
 		}
@@ -41,23 +41,26 @@ public class StructureGenerator : MonoBehaviour
 	public void Place()
 	{
 		this.structures = new List<GameObject>();
-		this.randomGen = new Random();
-		this.shrines = new Vector3[this.nShrines];
+		this.randomly = new Random();
+		this.shrines = new Vector3[this.TerrainController.StructureAmount];
 		this.CalculateWeight();
 		int num = 0;
-		for (int i = 0; i < this.nShrines; i++)
+		for (int i = 0; i < this.TerrainController.StructureAmount; i++)
 		{
 
             Vector3 startPoint = RandomPointAboveTerrain();
 			startPoint.y = 200f;
 			//Debug.DrawLine(startPoint, startPoint + Vector3.down * 500f, Color.red, 50f);
 			RaycastHit hit;
+
 			if (Physics.Raycast(startPoint, Vector3.down, out hit, 500f) && hit.transform.gameObject.layer == LayerMask.NameToLayer("Ground"))
 			{
 				this.shrines[i] = hit.point;
 				num++;
-				GameObject gameObject = this.FindObjectToSpawn(this.TerrainController.structurePrefabs, this.totalWeight, this.randomGen);
-				GameObject gameObject2 = Object.Instantiate<GameObject>(gameObject, hit.point, gameObject.transform.rotation, transform);
+				Quaternion orientation = Quaternion.Euler(Vector3.up * UnityEngine.Random.Range(0f, 360f));
+				GameObject gameObject = this.FindObjectToSpawn(this.TerrainController.terrChoice, this.totalWeight, this.randomly);
+				GameObject gameObject2 = Object.Instantiate<GameObject>(gameObject, hit.point, orientation, transform);
+				//GameObject gameObject2 = Object.Instantiate<GameObject>(gameObject, hit.point, gameObject.transform.rotation, transform);
 				this.structures.Add(gameObject2);
 				this.Process(gameObject2, hit);
 			}

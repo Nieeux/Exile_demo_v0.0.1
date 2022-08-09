@@ -14,10 +14,12 @@ public class ItemManager : MonoBehaviour
 	public Dictionary<int, ItemStats> AllItems;
 	public Dictionary<int, ItemStats> AllWeapons;
 	public Dictionary<int, ItemStats> AllEquipments;
+	public Dictionary<int, Buff> Allbuffs;
 	public Dictionary<string, int> GetNameEquipments;
 
 	public ItemStats[] Items;
 	public ItemStats[] Weapons;
+	public Buff[] buffs;
 	public ItemStats[] Equipments;
 
 	public static int currentId;
@@ -31,7 +33,7 @@ public class ItemManager : MonoBehaviour
 
 	public float Advanced;
 
-	public float randomly;
+	private float randomly;
 
 	private void Awake()
 	{
@@ -40,10 +42,12 @@ public class ItemManager : MonoBehaviour
 		this.AllItems = new Dictionary<int, ItemStats>();
 		this.AllWeapons = new Dictionary<int, ItemStats>();
 		this.AllEquipments = new Dictionary<int, ItemStats>();
+		this.Allbuffs = new Dictionary<int, Buff>();
 		this.GetNameEquipments = new Dictionary<string, int>();
 		this.GetAllItems();
 		this.GetAllEquipments();
 		this.GetAllWeapon();
+		this.GetAllBuffs();
 
 	}
 	private void GetAllItems()
@@ -63,7 +67,14 @@ public class ItemManager : MonoBehaviour
 			this.AllWeapons.Add(i, this.Weapons[i]);
 		}
 	}
-
+	private void GetAllBuffs()
+	{
+		for (int i = 0; i < this.buffs.Length; i++)
+		{
+			this.buffs[i].id = i;
+			this.Allbuffs.Add(i, this.buffs[i]);
+		}
+	}
 	private void GetAllEquipments()
 	{
 		for (int i = 0; i < this.Equipments.Length; i++)
@@ -111,7 +122,7 @@ public class ItemManager : MonoBehaviour
 		}
 		return randomly = 3;
 	}
-	public void DropWeaponAtPlace(int itemId, Vector3 pos)
+	public void DropWeaponAtPlace(int itemId, int buffId, Vector3 pos)
 	{
 		GetRandomNumber(Original, Upgrade, Advanced);
 		ItemStats inventoryItem = ScriptableObject.CreateInstance<ItemStats>();
@@ -127,7 +138,9 @@ public class ItemManager : MonoBehaviour
 		{
 			inventoryItem.GetweaponAdvanced(this.AllWeapons[itemId]);
 		}
+
 		item = inventoryItem;
+		item.buffs.Add(Allbuffs[buffId]);
 		PickupWeapon pickup = Instantiate(inventoryItem.prefab, pos, Quaternion.identity).GetComponent<PickupWeapon>();
 		pickup.item = this.item;
 		pickup.GetComponent<WeaponController>().GunStats = this.item;
@@ -156,12 +169,38 @@ public class ItemManager : MonoBehaviour
 		pickup.transform.position = pos;
 		pickup.GetComponent<Rigidbody>().isKinematic = true;
 	}
-	public void GetWeaponOriginal(int itemId, Vector3 pos, Quaternion orientation, Transform transform)
+
+	public void getWeaponOriginal(int itemId, int buffId, Vector3 pos, Quaternion orientation, Transform transform)
 	{
 		GetRandomNumber(Original, Upgrade, Advanced);
 		ItemStats inventoryItem = ScriptableObject.CreateInstance<ItemStats>();
 		inventoryItem.GetweaponOriginal(this.AllWeapons[itemId]);
 		item = inventoryItem;
+		item.buffs.Add(Allbuffs[buffId]);
+		PickupWeapon pickup = Instantiate(inventoryItem.prefab, pos, orientation, transform).GetComponent<PickupWeapon>();
+		pickup.item = this.item;
+		pickup.GetComponent<WeaponController>().GunStats = this.item;
+		pickup.transform.position = pos;
+	}
+	public void getWeaponUpgrade(int itemId, int buffId, Vector3 pos, Quaternion orientation, Transform transform)
+	{
+		GetRandomNumber(Original, Upgrade, Advanced);
+		ItemStats inventoryItem = ScriptableObject.CreateInstance<ItemStats>();
+		inventoryItem.GetweaponUpgrade(this.AllWeapons[itemId]);
+		item = inventoryItem;
+		item.buffs.Add(Allbuffs[buffId]);
+		PickupWeapon pickup = Instantiate(inventoryItem.prefab, pos, orientation, transform).GetComponent<PickupWeapon>();
+		pickup.item = this.item;
+		pickup.GetComponent<WeaponController>().GunStats = this.item;
+		pickup.transform.position = pos;
+	}
+	public void getweaponAdvanced(int itemId, int buffId, Vector3 pos, Quaternion orientation, Transform transform)
+	{
+		GetRandomNumber(Original, Upgrade, Advanced);
+		ItemStats inventoryItem = ScriptableObject.CreateInstance<ItemStats>();
+		inventoryItem.GetweaponAdvanced(this.AllWeapons[itemId]);
+		item = inventoryItem;
+		item.buffs.Add(Allbuffs[buffId]);
 		PickupWeapon pickup = Instantiate(inventoryItem.prefab, pos, orientation, transform).GetComponent<PickupWeapon>();
 		pickup.item = this.item;
 		pickup.GetComponent<WeaponController>().GunStats = this.item;
@@ -185,9 +224,15 @@ public class ItemManager : MonoBehaviour
 		}
 		item = inventoryItem;
 	}
+
 	public ItemStats GetRandomWeapons()
 	{
 		return this.Weapons[UnityEngine.Random.Range(0, this.Weapons.Length)];
+	}
+
+	public Buff GetBuff()
+	{
+		return this.buffs[UnityEngine.Random.Range(0, this.buffs.Length)];
 	}
 
 	public ItemStats GetRandomWeapons(float whiteWeight, float blueWeight, float orangeWeight)

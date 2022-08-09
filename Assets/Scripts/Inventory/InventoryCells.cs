@@ -47,7 +47,6 @@ public class InventoryCells : MonoBehaviour, IEventSystemHandler,IPointerEnterHa
 			this.Name.text = "";
 			this.itemImage.sprite = null;
 			this.itemImage.color = Color.clear;
-			Debug.Log("CellNull");
 		}
 		else
 		{
@@ -82,6 +81,7 @@ public class InventoryCells : MonoBehaviour, IEventSystemHandler,IPointerEnterHa
 	{
 		return equipAble = true;
 	}
+
 	public void OnPointerEnter(PointerEventData eventData)
 	{
 		this.SetColor(this.hover);

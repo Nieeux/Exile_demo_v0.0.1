@@ -2,20 +2,21 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.AI;
 
 public class GameManager : MonoBehaviour
 {
 	public static WorldSettings worldSettings { get; set; }
-	public static GameManager instance;
+	public static GameManager Instance;
 	public GameObject resourceGen;
 
 	private void Awake()
 	{
-		if (GameManager.instance == null)
+		if (GameManager.Instance == null)
 		{
-			GameManager.instance = this;
+			GameManager.Instance = this;
 		}
-		else if (GameManager.instance != this)
+		else if (GameManager.Instance != this)
 		{
 			Object.Destroy(this);
 		}
@@ -28,5 +29,11 @@ public class GameManager : MonoBehaviour
     private void Start()
     {
 		
+	}
+	public void Relife()
+    {
+		NavMesh.RemoveAllNavMeshData();
+		Scene scene = SceneManager.GetActiveScene();
+		SceneManager.LoadScene(scene.name);
 	}
 }

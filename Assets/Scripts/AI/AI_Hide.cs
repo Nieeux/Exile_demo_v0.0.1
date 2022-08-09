@@ -16,10 +16,6 @@ public class AI_Hide : AIstate
     }
     void AIstate.Update(AIController agent)
     {
-        if (agent.canSee && !agent.CurrentWeapon.reloading)
-        {
-            agent.stateMachine.ChangesState(StateType.Attack);
-        }
 
     }
 

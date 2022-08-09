@@ -1,57 +1,107 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using DG.Tweening;
 
 public class UIBob : MonoBehaviour
 {
-    public static UIBob Instance;
-    public Vector2 amount;
-    public float lerp = .5f;
-    public Transform Model;
-    public Transform cam;
+	public static UIBob Instance;
 
-    public float punchStrenght = .1f;
-    public int punchVibrato = 5;
-    public float punchDuration = .1f;
-    public float punchElasticity = .5f;
+	public float walkingBobbingSpeed = 14f;
 
-    public float Amount = 0.02f,
-    maxAmount = 0.06f,
-    smoothAmount = 6f;
+	public float RunningBobbingSpeed = 14f;
 
-    public float rotationAmount = 4f,
-        maxRotationAmount = 5f,
-        smoothRotation = 12f;
+	public float WalkbobbingAmount = 0.05f;
+
+	public float RunbobbingAmount = 0.05f;
+
+	private float defaultPosY;
+
+	private float timer;
+
+	[Space]
+	[Header("Velocity based sway")]
+	public float amount = 0.1f;
+
+	public float maxAmount = 0.3f;
+
+	public float smoothAmount = 6f;
+
+	public float scale = 0.25f;
+
+	public float Weight { get; set; }
+
+	[Header("Step based sway")]
+	public float stepStrenght = 5f;
+
+	public float noiseStrenght = 1f;
+
+	public float stepMultiplier = 1f;
+
+	[Header("Rotation Step sway")]
+	public float rotSmoothAmount = 6f;
 
 
-    private Vector3 initialPosition;
+	public float stepRotMultiplier = 1f;
 
-    private void Start()
-    {
-        UIBob.Instance = this;
-    }
+	public Vector3 initPos;
 
-    // Update is called once per frame
-    private void Update()
-    {
-        float x = Input.GetAxis("Mouse X");
-        float y = Input.GetAxis("Mouse Y");
+	public Quaternion initRot;
 
-        float moveX = Mathf.Clamp(x * Amount, -maxAmount, maxAmount);
-        float moveY = Mathf.Clamp(y * Amount, -maxAmount, maxAmount);
+	public Vector3 finalPosToMove;
 
-        Vector3 finalPosition = new Vector3(moveX, moveY, -144);
+	public Vector3 stepPos = Vector3.zero;
 
-        this.transform.localPosition = Vector3.Lerp(transform.localPosition, finalPosition + initialPosition, Time.deltaTime * smoothAmount);
-        this.transform.localEulerAngles = new Vector3(Mathf.LerpAngle(transform.localEulerAngles.x, y * amount.y, lerp), Mathf.LerpAngle(transform.localEulerAngles.y, x * amount.x, lerp), 1);
+	public Quaternion stepRot = Quaternion.identity;
 
-    }
-    public void RecoilHUD()
-    {
-        //Súng gi?t
-        Sequence s = DOTween.Sequence();
-        s.Append(Model.DOPunchPosition(new Vector3(0, 0, -punchStrenght), punchDuration, punchVibrato, punchElasticity));
-    }
 
+	private float ZAxis;
+
+	private void Awake()
+	{
+		UIBob.Instance = this;
+
+	}
+	private void Start()
+	{
+
+		this.defaultPosY = base.transform.localPosition.y;
+
+		this.Weight = 1f;
+		this.initPos = base.transform.localPosition;
+		this.initRot = base.transform.localRotation;
+	}
+	void Update()
+	{
+		this.InputAxis();
+
+		if (finalPosToMove != Vector3.zero)
+		{
+			this.stepPos = Vector3.Lerp(this.stepPos, Vector3.zero, Time.deltaTime * this.smoothAmount);
+			Vector3 vector = this.finalPosToMove + this.stepPos;
+			vector *= this.scale;
+			vector *= this.Weight;
+			base.transform.localPosition = Vector3.Lerp(base.transform.localPosition, vector, Time.deltaTime * this.smoothAmount);
+
+		}
+
+	}
+	public void UIbob()
+	{
+		if (PlayerMovement.Instance.isRunning)
+		{
+			this.timer += Time.deltaTime * this.RunningBobbingSpeed;
+			transform.localPosition = new Vector3(base.transform.localPosition.x, this.defaultPosY + Mathf.Sin(this.timer) * this.RunbobbingAmount, base.transform.localPosition.z);
+			return;
+		}
+		this.timer += Time.deltaTime * this.walkingBobbingSpeed;
+		transform.localPosition = new Vector3(base.transform.localPosition.x, this.defaultPosY + Mathf.Sin(this.timer) * this.WalkbobbingAmount, base.transform.localPosition.z);
+	}
+
+
+	private void InputAxis()
+	{
+		this.ZAxis = -Input.GetAxis("Vertical") * this.amount;
+		this.ZAxis = Mathf.Clamp(this.ZAxis, -this.maxAmount, this.maxAmount);
+		this.finalPosToMove = new Vector3(0f, 0f, this.ZAxis) + this.initPos;
+	}
 }

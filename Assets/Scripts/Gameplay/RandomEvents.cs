@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class RandomEvents : MonoBehaviour, SharedObject
+public class RandomEvents : MonoBehaviour, SharedId
 {
     public itemToSpawn[] itemToSpawn;
     public int id;

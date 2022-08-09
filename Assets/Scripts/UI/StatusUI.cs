@@ -8,7 +8,13 @@ using System.Collections;
 public class StatusUI : MonoBehaviour
 {
     public static StatusUI Instance;
-    public bool TakingDamage;
+
+    [Header("Object Status")]
+    public GameObject AllUI;
+    public GameObject GameOver;
+    public GameObject StatusMenu;
+    public GameObject PauseMenu;
+
     [Header("Bar Status")]
     public Image HealthBar;
     public Image HurtBar;
@@ -16,18 +22,15 @@ public class StatusUI : MonoBehaviour
     public Image hunger;
 
     [Header("Number Status")]
-    public GameObject NumberStatus;
     public TextMeshProUGUI HealthNumber;
     public TextMeshProUGUI StaminaNumber;
     public TextMeshProUGUI HungerNumber;
 
+    [Header("Stats Status")]
     public float HurtSpeed = 0.01f;
     public float damageFillTimeRemap;
     public PlayerStats Player;
 
-    public GameObject GameOver;
-    public GameObject PauseStatus;
-    public GameObject PauseMenu;
     public Camera ZoomUI;
     public float ViewZoom = 60;
     public float SpeedZoom = 20f;
@@ -43,9 +46,9 @@ public class StatusUI : MonoBehaviour
     private void Start()
     {
         PauseMenu.SetActive(false);
-        PauseStatus.SetActive(false);
-        NumberStatus.SetActive(false);
+        StatusMenu.SetActive(false);
         GameOver.SetActive(false);
+
     }
     private void Update()
     {
@@ -55,9 +58,9 @@ public class StatusUI : MonoBehaviour
 
         if (Input.GetButtonDown("Status") && !PauseMenu.activeSelf)
         {
-            SetStatusActivation(!PauseStatus.activeSelf);
+            SetStatusActivation(!StatusMenu.activeSelf);
         }
-        if (Input.GetKeyDown(KeyCode.Escape) && !PauseStatus.activeSelf)
+        if (Input.GetKeyDown(KeyCode.Escape) && !StatusMenu.activeSelf)
         {
             Pause(!PauseMenu.activeSelf);
         }
@@ -66,11 +69,7 @@ public class StatusUI : MonoBehaviour
         if (Player.CurrentHealth <= 0)
         {
             ClosePauseMenu();        
-            if (Input.GetKeyDown(KeyCode.Space))
-            {
-                Scene scene = SceneManager.GetActiveScene();
-                SceneManager.LoadScene(scene.name);
-            }
+
         }
 
         //Update thanh mau khi HP Player khac MaxHP
@@ -165,11 +164,10 @@ public class StatusUI : MonoBehaviour
     }
     private void SetStatusActivation(bool active)
     {
-        NumberStatus.SetActive(active);
-        PauseStatus.SetActive(active);
+        StatusMenu.SetActive(active);
         IsShowStatus = active;
 
-        if (PauseStatus.activeSelf)
+        if (StatusMenu.activeSelf)
         {
             Cursor.lockState = CursorLockMode.None;
             Cursor.visible = true;

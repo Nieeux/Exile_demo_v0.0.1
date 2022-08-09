@@ -16,12 +16,14 @@ public class WeaponController : MonoBehaviour
     public AudioClip reloadAudio;
 
     public ItemStats GunStats;
+    public Color WeaponAmmoType;
 
     float nextFireTime = 0;
     public bool reloading;
     public bool canFire = false;
     public bool AiEquip = false;
 
+    private Vector3 BulletSpreadVariance = new Vector3(0.01f, 0.01f, 0.01f);
 
     public Rigidbody rb;
     public BoxCollider coll;
@@ -33,12 +35,10 @@ public class WeaponController : MonoBehaviour
     AudioSource m_ShootAudioSource;
 
     public UnityAction onDamaged;
-    public Interactable WeaponIndex { get; private set; }
+    public Interact WeaponIndex { get; private set; }
 
     public bool IsWeaponActive { get; private set; }
     public bool IsCharging { get; private set; }
-    public GameObject Owner { get; set; }
-    public GameObject SourcePrefab { get; set; }
 
     void Awake()
     {
@@ -52,6 +52,8 @@ public class WeaponController : MonoBehaviour
         rb = base.GetComponent<Rigidbody>();
         coll = base.GetComponent<BoxCollider>();
 
+        Bullet bullet = GunStats.bulletPrefab.GetComponent<Bullet>();
+        WeaponAmmoType = bullet.ammoTypeColor;
 
         audioSource = GetComponent<AudioSource>();
         audioSource.playOnAwake = false;
@@ -123,11 +125,9 @@ public class WeaponController : MonoBehaviour
                     //Fire
                     Bullet bulletObject = Instantiate(GunStats.bulletPrefab, firePoint.position, firePoint.rotation).GetComponent<Bullet>();
                     bulletObject.BulletDamage = GunStats.GunDamage;
-                    bulletObject.BulletCrit = GunStats.Critical;
-
+                    this.WeaponAmmoType = bulletObject.ammoTypeColor;
                     // giam Durability khi ban
                     RecoilAni();
-
 
                     PlayerWeaponManager.Instance.RecoilFire();
                     //UIBob.Instance.RecoilHUD();
@@ -155,17 +155,20 @@ public class WeaponController : MonoBehaviour
     {
         //Súng gi?t
         Sequence s = DOTween.Sequence();
-        s.Append(transform.DOShakeRotation(GunStats.ShakeDuration, GunStats.ShakeStrenght, GunStats.punchVibrato, GunStats.randomness, true));
+        s.Append(base.transform.DOShakeRotation(GunStats.ShakeDuration, GunStats.ShakeStrenght, GunStats.punchVibrato, GunStats.randomness, true));
         Sequence r = DOTween.Sequence();
-        r.Append(transform.DOPunchRotation(new Vector3(-20, 0, -10), GunStats.punchDurationR, GunStats.punchVibrato, GunStats.punchElasticity));
+        r.Append(base.transform.DOPunchRotation(GunStats.PunchR, GunStats.punchDurationR, GunStats.punchVibrato, GunStats.punchElasticity));
         Sequence p = DOTween.Sequence();
-        p.Append(transform.DOPunchPosition(new Vector3(0, 0, -GunStats.punchStrenght), GunStats.punchDuration, GunStats.punchVibrato, GunStats.punchElasticity));
+        p.Append(base.transform.DOPunchPosition(new Vector3(0, 0, -GunStats.punchStrenght), GunStats.punchDuration, GunStats.punchVibrato, GunStats.punchElasticity));
 
     }
+
     private void BrokenWeapon()
     {
         PlayerWeaponManager.Instance.BrokeWeapon(this, GunStats);
-    }
+
+    }       
+
     public void AiFire()
     {
         if (canFire)
@@ -176,15 +179,18 @@ public class WeaponController : MonoBehaviour
 
                 if (GunStats.CurrentMagazine > 0)
                 {
-                    float inaccuracy = 0.2f;
+                    Vector3 direction = GetDirection();
                     Vector3 firePointPointerPosition = firePoint.transform.position + firePoint.transform.forward * 100;
 
-                    firePointPointerPosition += Random.insideUnitSphere * inaccuracy;
+                    RaycastHit hit;
+                    if (Physics.Raycast(firePoint.transform.position, direction, out hit, 100))
+                    {
+                        firePointPointerPosition = hit.point;
+                    }
                     firePoint.LookAt(firePointPointerPosition);
                     //Fire
                     Bullet bulletObject = Instantiate(GunStats.bulletPrefab, firePoint.position, firePoint.rotation).GetComponent<Bullet>();
                     bulletObject.BulletDamage = GunStats.GunDamage;
-                    bulletObject.BulletCrit = GunStats.Critical;
                     // giam Durability khi ban
                     GunStats.CurrentDurability -= 0.5f;
                     //UIBob.Instance.RecoilHUD();
@@ -200,6 +206,25 @@ public class WeaponController : MonoBehaviour
             }
         }
     }
+
+    private Vector3 GetDirection()
+    {
+        Vector3 direction = transform.forward;
+
+        if (canFire)
+        {
+            direction += new Vector3(
+                Random.Range(-BulletSpreadVariance.x, BulletSpreadVariance.x),
+                Random.Range(-BulletSpreadVariance.y, BulletSpreadVariance.y),
+                Random.Range(-BulletSpreadVariance.z, BulletSpreadVariance.z)
+            );
+
+            direction.Normalize();
+        }
+
+        return direction;
+    }
+
     IEnumerator Reload(bool Reloading)
     {
         reloading = Reloading;

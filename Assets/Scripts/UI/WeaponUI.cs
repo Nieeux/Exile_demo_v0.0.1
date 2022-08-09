@@ -12,6 +12,8 @@ public class WeaponUI : MonoBehaviour, IPointerEnterHandler, IEventSystemHandler
     public Image WeaponImage;
     public Image VienImage;
     public Image VienImage2;
+    public Image Ammotype;
+    public Image buff;
     WeaponController m_Weapon;
     public Gradient GradientDurability;
     public Image Durability;
@@ -33,6 +35,7 @@ public class WeaponUI : MonoBehaviour, IPointerEnterHandler, IEventSystemHandler
     public TextMeshProUGUI TextCritical;
     public TextMeshProUGUI TextMagazine;
     public TextMeshProUGUI TextDurability;
+    public TextMeshProUGUI TextWeaponRare;
 
     public int WeaponUIIndex { get; set; }
 
@@ -47,6 +50,10 @@ public class WeaponUI : MonoBehaviour, IPointerEnterHandler, IEventSystemHandler
         this.WeaponImage.color = m_Weapon.GunStats.colorIndex;
         this.VienImage.color = m_Weapon.GunStats.colorIndex;
         this.VienImage2.color = m_Weapon.GunStats.colorIndex;
+        this.Ammotype.color = m_Weapon.WeaponAmmoType;
+
+        this.TextWeaponRare.text = m_Weapon.GunStats.RareIndex;
+        this.TextWeaponRare.color = m_Weapon.GunStats.colorIndex;
     }
 
     // Update is called once per frame
@@ -82,7 +89,7 @@ public class WeaponUI : MonoBehaviour, IPointerEnterHandler, IEventSystemHandler
 
         this.TextFireRate.text = m_Weapon.GunStats.fireRate.ToString("0.0");
 
-        this.TextCritical.text = m_Weapon.GunStats.Critical.ToString("0.0");
+        this.TextCritical.text = m_Weapon.GunStats.Weight.ToString("00");
 
         this.TextMagazine.text = m_Weapon.GunStats.Magazine.ToString("00");
 
@@ -94,6 +101,7 @@ public class WeaponUI : MonoBehaviour, IPointerEnterHandler, IEventSystemHandler
         WeaponUIIndex = weaponIndex;
         WeaponImage.sprite = weapon.GunStats.sprite;
         WeaponName.text = weapon.GunStats.nameViet;
+        buff.sprite = weapon.GunStats.buffs[0].sprite;
 
     }
     private void UpdateAmmo(WeaponController weapon)

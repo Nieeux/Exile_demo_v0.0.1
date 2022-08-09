@@ -6,36 +6,44 @@ using UnityEngine.Events;
 public class PlayerStats : MonoBehaviour
 {
     public static PlayerStats Instance;
-    private PlayerMovement player;
 
+    [Header("Heath")]
     public float MaxHealth = 100;
-    public float damage { get; set; }
     public float CurrentHealth { get; set; }
-    public float stamina { get; set; }
-    public float maxStamina { get; set; }
-    public float hunger { get; set; }
-    public float maxHunger { get; set; }
     public float armor { get; set; }
     public int speed { get; set; }
 
-    private bool healing;
+    [Header("Hunger")]
+    private float hungerDrainRate = 0.15f;
+    public float hunger { get; set; }
+    public float maxHunger { get; set; }
+
+    [Header("Stamina")]
+    private bool canRun = true;
+    public float stamina { get; set; }
+    public float maxStamina { get; set; }
     private float staminaRegenRate = 15f;
     private float staminaDrainRate = 12f;
-    private float hungerDrainRate = 0.15f;
     private float staminaDrainMultiplier = 5f;
     private float healingDrainMultiplier = 2f;
+    private Coroutine regeneratingHealth;
+
+    [Header("Healing")]
+    private bool healing;
     private float healingRate = 5f;
 
+    [Header("Damage")]
+    bool IsDead;
+    public float damage { get; set; }
+    public bool Invincible { get; set; }
     public float DamageMultiplier = 1f;
 
-    bool IsDead;
-
+    private PlayerMovement player;
     public UnityAction<float> OnDamaged;
     public UnityAction<float> OnHealed;
     public UnityAction OnDie;
 
 
-    public bool Invincible { get; set; }
     private void Awake()
     {
         PlayerStats.Instance = this;
@@ -74,17 +82,29 @@ public class PlayerStats : MonoBehaviour
                 this.stamina += this.staminaRegenRate * Time.deltaTime * num;
             }
         }
-
-        if (this.stamina == 0f && player.isRunning)
+        else
         {
-            this.stamina = 0;
-
+            this.stamina -= this.staminaDrainRate * Time.deltaTime / 2f;
         }
+
         if (this.stamina <= 0f)
         {
-            return;
+            this.stamina = 0;
+            regeneratingHealth = StartCoroutine(CanRegeneratingHealth());
         }
-        this.stamina -= this.staminaDrainRate * Time.deltaTime / 2f;
+        if (regeneratingHealth != null)
+        {
+            StopCoroutine(CanRegeneratingHealth());
+            regeneratingHealth = null;
+        }
+    }
+    private IEnumerator CanRegeneratingHealth()
+    {
+        canRun = false;
+        yield return new WaitForSeconds(3);
+        canRun = true;
+        regeneratingHealth = null;
+
     }
     private void Hunger()
     {
@@ -144,9 +164,11 @@ public class PlayerStats : MonoBehaviour
         if (Invincible)
             return;
 
+        CameraShake.Instance.Shake();
         float healthBefore = CurrentHealth;
         CurrentHealth -= damage;
         CurrentHealth = Mathf.Clamp(CurrentHealth, 0f, MaxHealth);
+
 
 
         // call OnDamage action
@@ -157,6 +179,7 @@ public class PlayerStats : MonoBehaviour
             OnDamaged?.Invoke(trueDamageAmount);
         }
         HandleDeath();
+        
     }
 
     public void InflictDamage(float damage, bool isExplosionDamage)
@@ -197,7 +220,7 @@ public class PlayerStats : MonoBehaviour
     }
     public bool CanRun()
     {
-        return this.stamina > 0f;
+        return this.stamina > 0f && canRun == true;
     }
     public bool Weak()
     {

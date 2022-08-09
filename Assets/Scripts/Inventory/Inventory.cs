@@ -1,124 +1,119 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class Inventory : MonoBehaviour
 {
+    [Header("Inventory")]
+	public int BarSelect;
+	public Transform CamDrop;
+	public ItemStats currentItem;
+	public Transform inventoryBar;
+	public List<InventoryCells> inventoryCells;
+	//public InventoryCells[] inventoryCells;
+
+	public int Moneys { get; set; }
+
+	[Header("Equipments")]
+	public List<ItemStats> Item;
+	private float critcal = 0;
+	private float speed = 0;
+	public Dictionary<int, ItemStats> equipments;
+	public Dictionary<string, int> GetNameEquipments;
+
+    [Header("Tutorial")]
+	public GameObject TipUseItem;
+
 	public static Inventory Instance;
 
-	public List<InventoryCells> cells;
-	public Transform inventoryParent;
+	private Vector2 randomDamageRange = new Vector2(0.7f, 1f);
 
-	public static readonly float throwForce = 700f;
-
-	private void Awake()
-	{
+    private void Awake()
+    {
 		Inventory.Instance = this;
 	}
 
-	private void Start()
-	{
-		this.FillCellList();
+    private void Start()
+    {
+		FillCellList();
+		//this.inventoryCells = inventoryBar.GetComponentsInChildren<InventoryCells>();
+		TipUseItem.SetActive(false);
 	}
 
+    private void Update()
+    {
+		if (!ActiveMenu())
+		{
+			for (int i = 1; i <= 5; i++)
+			{
+				if (Input.GetButtonDown("Bar" + i))
+				{
+					this.BarSelect = i - 1;
+					this.UpdateHotbar();
+				}
+			}
+		}
+		else
+		{
+			currentItem = null;
+		}
+
+		for (int i = 0; i < this.inventoryCells.Count; i++)
+		{
+			//dung o inventory da chon && dang select 
+			if (i == this.BarSelect && currentItem != null)
+			{
+				this.inventoryCells[i].Select.color = this.inventoryCells[i].hover;
+			}
+			else
+			{
+				this.inventoryCells[i].Select.color = this.inventoryCells[i].idle;
+			}
+		}
+
+		//Tutorial
+		if (currentItem != null)
+		{
+			TipUseItem.SetActive(true);
+		}
+		else
+		{
+			TipUseItem.SetActive(false);
+		}
+	}
+
+	private void UpdateHotbar()
+	{
+
+		if (this.inventoryCells[this.BarSelect].currentItem != this.currentItem)
+		{
+			this.currentItem = this.inventoryCells[this.BarSelect].currentItem;
+		}
+
+	}
 	//Tim o inventory
 	private void FillCellList()
 	{
-		this.cells = new List<InventoryCells>();
-		foreach (InventoryCells item in this.inventoryParent.GetComponentsInChildren<InventoryCells>())
+		this.inventoryCells = new List<InventoryCells>();
+		foreach (InventoryCells item in this.inventoryBar.GetComponentsInChildren<InventoryCells>())
 		{
-			this.cells.Add(item);
+			this.inventoryCells.Add(item);
 		}
 	}
-	public bool CanPickup(ItemStats i)
-	{
-		if (i == null)
-		{
-			return false;
-		}
-		int num = i.amount;
-		if (this.IsInventoryFull())
-		{
-			using (List<InventoryCells>.Enumerator enumerator = this.cells.GetEnumerator())
-			{
-				while (enumerator.MoveNext())
-				{
-					InventoryCells inventoryCell = enumerator.Current;
-					if (inventoryCell != null && inventoryCell.currentItem.id == i.id)
-					{
-						num -= inventoryCell.currentItem.max - inventoryCell.currentItem.amount;
-						if (num <= 0)
-						{
-							return true;
-						}
-					}
-				}
-				return false;
-			}
-		}
-		return true;
-	}
-
 
 	public void UpdateAllCells()
 	{
-		foreach (InventoryCells inventoryCell in this.cells)
+		foreach (InventoryCells inventoryCell in this.inventoryCells)
 		{
 			inventoryCell.UpdateCell();
 		}
 	}
-
-	public bool pickupCooldown { get; set; }
-	public void CooldownPickup()
-	{
-		this.pickupCooldown = true; ;
-	}
-
-	public void CheckInventoryAlmostFull()
-	{
-		int num = 0;
-		using (List<InventoryCells>.Enumerator enumerator = this.cells.GetEnumerator())
-		{
-			while (enumerator.MoveNext())
-			{
-				if (enumerator.Current.currentItem == null)
-				{
-					num++;
-					if (num > 2)
-					{
-						return;
-					}
-				}
-			}
-		}
-		if (num == 1)
-		{
-			this.CooldownPickup();
-		}
-	}
-
-	public bool IsInventoryFull()
-	{
-		Debug.Log("check full");
-		using (List<InventoryCells>.Enumerator enumerator = this.cells.GetEnumerator())
-		{
-			while (enumerator.MoveNext())
-			{
-				if (enumerator.Current.currentItem == null)
-				{
-					return false;
-				}
-			}
-		}
-		return true;
-	}
-
-
 	public int AddItemToInventory(ItemStats item)
 	{
 		ItemStats inventoryItem = ScriptableObject.CreateInstance<ItemStats>();
 		inventoryItem.Getitem(item, item.amount);
 		InventoryCells inventoryCell = null;
-		foreach (InventoryCells inventoryCell2 in this.cells)
+		foreach (InventoryCells inventoryCell2 in this.inventoryCells)
 		{
 			if (inventoryCell2.currentItem == null)
 			{
@@ -145,7 +140,6 @@ public class Inventory : MonoBehaviour
 		{
 			inventoryCell.currentItem = inventoryItem;
 			inventoryCell.UpdateCell();
-			MonoBehaviour.print("added to available cell");
 			UIEvents.Instance.AddPickup(inventoryItem);
 			return 0;
 		}
@@ -154,54 +148,25 @@ public class Inventory : MonoBehaviour
 	}
 
 
-	public void DropItemIntoWorld(ItemStats item)
+	public bool IsInventoryFull()
 	{
-		if (item == null)
+		using (List<InventoryCells>.Enumerator enumerator = this.inventoryCells.GetEnumerator())
 		{
-			return;
-		}
-	}
-
-	public int GetMoney()
-	{
-		int num = 0;
-		foreach (InventoryCells inventoryCell in this.cells)
-		{
-			if (!(inventoryCell.currentItem == null) && inventoryCell.currentItem.name == "Money")
+			while (enumerator.MoveNext())
 			{
-				num += inventoryCell.currentItem.amount;
-			}
-		}
-		return num;
-	}
-
-	public void UseMoney(int amount)
-	{
-		int num = 0;
-		ItemStats itemByName = ItemManager.Instance.GetItemByName("Money");
-		foreach (InventoryCells inventoryCell in this.cells)
-		{
-			if (!(inventoryCell.currentItem == null) && inventoryCell.currentItem.Compare(itemByName))
-			{
-				if (inventoryCell.currentItem.amount > amount)
+				if (enumerator.Current.currentItem == null)
 				{
-					int num2 = amount - num;
-					inventoryCell.currentItem.amount -= num2;
-					inventoryCell.UpdateCell();
-					MonoBehaviour.print("taking money");
-					break;
+					return false;
 				}
-				num += inventoryCell.currentItem.amount;
-				MonoBehaviour.print("removing money");
-				inventoryCell.RemoveItem();
 			}
 		}
+		return true;
 	}
 
 	public bool HasItem(ItemStats requirement)
 	{
 		int num = 0;
-		foreach (InventoryCells inventoryCell in this.cells)
+		foreach (InventoryCells inventoryCell in this.inventoryCells)
 		{
 			if (!(inventoryCell.currentItem == null) && inventoryCell.currentItem.Compare(requirement))
 			{
@@ -215,24 +180,186 @@ public class Inventory : MonoBehaviour
 		return num >= requirement.amount;
 	}
 
-	public void RemoveItem(ItemStats requirement)
+	public void Use()
+	{
+		if (this.currentItem == null)
+		{
+			return;
+		}
+		if (this.currentItem.type == ItemStats.ItemType.Food)
+		{
+			UseFood(1);
+
+			PlayerStats.Instance.Heal(50);
+
+		}
+		if (this.currentItem.type == ItemStats.ItemType.Equipment
+			&& this.inventoryCells[this.BarSelect].equipAble == false)
+		{
+			EquipItemUI(currentItem);
+			UpdateEquipmentsModified(currentItem);
+
+		}
+		if (this.currentItem.type == ItemStats.ItemType.Item)
+		{
+
+		}
+	}
+
+	public void EquipItemUI(ItemStats currentItem)
+	{
+		if (this.inventoryCells[this.BarSelect].currentItem == currentItem)
+		{
+			this.inventoryCells[BarSelect].Equip.color = this.inventoryCells[BarSelect].EquipColor;
+			this.inventoryCells[BarSelect].EquipItem();
+
+		}
+	}
+
+	public void DropItem()
+	{
+		if (this.currentItem == null)
+		{
+			return;
+		}
+
+		// Nem trang bi
+		if (this.inventoryCells[this.BarSelect].equipAble == false)
+		{
+			PickupItem pickup = Instantiate(currentItem.prefab, CamDrop.transform.position, Quaternion.identity).GetComponent<PickupItem>();
+			pickup.GetComponentInChildren<SharedId>().SetId(ResourceManager.Instance.GetNextId());
+			this.inventoryCells[this.BarSelect].RemoveItem();
+			this.UpdateHotbar();
+		}
+        // Huy trang bi
+        else
+        {
+			this.inventoryCells[this.BarSelect].equipAble = false;
+			this.inventoryCells[this.BarSelect].Equip.color = this.inventoryCells[this.BarSelect].idle;
+			UpdateEquipmentsModified(currentItem);
+		}
+	}
+
+	public void UseFood(int n)
+	{
+		this.currentItem.amount -= n;
+		if (this.currentItem.amount <= 0)
+		{
+			this.inventoryCells[this.BarSelect].RemoveItem();
+		}
+		this.inventoryCells[this.BarSelect].UpdateCell();
+	}
+
+	private void UpdateEquipmentsModified(ItemStats Items)
+	{
+		if (Items.name == "khungtroluc" && this.inventoryCells[this.BarSelect].equipAble == true)
+		//(Item.Find((x) => x.name == "khungtroluc"))
+		{
+			speed = 1;
+		}
+		else if (Items.name == "khungtroluc" && this.inventoryCells[this.BarSelect].equipAble == false)
+		{
+			speed = 0;
+		}
+		if (Items.name == "matkinh" && this.inventoryCells[this.BarSelect].equipAble == true)
+		{
+			critcal = 0.2f;
+		}
+		else if(Items.name == "matkinh" && this.inventoryCells[this.BarSelect].equipAble == false)
+		{
+			critcal = 0;
+		}
+
+		base.Invoke("UpdateUI", 0.1f);
+
+	}
+	public float GetCritical()
+	{
+		float n = critcal;
+		return 0.1f + n;
+	}
+	public float GetSpeedUp()
+	{
+		float n = speed;
+		return 0 + n;
+	}
+
+	public ItemStats GetItemByName(string name)
+	{
+		foreach (ItemStats inventoryItem in this.Item)
+		{
+			if (inventoryItem.name == name)
+			{
+				Debug.Log("Tim ten");
+				return inventoryItem;
+			}
+
+		}
+		return null;
+	}
+
+	public DamageResult GetDamage()
+	{
+		float dmg = Random.Range(randomDamageRange.x, randomDamageRange.y);
+		bool ItCrit = Random.value < GetCritical();
+
+		if (ItCrit)
+		{
+			dmg *= 2f;
+		}
+		return new DamageResult(dmg, ItCrit);
+	}
+
+	public class DamageResult
+	{
+		public float damageMultiplier;
+		public bool ItCrit;
+		public float AmmoPiercing;
+
+		public DamageResult(float damage, bool crit)
+		{
+			this.damageMultiplier = damage;
+			this.ItCrit = crit;
+
+			//this.AmmoPiercing = AmmoPiercing;
+		}
+	}
+	private void UpdateUI()
+    {
+		UIPlayerStats.Instance.UpdateStatsPlayer();
+	}
+	public void Removeitem()
+	{
+
+		if (currentItem != null)
+		{
+			this.inventoryCells[this.BarSelect].RemoveItem();
+			//this.UpdateHotbar();
+		}
+	}
+	public int GetMoney()
 	{
 		int num = 0;
-		foreach (InventoryCells inventoryCell in this.cells)
+		num += Moneys;
+		return num;
+	}
+	public void UseMoney(int Money)
+	{
+		Moneys -= Money;
+		if (Moneys <= 0)
 		{
-			if (!(inventoryCell.currentItem == null) && inventoryCell.currentItem.Compare(requirement))
-			{
-				if (inventoryCell.currentItem.amount > requirement.amount)
-				{
-					int num2 = requirement.amount - num;
-					inventoryCell.currentItem.amount -= num2;
-					inventoryCell.UpdateCell();
-					break;
-				}
-				Debug.Log("remove");
-				num += inventoryCell.currentItem.amount;
-				inventoryCell.RemoveItem();
-			}
+			Moneys = 0;
 		}
+		MoneyUI.Instance.Value = Moneys;
+	}
+	public void RewardMoney(int Money)
+	{
+		Moneys += Money;
+		MoneyUI.Instance.Value = Moneys;
+	}
+
+	public bool ActiveMenu()
+	{
+		return Cursor.lockState == CursorLockMode.Locked;
 	}
 }

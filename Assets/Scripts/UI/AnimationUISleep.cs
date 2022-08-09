@@ -30,20 +30,14 @@ public class AnimationUISleep : MonoBehaviour
             this.layout.padding = rectOffset;
             this.layout.padding.left = (int)this.padleft;
         }
-        else
+        else if (padleft < 0)
         {
-            //Khong cho update thuong xuyen
-            if (padleft < 0)
-            {
-                this.padleft = (int)Mathf.Lerp(this.padleft, 0, Time.deltaTime * 20f);
-                RectOffset rectOffset = new RectOffset(this.layout.padding.left, this.layout.padding.right, this.layout.padding.top, this.layout.padding.bottom);
-                rectOffset.left = (int)this.padleft;
-                this.layout.padding = rectOffset;
-                this.layout.padding.left = (int)this.padleft;
-                base.Invoke("TurnOff", 0.1f);
-                
-
-            }
+            this.padleft = (int)Mathf.Lerp(this.padleft, 0, Time.deltaTime * 20f);
+            RectOffset rectOffset = new RectOffset(this.layout.padding.left, this.layout.padding.right, this.layout.padding.top, this.layout.padding.bottom);
+            rectOffset.left = (int)this.padleft;
+            this.layout.padding = rectOffset;
+            this.layout.padding.left = (int)this.padleft;
+            base.Invoke("TurnOff", 0.1f);
         }
     }
     void TurnOff()

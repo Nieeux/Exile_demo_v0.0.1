@@ -5,7 +5,7 @@ using UnityEngine;
 public class Item : MonoBehaviour
 {
     public static Item Instance;
-    public Interactable ItemIndex { get; private set; }
+    public Interact ItemIndex { get; private set; }
     public bool IsCharging { get; private set; }
     public bool IsWeaponActive { get; private set; }
     public GameObject Owner { get; set; }

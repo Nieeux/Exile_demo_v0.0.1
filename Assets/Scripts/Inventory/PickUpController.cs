@@ -5,7 +5,7 @@ using UnityEngine;
 public class PickUpController : MonoBehaviour
 {
     private WeaponController gunScript;
-    private WeaponAnimation AniGunScript;
+    private WeaponSway AniGunScript;
     public Rigidbody rb;
     public BoxCollider coll;
     public Transform player, gunContainer, fpsCam;
@@ -19,7 +19,7 @@ public class PickUpController : MonoBehaviour
     private void Awake()
     {
         this.gunScript = base.GetComponent<WeaponController>();
-        this.AniGunScript = base.GetComponent<WeaponAnimation>();
+        this.AniGunScript = base.GetComponent<WeaponSway>();
     }
 
     private void Start()

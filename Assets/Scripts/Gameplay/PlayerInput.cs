@@ -1,20 +1,20 @@
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine.SceneManagement;
 using UnityEngine;
 
 public class PlayerInput : MonoBehaviour
 {
     public static PlayerInput Instance;
     public PlayerStats PlayerHealth;
+    public PlayerMovement playerMovement;
     public PlayerWeaponManager WeaponManager;
-    bool m_FireInputWasHeld;
 
     private void Start()
     {
         PlayerInput.Instance = this;
         this.WeaponManager = base.GetComponent<PlayerWeaponManager>();
         this.PlayerHealth = base.GetComponent<PlayerStats>();
+        this.playerMovement = base.GetComponent<PlayerMovement>();
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
     }
@@ -24,11 +24,9 @@ public class PlayerInput : MonoBehaviour
         {
             if (Input.GetButtonDown("Pickup"))
             {
-                Interactable currentInteractable = DetectItem.Instance.currentInteractable;
-                Debug.Log("Pickup");
-                // neu item ton tai va chua full do
-                if (currentInteractable != null && !Inventory.Instance.IsInventoryFull())
-                     //&& !Inventory.Instance.IsInventoryFull()
+                Interact currentInteractable = DetectItem.Instance.currentInteractable;
+
+                if (currentInteractable != null)
                 {
                     currentInteractable.Interact();
                 }
@@ -39,12 +37,11 @@ public class PlayerInput : MonoBehaviour
         {
             if (Input.GetMouseButtonDown(1))
             {
-                Debug.Log("Da bam chuot phai");
-                HotBar.Instance.DropItem();
+                Inventory.Instance.DropItem();
             }
             if (Input.GetMouseButtonDown(0))
             {
-                HotBar.Instance.Use();
+                Inventory.Instance.Use();
 
             }
         }
@@ -52,11 +49,11 @@ public class PlayerInput : MonoBehaviour
         // Player ch?t load l?i game 
         if (PlayerHealth.CurrentHealth <= 0)
         {
-
+           // playerMovement.
             if (Input.GetKeyDown(KeyCode.Space))
             {
-                Scene scene = SceneManager.GetActiveScene();
-                SceneManager.LoadScene(scene.name);
+                GameManager.Instance.Relife();
+
             }
         }
     }

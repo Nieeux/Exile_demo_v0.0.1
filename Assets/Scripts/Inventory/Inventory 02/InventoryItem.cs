@@ -71,7 +71,7 @@ public class InventoryItem : MonoBehaviour
             if (InputHandler.GetDropWeapon())
             {
                 Debug.Log("DropWeapon");
-                Interactable weaponIndex = activeItem.ItemIndex;
+                Interact weaponIndex = activeItem.ItemIndex;
                 weaponIndex.RemoveObject();
             }
         }

@@ -22,28 +22,24 @@ public class AnimationUIWeaponStatus : MonoBehaviour
     {
         if (StatusUI.Instance.IsShowStatus == true)
         {
-            this.padBottom = Mathf.Lerp( this.padBottom, 330, Time.deltaTime * 20f);
-            this.padSpacing = Mathf.Lerp(this.padSpacing, 70, Time.deltaTime * 20f);
+            this.padBottom = Mathf.Lerp( this.padBottom, 250, Time.deltaTime * 20f);
+            this.padSpacing = Mathf.Lerp(this.padSpacing, 120, Time.deltaTime * 20f);
             RectOffset rectOffset = new RectOffset(this.layout.padding.left, this.layout.padding.right, this.layout.padding.top, this.layout.padding.bottom);
             rectOffset.bottom = (int)this.padBottom;
             this.layout.padding = rectOffset;
             this.layout.padding.bottom = (int)this.padBottom;
             this.layout.spacing = (int)this.padSpacing;
         }
-        else
+        else if (padBottom > 0)
         {
             //Khong cho update thuong xuyen
-            if (padBottom > 0)
-            {
-                this.padBottom = (int)Mathf.Lerp(this.padBottom, 0, Time.deltaTime * 20f);
-                this.padSpacing = (int)Mathf.Lerp(this.padSpacing, 0, Time.deltaTime * 20f);
-                RectOffset rectOffset = new RectOffset(this.layout.padding.left, this.layout.padding.right, this.layout.padding.top, this.layout.padding.bottom);
-                rectOffset.bottom = (int)this.padBottom;
-                this.layout.padding = rectOffset;
-                this.layout.padding.bottom = (int)this.padBottom;
-                this.layout.spacing = (int)this.padSpacing;
-
-            }
+            this.padBottom = (int)Mathf.Lerp(this.padBottom, 0, Time.deltaTime * 20f);
+            this.padSpacing = (int)Mathf.Lerp(this.padSpacing, 0, Time.deltaTime * 20f);
+            RectOffset rectOffset = new RectOffset(this.layout.padding.left, this.layout.padding.right, this.layout.padding.top, this.layout.padding.bottom);
+            rectOffset.bottom = (int)this.padBottom;
+            this.layout.padding = rectOffset;
+            this.layout.padding.bottom = (int)this.padBottom;
+            this.layout.spacing = (int)this.padSpacing;
         }
 
     }

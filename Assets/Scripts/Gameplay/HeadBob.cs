@@ -14,8 +14,6 @@ public class HeadBob : MonoBehaviour
 
 	public float RunbobbingAmount = 0.05f;
 
-	public Transform cameraJoint;
-
 	private float defaultPosY;
 
 	private float timer;
@@ -40,11 +38,11 @@ public class HeadBob : MonoBehaviour
 		if (PlayerMovement.Instance.isRunning)
 		{
 			this.timer += Time.deltaTime * this.RunningBobbingSpeed;
-			this.cameraJoint.localPosition = new Vector3(base.transform.localPosition.x, this.defaultPosY + Mathf.Sin(this.timer) * this.RunbobbingAmount, base.transform.localPosition.z);
+			transform.localPosition = new Vector3(base.transform.localPosition.x, this.defaultPosY + Mathf.Sin(this.timer) * this.RunbobbingAmount, base.transform.localPosition.z);
 			return;
 		}
-		this.timer += Time.deltaTime * this.walkingBobbingSpeed; 
-		this.cameraJoint.localPosition = new Vector3(base.transform.localPosition.x, this.defaultPosY + Mathf.Sin(this.timer) * this.WalkbobbingAmount, base.transform.localPosition.z);
+		this.timer += Time.deltaTime * this.walkingBobbingSpeed;
+		transform.localPosition = new Vector3(base.transform.localPosition.x, this.defaultPosY + Mathf.Sin(this.timer) * this.WalkbobbingAmount, base.transform.localPosition.z);
 	}
 
 }

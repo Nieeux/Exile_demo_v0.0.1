@@ -1,184 +1,122 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Random = System.Random;
 using UnityEngine.AI;
 
 public class SpawnEnemy : MonoBehaviour
 {
-    /*
-    public Transform Player;
-    public float SpawnDensityPerTile = 0.5f;
-    public int MaxEnemies = 5;
-    public Vector3Int NavMeshSize = new Vector3Int(40, 10, 40);
-    public const int TileSize = 10;
-    public List<GameObject> Enemies = new List<GameObject>();
-    public SpawnMethod EnemySpawnMethod = SpawnMethod.RoundRobin;
-    [SerializeField]
-    private AreaFloorBaker FloorBaker;
-    [SerializeField]
-    private LayerMask EnemyMask;
-    private int SpawnedEnemies = 0;
+	public static SpawnEnemy Instance;
 
-    private Dictionary<int, GameObject> EnemyObjectPools = new Dictionary<int, GameObject>();
-    private HashSet<Vector3> SpawnedTiles = new HashSet<Vector3>();
-    public HashSet<AIController> AliveEnemies = new HashSet<AIController>();
-    public Dictionary<Vector3, int> SpawnedTilesToEnemiesMap = new Dictionary<Vector3, int>();
+	public const float maxViewDst = 160;
 
-    private Collider[] EnemyColliders;
+	private WorldGenerator World;
+	GameObject EnemyManager;
+
+	int chunksVisibleInViewDst;
+	int chunkSize = 120;
+	private Vector2 viewerPosition;
+
+    [SerializeField]
+	private int maxEnemy = 2;
+	private Vector3[] enemyPos;
+
+    [Header("Randomly")]
+	public WeightedSpawn[] structurePrefabs;
+	public float totalWeight { get; set; }
+	protected Random randomly;
+
+	public List<AIController> enemyList;
 
     private void Awake()
     {
-        for (int i = 0; i < Enemies.Count; i++)
+		SpawnEnemy.Instance = this;
+
+	}
+
+    void Start()
+	{
+		World = GetComponent<WorldGenerator>();
+		chunksVisibleInViewDst = Mathf.RoundToInt(maxViewDst / chunkSize);
+		EnemyManager = new GameObject("EnemyManager");
+		//EnemyManager.transform.parent = transform;
+
+	}
+
+	void Update()
+	{
+		if(enemyList.Count < maxEnemy)
         {
-            EnemyObjectPools.Add(i, Enemies[i]);
-        }
-        FloorBaker.OnNavMeshUpdate += HandleNavMeshUpdate;
-    }
+			Place();
+		}
+		
+	}		
 
-    private void Start()
-    {
-        EnemyColliders = new Collider[MaxEnemies];
-    }
+	public void Place()
+	{
+		//this.Enemy = new List<GameObject>();
+		this.randomly = new Random();
+		this.enemyPos = new Vector3[this.maxEnemy];
+		this.CalculateWeight();
+		for (int i = 0; i < this.maxEnemy; i++)
+		{
 
-    private void SpawnEnemiesOnNewTiles(Vector3 currentTilePosition)
-    {
-        if (SpawnedEnemies >= MaxEnemies)
-        {
-            return;
-        }
+			Vector3 position = World.player.transform.position + new Vector3(UnityEngine.Random.Range(-10f, 10f) * 50f, 0f, UnityEngine.Random.Range(-10f, 10f) * 50f);
+			Vector3 startPoint = RandomPointAboveTerrain();
+			RaycastHit hit;
 
-        for (int x = -1 * NavMeshSize.x / TileSize / 2; x < NavMeshSize.x / TileSize / 2; x++)
-        {
-            for (int z = -1 * NavMeshSize.z / TileSize / 2; z < NavMeshSize.z / TileSize / 2; z++)
-            {
-                Vector3 tilePosition = new Vector3(currentTilePosition.x + x, currentTilePosition.y, currentTilePosition.z + z);
-                int enemiesSpawnedForTile = 0;
 
-                if (!SpawnedTiles.Contains(tilePosition))
-                {
-                    SpawnedTiles.Add(tilePosition);
-                    SpawnedTilesToEnemiesMap.Add(tilePosition, enemiesSpawnedForTile);
+			if (Physics.Raycast(position, Vector3.down, out hit, 10f) && hit.transform.gameObject.layer == LayerMask.NameToLayer("Ground"))
+			{
+				this.enemyPos[i] = hit.point;
+				//Quaternion orientation = Quaternion.Euler(Vector3.up * UnityEngine.Random.Range(0f, 360f));
+				AIController gameObject = this.FindEnemyToSpawn(this.structurePrefabs, this.totalWeight, this.randomly);
+				AIController gameObject2 = Instantiate(gameObject, hit.point, gameObject.transform.rotation, EnemyManager.transform);
+				//GameObject gameObject2 = Object.Instantiate<GameObject>(gameObject, hit.point, gameObject.transform.rotation, transform);
+				this.enemyList.Add(gameObject2);
 
-                    while (enemiesSpawnedForTile + Random.value < SpawnDensityPerTile && SpawnedEnemies < MaxEnemies)
-                    {
-                        SpawnEnemyOnTile(tilePosition);
-                        enemiesSpawnedForTile++;
-                        SpawnedEnemies++;
-                    }
-                }
-            }
-        }
-    }
+			}
+		}
+	}
+	public void CalculateWeight()
+	{
+		this.totalWeight = 0f;
+		foreach (WeightedSpawn weightedSpawn in this.structurePrefabs)
+		{
+			this.totalWeight += weightedSpawn.weight;
+		}
+	}
 
-    private void SpawnEnemyOnTile(Vector3 TilePosition)
-    {
-        if (EnemySpawnMethod == SpawnMethod.RoundRobin)
-        {
-            SpawnRoundRobinEnemy(SpawnedEnemies, TilePosition);
-        }
-        else if (EnemySpawnMethod == SpawnMethod.Random)
-        {
-            SpawnRandomEnemy(TilePosition);
-        }
-    }
+	private Vector3 RandomPointAboveTerrain()
+	{
+		return new Vector3(
+			// random diem tao objects
 
-    private void SpawnRoundRobinEnemy(int SpawnedEnemies, Vector3 TilePosition)
-    {
-        int spawnIndex = SpawnedEnemies % Enemies.Count;
+			UnityEngine.Random.Range(World.player.transform.position.x - World.viewedChunk().x / 2, transform.position.x + 200 / 2), transform.position.y + World.viewedChunk().y * 2,
+			UnityEngine.Random.Range(transform.position.z - 200 / 2, transform.position.z + 200 / 2));
 
-        DoSpawnEnemy(spawnIndex, TilePosition);
-    }
+	}
 
-    private void SpawnRandomEnemy(Vector3 TilePosition)
-    {
-        DoSpawnEnemy(Random.Range(0, Enemies.Count), TilePosition);
-    }
+	public AIController FindEnemyToSpawn(WeightedSpawn[] structurePrefabs, float totalWeight, Random rand)
+	{
+		float num = (float)rand.NextDouble();
+		float num2 = 0f;
+		for (int i = 0; i < structurePrefabs.Length; i++)
+		{
+			num2 += structurePrefabs[i].weight;
+			if (num < num2 / totalWeight)
+			{
+				return structurePrefabs[i].prefab;
+			}
+		}
+		return structurePrefabs[0].prefab;
+	}
 
-    private void DoSpawnEnemy(int SpawnIndex, Vector3 TilePosition)
-    {
-        PoolableObject poolableObject = EnemyObjectPools[SpawnIndex].GetObject();
 
-        if (poolableObject != null)
-        {
-            AIController enemy = poolableObject.GetComponent<AIController>();
-            //Enemies[SpawnIndex].SetupEnemy(enemy);
-
-            NavMeshHit Hit;
-            Vector3 SamplePosition = TilePosition * TileSize +
-                new Vector3(Random.Range(-TileSize / 2, TileSize / 2), 0, Random.Range(-TileSize / 2, TileSize / 2));
-            if (NavMesh.SamplePosition(SamplePosition, out Hit, 5f, enemy.Agent.areaMask))
-            {
-                enemy.Agent.Warp(Hit.position);
-                // enemy needs to get enabled and start chasing now.
-                enemy.Movement.Player = Player;
-                enemy.Agent.enabled = true;
-                enemy.Movement.Spawn();
-                AliveEnemies.Add(enemy);
-                enemy.OnDie += HandleEnemyDeath;
-            }
-            else
-            {
-                Debug.LogError($"Unable to place NavMeshAgent on NavMesh. Tried to spawn on tile {TilePosition} at World Location: {SamplePosition}");
-                SpawnedEnemies--;
-                SpawnedTiles.Remove(TilePosition);
-                enemy.gameObject.SetActive(false);
-            }
-        }
-        else
-        {
-            Debug.LogError($"Unable to fetch enemy of type {SpawnIndex} from object pool. Out of objects?");
-            SpawnedEnemies--;
-            SpawnedTiles.Remove(TilePosition);
-        }
-    }
-
-    private void HandleEnemyDeath(AIController enemy)
-    {
-        AliveEnemies.Remove(enemy);
-    }
-
-    private void HandleNavMeshUpdate(Bounds Bounds)
-    {
-        int Hits = Physics.OverlapBoxNonAlloc(Bounds.center, Bounds.extents, EnemyColliders, Quaternion.identity, EnemyMask.value);
-
-        Enemy enemyComponent;
-        Enemy[] enemyArray = new Enemy[Hits];
-        for (int i = 0; i < Hits; i++)
-        {
-            if (EnemyColliders[i].gameObject.TryGetComponent<Enemy>(out enemyComponent))
-            {
-                enemyArray[i] = enemyComponent;
-                enemyComponent.Agent.enabled = true;
-            }
-        }
-
-        HashSet<Enemy> outOfBoundsEnemies = new HashSet<Enemy>(AliveEnemies);
-
-        outOfBoundsEnemies.ExceptWith(enemyArray);
-
-        foreach (Enemy enemy in outOfBoundsEnemies)
-        {
-            enemy.Agent.enabled = false;
-        }
-
-        Vector3 currentTilePosition = new Vector3(
-            Mathf.FloorToInt(Player.transform.position.x) / TileSize,
-            Mathf.FloorToInt(Player.transform.position.y) / TileSize,
-            Mathf.FloorToInt(Player.transform.position.z) / TileSize
-        );
-
-        if (!SpawnedTiles.Contains(currentTilePosition))
-        {
-            SpawnedTiles.Add(currentTilePosition);
-        }
-
-        SpawnEnemiesOnNewTiles(currentTilePosition);
-    }
-
-    public enum SpawnMethod
-    {
-        RoundRobin,
-        Random
-    }
-    */
+	[System.Serializable]
+	public class WeightedSpawn
+	{
+		public AIController prefab;
+		public float weight;
+	}
 }

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Random = System.Random;
 
-public class PickupWeapon : MonoBehaviour, Interactable, SharedObject
+public class PickupWeapon : MonoBehaviour, Interact, SharedId
 {
 	public WeaponController WeaponPrefab;
 
@@ -24,24 +24,10 @@ public class PickupWeapon : MonoBehaviour, Interactable, SharedObject
 				{
 					PlayerWeaponManager.Instance.SwitchWeapon(true);
 				}
-				Destroy(gameObject);
+				//Destroy(this.gameObject);
 			}
 		}
 
-	}
-
-	public void LocalExecute()
-	{
-
-	}
-
-	public void AllExecute()
-	{
-
-	}
-
-	public void ServerExecute(int fromClient)
-	{
 	}
 
 	public void RemoveObject()
@@ -80,7 +66,7 @@ public class PickupWeapon : MonoBehaviour, Interactable, SharedObject
 	{
 		return this.id;
 	}
-
+	/*
     private void OnTriggerEnter(Collider other)
     {
 		AIController AIPickup = other.GetComponent<AIController>();
@@ -91,4 +77,5 @@ public class PickupWeapon : MonoBehaviour, Interactable, SharedObject
 
 		}
 	}
+	*/
 }

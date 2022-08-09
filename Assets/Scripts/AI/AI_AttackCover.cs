@@ -19,16 +19,22 @@ public class AI_AttackCover : AIstate
             agent.ReadyAttack();
             agent.CurrentWeapon.canFire = true;
             agent.CurrentWeapon.AiFire();
+
+            if (agent.CurrentWeapon.GunStats.CurrentDurability <= 0)
+                agent.BrokeWeapon(agent.WeaponStats);
+
+        }
+        if (agent.CurrentWeapon == null)
+        {
+            agent.stateMachine.ChangesState(StateType.Hide);
         }
         if (!agent.canSee)
         {
             agent.LostTarget();
             agent.stateMachine.ChangesState(StateType.Attack);
         }
-        if (agent.CurrentWeapon.reloading)
-        {
-            //agent.stateMachine.ChangesState(StateType.Hide);
-        }
+
+
 
     }
     public void Exit(AIController agent)

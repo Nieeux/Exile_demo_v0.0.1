@@ -1,10 +1,6 @@
-public interface Interactable
+public interface Interact
 {
 	void Interact();
-
-	void LocalExecute();
-
-	void AllExecute();
 
 	void RemoveObject();
 

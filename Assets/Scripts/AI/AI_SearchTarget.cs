@@ -29,7 +29,7 @@ public class AI_SearchTarget : AIstate
             //float Rot = agent.transform.localRotation.eulerAngles.y;
             //this.padleft = (int)Mathf.Lerp(this.padleft, Rot / 2, Time.deltaTime * 100f);
             //agent.transform.eulerAngles = new Vector3(agent.transform.eulerAngles.x, padleft, agent.transform.eulerAngles.z);
-            agent.Agent.destination = agent.SeeTargetFirtTime;
+            //agent.Agent.destination = agent.Targetposition;
         }
     }
     public void Exit(AIController agent)
