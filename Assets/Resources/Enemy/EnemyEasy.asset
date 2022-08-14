@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d50478db7455c5f4dbd923f10db4cb16, type: 3}
+  m_Name: EnemyEasy
+  m_EditorClassIdentifier: 
+  name: 00
+  health: 50
+  ranged: 0
+  speed: 0
+  minMoneyReward: 0
+  maxMoneyReward: 200
+  DeadPrefab: {fileID: 6311155719092591399, guid: 299ae4a929cba10488146ecb68aefa0b, type: 3}
+  EnemyPrefab: {fileID: 5940542461286528666, guid: 011af73d88c71a246ae4fb9947ea0035, type: 3}

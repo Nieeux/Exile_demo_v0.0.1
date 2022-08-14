@@ -7,9 +7,11 @@ public class ItemInfo : MonoBehaviour
 {
 	public TextMeshProUGUI text;
 
-	public RawImage image;
+	public TextMeshProUGUI Weight;
 
-	public float padding;
+	public RectTransform background;
+
+	public Camera UiCamera;
 
 	public static ItemInfo Instance;
 
@@ -29,6 +31,12 @@ public class ItemInfo : MonoBehaviour
 	}
     private void Update()
 	{
+        if (!ActiveMenu())
+        {
+			Vector2 Point;
+			RectTransformUtility.ScreenPointToLocalPointInRectangle(transform.parent.GetComponent<RectTransform>(), Input.mousePosition, UiCamera, out Point);
+			transform.localPosition = Point;
+		}
 
 	}
 
@@ -45,6 +53,9 @@ public class ItemInfo : MonoBehaviour
 	public void SetText(string t)
 	{
 		this.text.text = t;
+		//float textpadding = 4f;
+		//Vector2 backgroundsize = new Vector2(text.preferredWidth + textpadding * 2f, text.preferredHeight + textpadding * 2f);
+		//background.sizeDelta = backgroundsize;
 		if (t == "")
 		{
 			Info.SetActive(false);
@@ -56,7 +67,15 @@ public class ItemInfo : MonoBehaviour
 			//this.Fade(1f, 0.2f);
 		}
 	}
+	public void SetWeight(float weight)
+    {
+		this.Weight.text = string.Format("{0:0.##} kg", weight);
+	}
 
+	public bool ActiveMenu()
+	{
+		return Cursor.lockState == CursorLockMode.Locked;
+	}
 	/*
 	public void Fade(float opacity, float time = 0.2f)
 	{

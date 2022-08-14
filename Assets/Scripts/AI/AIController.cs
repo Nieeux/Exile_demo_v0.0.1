@@ -14,7 +14,7 @@ public class AIController : MonoBehaviour
     [Header("Main")]
     public EnemyRank enemyRank;
     public NavMeshAgent Agent;
-    public EnemyStats enemyStats;
+    public EnemyStats EnemyStats;
     [Header("States")]
     public StateType IndexState;
     public StateType ChangeState;
@@ -34,12 +34,7 @@ public class AIController : MonoBehaviour
 
     public bool canSee;
 
-    [Header("Equip")]
-
-    public Transform WeaponSocket;
-    public ItemStats WeaponStats;
-    public WeaponController CurrentWeapon;
-    private WeaponController brokeWeapon;
+    
 
     [Header("Hide")]
     public float radiusHide;
@@ -58,6 +53,9 @@ public class AIController : MonoBehaviour
     private Collider[] rangeChecks = new Collider[2];
 
     public UnityAction onDamaged;
+    public float healthLost;
+    public bool onDamage;
+    public bool remenberTarget;
 
     public AIStateMachine stateMachine;
     public Vector3 Targetposition;
@@ -66,9 +64,29 @@ public class AIController : MonoBehaviour
     public bool walkPointSet;
     public Vector3 walkPoint;
 
-    HitAble health;
+    public float MaxHealth = 100;
+    public float DamageMultiplier = 1f;
+    public float damageFinal;
+    public GameObject numberFx;
+
+    bool IsDead;
+
+    public float CurrentHealth { get; set; }
+    public bool Invincible { get; set; }
+
     WeaponIK weaponIK;
     NavmeshGenerator navmeshGenerator;
+    public AiInventory inventory;
+
+    private void Awake()
+    {
+        EnemyStats enemyStats = ScriptableObject.CreateInstance<EnemyStats>();
+        enemyStats.Getstats(EnemyStats);
+        EnemyStats = enemyStats;
+        MaxHealth = EnemyStats.health;
+        CurrentHealth = MaxHealth;
+
+    }
 
     private void Start()
     {
@@ -83,33 +101,35 @@ public class AIController : MonoBehaviour
 
         stateMachine.ChangesState(ChangeState);
 
-        target = PlayerMovement.Instance.transform;
+        if (PlayerMovement.Instance.transform != null)
+        {
+            target = PlayerMovement.Instance.transform;
+        }
 
         PlayerStats.Instance.OnDie += PlayerOnDie;
 
-        health = GetComponent<HitAble>();
         Agent = GetComponent<NavMeshAgent>();
-        weaponIK = GetComponent<WeaponIK>();
         navmeshGenerator = GetComponent<NavmeshGenerator>();
-        health.OnDie += OnDie;
-        health.OnDamaged += OnDamaged;
+        inventory = GetComponent<AiInventory>();
+        weaponIK = GetComponent<WeaponIK>();
+
         playerRef = GameObject.FindGameObjectWithTag("Player");
         if (GetComponent<Rigidbody>())
         {
             GetComponent<Rigidbody>().isKinematic = true;
         }
 
-        if(enemyRank == EnemyRank.Easy)
+        if (enemyRank == EnemyRank.Easy)
         {
-            StarterWeaponOriginal();
+            inventory.StarterWeaponOriginal();
         }
         if (enemyRank == EnemyRank.Normal)
         {
-            StarterWeaponUpgrade();
+            inventory.StarterWeaponUpgrade();
         }
         if (enemyRank == EnemyRank.Hard)
         {
-            StarterWeaponAdvanced();
+            inventory.StarterWeaponAdvanced();
         }
 
         StartCoroutine(FOVRoutine());
@@ -123,22 +143,33 @@ public class AIController : MonoBehaviour
 
         if (target != null)
         {
-            //stateMachine.ChangesState(StateType.Chase);
+            
             if (canSee == true)
             {
-                LookAtTarget();
+                
                 TargetPosition();
-                //stateMachine.ChangesState(StateType.Shoot);
+                
             }
             else
             {
-                //stateMachine.ChangesState(StateType.Hide);
+                
             }
         }
-
+        if (healthLost > 0f)
+        {
+            onDamage = true;
+            base.Invoke("forgetonDamage", 1f);
+        }
+        else
+        {
+            onDamage = false;
+        }
 
     }
-
+    private void forgetonDamage()
+    {
+        healthLost = 0f;
+    }
     private IEnumerator FOVRoutine()
     {
         WaitForSeconds wait = new WaitForSeconds(0.5f);
@@ -148,6 +179,11 @@ public class AIController : MonoBehaviour
             yield return wait;
             RespawnCheck();
             FieldOfViewCheck();
+
+            if (transform.position.x == Targetposition.x && transform.position.z == Targetposition.z)
+            {
+                remenberTarget = false;
+            }
         }
     }
 
@@ -163,6 +199,8 @@ public class AIController : MonoBehaviour
         else
         {
             Targetposition = target.transform.position;
+            remenberTarget = true;
+
         }
     }
 
@@ -193,84 +231,25 @@ public class AIController : MonoBehaviour
 
     public void LookAtTarget()
     {
-        if (this.target == null)
-        {
-            return;
-        }
+        //if (this.target == null)
+        //{
+            //return;
+        //}
         Vector3 normalized = (this.target.position - base.transform.position).normalized;
         Quaternion b = Quaternion.LookRotation(new Vector3(normalized.x, 0f, normalized.z));
         this.transform.rotation = Quaternion.Slerp(this.transform.rotation, b, Time.deltaTime * 5);
     }
 
-    public void StarterWeaponOriginal()
+    public void SearchWalkPoint()
     {
-        ItemStats RandomWeapon = ItemManager.Instance.GetRandomWeapons();
-        Buff buff = ItemManager.Instance.GetBuff();
-        ItemManager.Instance.getWeaponOriginal(RandomWeapon.id, buff.id, WeaponSocket.transform.position, WeaponSocket.transform.rotation, WeaponSocket);
-        CurrentWeapon = GetComponentInChildren<WeaponController>();
+        //Calculate random point in range
+        float randomZ = Random.Range(-radiusHide, radiusHide);
+        float randomX = Random.Range(-radiusHide, radiusHide);
 
-        WeaponStats = CurrentWeapon.GunStats;
-        CurrentWeapon.coll.enabled = false;
-        CurrentWeapon.rb.isKinematic = true;
-        CurrentWeapon.AiEquip = true;
-        weaponIK.SetAimTransform(WeaponSocket);
-    }
-    public void StarterWeaponUpgrade()
-    {
-        ItemStats RandomWeapon = ItemManager.Instance.GetRandomWeapons();
-        Buff buff = ItemManager.Instance.GetBuff();
-        ItemManager.Instance.getWeaponUpgrade(RandomWeapon.id, buff.id, WeaponSocket.transform.position, WeaponSocket.transform.rotation, WeaponSocket);
-        CurrentWeapon = GetComponentInChildren<WeaponController>();
+        walkPoint = new Vector3(transform.position.x + randomX, transform.position.y, transform.position.z + randomZ);
 
-        WeaponStats = CurrentWeapon.GunStats;
-        CurrentWeapon.coll.enabled = false;
-        CurrentWeapon.rb.isKinematic = true;
-        CurrentWeapon.AiEquip = true;
-        weaponIK.SetAimTransform(WeaponSocket);
-    }
-    public void StarterWeaponAdvanced()
-    {
-        ItemStats RandomWeapon = ItemManager.Instance.GetRandomWeapons();
-        Buff buff = ItemManager.Instance.GetBuff();
-        ItemManager.Instance.getweaponAdvanced(RandomWeapon.id, buff.id, WeaponSocket.transform.position, WeaponSocket.transform.rotation, WeaponSocket);
-        CurrentWeapon = GetComponentInChildren<WeaponController>();
-
-        WeaponStats = CurrentWeapon.GunStats;
-        CurrentWeapon.coll.enabled = false;
-        CurrentWeapon.rb.isKinematic = true;
-        CurrentWeapon.AiEquip = true;
-        weaponIK.SetAimTransform(WeaponSocket);
-    }
-
-    public void AiEquip(WeaponController weapon, ItemStats item)
-    {
-        WeaponController Weapon = Instantiate(weapon, WeaponSocket);
-        Weapon.GunStats = item;
-        Weapon.GetComponent<PickupWeapon>().item = item;
-
-        CurrentWeapon = Weapon;
-
-        Weapon.transform.localPosition = Vector3.zero;
-        Weapon.transform.localRotation = Quaternion.identity;
-
-        Weapon.coll.enabled = false;
-        Weapon.rb.isKinematic = true;
-        Weapon.AiEquip = true;
-
-        WeaponStats = Weapon.GunStats;
-
-        weaponIK.SetAimTransform(WeaponSocket);
-    }
-
-    public void DropWeapon(ItemStats item)
-    {
-        if (WeaponStats != null)
-        {
-            WeaponController Weapon = Instantiate(item.prefab, transform.position, Quaternion.identity).GetComponent<WeaponController>();
-            Weapon.GunStats = item;
-            Weapon.GetComponent<PickupWeapon>().item = item;
-        }
-
+        if (Physics.Raycast(walkPoint, -transform.up, 2f, GroundMask))
+            walkPointSet = true;
     }
 
     public void ReadyAttack()
@@ -385,48 +364,105 @@ public class AIController : MonoBehaviour
             Destroy(gameObject);
         }
     }
+
     bool IsGrounded()
     {
-        return Physics.Raycast(transform.position, Vector3.down, 1f, GroundMask);
+        return Physics.Raycast(transform.position, Vector3.down, 10f, GroundMask);
     }
 
 
     public void Reward()
     {
 
-        int Moneys = Random.Range(enemyStats.minMoneyReward, enemyStats.maxMoneyReward);
+        int Moneys = Random.Range(EnemyStats.minMoneyReward, EnemyStats.maxMoneyReward);
 
         Inventory.Instance.RewardMoney(Moneys);
     }
 
     // BrokeWeapon
-    public void BrokeWeapon(ItemStats item)
-    {
-        if (WeaponStats.CurrentDurability <= 0 && WeaponStats != null)
-        {
-            WeaponController Weapon = Instantiate(item.prefab, transform.position, Quaternion.identity).GetComponent<WeaponController>();
-            Weapon.GunStats = null;
-            Weapon.GetComponent<PickupWeapon>().item = null;
-            brokeWeapon = Weapon;
 
-            Destroy(CurrentWeapon.WeaponRoot);
-            this.CurrentWeapon = null;
-            this.WeaponStats = null;
-            base.Invoke("StartFade", 5);
+
+
+
+    public void Heal(float healAmount)
+    {
+        float healthBefore = CurrentHealth;
+        CurrentHealth += healAmount;
+        CurrentHealth = Mathf.Clamp(CurrentHealth, 0f, MaxHealth);
+
+        // call OnHeal action
+        float trueHealAmount = CurrentHealth - healthBefore;
+
+    }
+
+    public void Damage(float damage,Bullet bulletType, int hitEffect, Vector3 pos)
+    {
+        if (Invincible)
+            return;
+
+        float healthBefore = CurrentHealth;
+        
+        if (inventory.currentArmor != null)
+        {
+            DamageCalculations.ArmorResult damageMultiplier = DamageCalculations.Instance.GetDamageArmor(inventory.currentArmor, bulletType, damage);
+            damageFinal = damageMultiplier.damageResult;
+        }
+        else
+        {
+            damageFinal = damage;
         }
 
+        CurrentHealth -= damageFinal;
+        CurrentHealth = Mathf.Clamp(CurrentHealth, 0f, MaxHealth);
+
+        Vector3 normalized = (PlayerMovement.Instance.playerCamera.position + Vector3.up * 1.5f - pos).normalized;
+
+
+        // call OnDamage action
+        float trueDamageAmount = healthBefore - CurrentHealth;
+
+        if (Vector3.Distance(PlayerMovement.Instance.playerCamera.position, base.transform.position) < 100f)
+        {
+            Object.Instantiate<GameObject>(this.numberFx, pos, Quaternion.identity).GetComponent<HitNumber>().SetTextAndDir((int)trueDamageAmount, normalized, (HitEffect)hitEffect);
+        }
+
+        if (trueDamageAmount > 0f)
+        {
+            OnDamaged(trueDamageAmount);
+        }
+        HandleDeath();
     }
 
-    private void StartFade()
+    /*
+    public void InflictDamage(float damage, bool isExplosionDamage, int hitEffect, Vector3 pos)
     {
-        brokeWeapon.rb.drag = 5;
-        brokeWeapon.coll.enabled = false;
-        Destroy(brokeWeapon.WeaponRoot, 2);
-    }
+        var totalDamage = damage;
 
+        // skip the crit multiplier if it's from an explosion
+        if (!isExplosionDamage)
+        {
+            totalDamage *= DamageMultiplier;
+        }
+
+        // apply the damages
+        Damage(totalDamage, hitEffect, pos);
+    }
+    */
+
+    void HandleDeath()
+    {
+        if (IsDead)
+            return;
+
+        if (CurrentHealth <= 0f)
+        {
+            IsDead = true;
+            OnDie();
+        }
+    }
     void OnDamaged(float damage)
     {
-        onDamaged?.Invoke();
+        healthLost = damage;
     }
 
     void PlayerOnDie()
@@ -441,7 +477,7 @@ public class AIController : MonoBehaviour
         navmeshGenerator.DestroyNavMeshData();
         stateMachine.ChangesState(StateType.Die);
 
-        GameObject npcDead = Instantiate(enemyStats.DeadPrefab, transform.position, transform.rotation);
+        GameObject npcDead = Instantiate(EnemyStats.DeadPrefab, transform.position, transform.rotation);
         npcDead.GetComponent<Rigidbody>().velocity = (-(target.position - transform.position).normalized * 8) + new Vector3(0, 5, 0);
         Destroy(gameObject);
 

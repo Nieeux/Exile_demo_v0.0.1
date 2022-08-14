@@ -17,12 +17,12 @@ public class PickupWeapon : MonoBehaviour, Interact, SharedId
 	{
         if(item != null)
 		{
-			if (PlayerWeaponManager.Instance.AddWeapon(WeaponPrefab, item))
+			if (WeaponInventory.Instance.AddWeapon(WeaponPrefab, item))
 			{
 				// Handle auto-switching to weapon if no weapons currently
-				if (PlayerWeaponManager.Instance.GetActiveWeapon() == null)
+				if (WeaponInventory.Instance.GetActiveWeapon() == null)
 				{
-					PlayerWeaponManager.Instance.SwitchWeapon(true);
+					WeaponInventory.Instance.SwitchWeapon(true);
 				}
 				//Destroy(this.gameObject);
 			}
@@ -32,7 +32,7 @@ public class PickupWeapon : MonoBehaviour, Interact, SharedId
 
 	public void RemoveObject()
 	{
-		PlayerWeaponManager.Instance.DropWeapon(WeaponPrefab, item);
+		WeaponInventory.Instance.DropWeapon(WeaponPrefab, item);
 		//UnityEngine.Object.Destroy(base.gameObject);
 		ResourceManager.Instance.RemoveInteractItem(this.id);
 	}
@@ -41,10 +41,15 @@ public class PickupWeapon : MonoBehaviour, Interact, SharedId
 	{
 		if (item == null)
 		{
-			return " " + language.MultiLanguage;
+			return " " + language.VietNamese;
 		}
 		return "E | " + this.WeaponPrefab.GunStats.nameViet;
 
+	}
+
+	public ItemStats GetItem()
+	{
+		return item;
 	}
 
 	public bool IsStarted()

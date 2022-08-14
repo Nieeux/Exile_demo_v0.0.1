@@ -30,33 +30,13 @@ public class MainMenuUI : MonoBehaviour
 		NavMesh.RemoveAllNavMeshData();
 		SceneManager.LoadScene(0);
 	}
+
 	public void Play()
 	{
 
-		base.Invoke("StartPlay", 1f);
+		base.Invoke("StartPlay", 3f);
 		LoadingScenes.Instance.Show = true;
 
-	}
-	public void CloseMenuSetting()
-    {
-		MenuSetting.SetActive(false);
-		MenuMain.SetActive(true);
-
-	}
-	public void CloseAboutMe()
-	{
-		MenuAboutMe.SetActive(false);
-		MenuMain.SetActive(true);
-	}
-	public void OpenMenuSetting()
-	{
-		MenuSetting.SetActive(true);
-		MenuMain.SetActive(false);
-	}
-	public void OpenAboutMe()
-	{
-		MenuAboutMe.SetActive(true);
-		MenuMain.SetActive(false);
 	}
 
 	public void OpenFacebook()
@@ -79,7 +59,7 @@ public class MainMenuUI : MonoBehaviour
 			PlayerMovement.Instance.Sensitivity = sens;
 		}
 		this.currentSens = sens;
-		PlayerPrefs.SetFloat("SensPreference", this.currentSens);
+		PlayerPrefs.SetFloat("Sensitivity", this.currentSens);
 	}
 
 	public void SetFullscreen(bool isFullscreen)

@@ -10,17 +10,17 @@ public class AI_Hide : AIstate
     {
         return StateType.Hide;
     }
-    void AIstate.Enter(AIController agent)
+    void AIstate.AiEnter(AIController agent)
     {
         agent.StartCoroutine(agent.Hide(agent.target));
     }
-    void AIstate.Update(AIController agent)
+    void AIstate.AiUpdate(AIController agent)
     {
 
     }
 
 
-    void AIstate.Exit(AIController agent)
+    void AIstate.AiExit(AIController agent)
     {
         agent.StopCoroutine(agent.Hide(agent.target));
         //agent.HidePlace = null;

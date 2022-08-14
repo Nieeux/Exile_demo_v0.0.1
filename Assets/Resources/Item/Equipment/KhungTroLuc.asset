@@ -12,20 +12,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d1d2c7165a9671f45b50c387379153c7, type: 3}
   m_Name: KhungTroLuc
   m_EditorClassIdentifier: 
-  important: 0
+  itemType: 2
   id: 1
   name: khungtroluc
   nameViet: "Khung tr\u1EE3 l\u1EF1c"
-  description: 
+  description: "T\u0103ng 1 t\u1ED1c \u0111\u1ED9 di chuy\u1EC3n"
   stackable: 0
   amount: 1
   max: 1
+  Weight: 10.7
   heal: 0
   hunger: 0
   stamina: 0
   GunDamage: 0
   fireRate: 0
-  Weight: 0
+  bulletsPerShot: 0
   CurrentDurability: 0
   Durability: 0
   CurrentMagazine: 0
@@ -36,8 +37,10 @@ MonoBehaviour:
   AllBulletPrefab: []
   fireAudio: {fileID: 0}
   reloadAudio: {fileID: 0}
+  weaponType: 0
   Rare: 0
   buffs: []
+  Debuffs: []
   punchStrenght: 0.2
   punchVibrato: 5
   punchDuration: 0.3
@@ -53,14 +56,12 @@ MonoBehaviour:
   rotationOffset: {x: 0, y: 0, z: 0}
   positionOffset: {x: 0, y: 0, z: 0}
   scale: 1
-  type: 2
   prefab: {fileID: 2841471369595137429, guid: ffe8a0f1b374a4049923782c73dc73df, type: 3}
   RareIndex: 
   nameOriginal: 
   nameUpgrade: 
   nameAdvanced: 
-  colorIndex: {r: 0, g: 0, b: 0, a: 0}
+  colorIndex: {r: 1, g: 1, b: 1, a: 1}
   colorOriginal: {r: 0, g: 0, b: 0, a: 0}
   colorUpgrade: {r: 0, g: 0, b: 0, a: 0}
   colorAdvanced: {r: 0, g: 0, b: 0, a: 0}
-  BuffWeapon: []

@@ -15,10 +15,10 @@ public interface AIstate
 {
     StateType GetState();
 
-    void Enter(AIController agent);
+    void AiEnter(AIController agent);
 
-    void Update(AIController agent);
+    void AiUpdate(AIController agent);
 
-    void Exit(AIController agent);
+    void AiExit(AIController agent);
 
 }

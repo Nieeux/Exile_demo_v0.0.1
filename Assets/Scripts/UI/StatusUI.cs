@@ -20,11 +20,13 @@ public class StatusUI : MonoBehaviour
     public Image HurtBar;
     public Image stamina;
     public Image hunger;
+    public Image sleepy;
 
     [Header("Number Status")]
     public TextMeshProUGUI HealthNumber;
     public TextMeshProUGUI StaminaNumber;
     public TextMeshProUGUI HungerNumber;
+    public TextMeshProUGUI sleepyNumber;
 
     [Header("Stats Status")]
     public float HurtSpeed = 0.01f;
@@ -53,8 +55,10 @@ public class StatusUI : MonoBehaviour
     private void Update()
     {
         ZoomUI.fieldOfView = Mathf.Lerp(ZoomUI.fieldOfView, ViewZoom, Time.deltaTime * SpeedZoom);
-        stamina.fillAmount = Player.stamina / Player.maxStamina;
-        hunger.fillAmount = Player.hunger / Player.maxHunger;
+
+        this.stamina.fillAmount = Player.stamina / Player.maxStamina;
+        this.hunger.fillAmount = Player.hunger / Player.maxHunger;
+        this.sleepy.fillAmount = Player.sleepy / Player.maxSleepy;
 
         if (Input.GetButtonDown("Status") && !PauseMenu.activeSelf)
         {
@@ -142,8 +146,9 @@ public class StatusUI : MonoBehaviour
         text += string.Format("Máu {0:0.} | {1:0.}", num, num2);
         this.HealthNumber.text = text;
 
-        this.StaminaNumber.text = Player.stamina.ToString("Lực 00");
-        this.HungerNumber.text = Player.hunger.ToString("Đói 00");
+        this.StaminaNumber.text = Player.stamina.ToString("00");
+        this.HungerNumber.text = Player.hunger.ToString("00");
+        this.sleepyNumber.text = Player.sleepy.ToString("00");
     }
     private void Healthnumber()
     {

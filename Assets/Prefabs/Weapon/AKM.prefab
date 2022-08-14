@@ -105,7 +105,6 @@ MonoBehaviour:
   WeaponAmmoType: {r: 0, g: 0, b: 0, a: 0}
   reloading: 0
   canFire: 0
-  AiEquip: 0
   rb: {fileID: 8078425582575817914}
   coll: {fileID: 8665244739356450696}
   WeaponRoot: {fileID: 7474613660059752366}
@@ -121,7 +120,7 @@ AudioSource:
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 0}
-  m_PlayOnAwake: 1
+  m_PlayOnAwake: 0
   m_Volume: 0.7
   m_Pitch: 1
   Loop: 0
@@ -130,7 +129,7 @@ AudioSource:
   SpatializePostEffects: 0
   Priority: 128
   DopplerLevel: 1
-  MinDistance: 1
+  MinDistance: 10
   MaxDistance: 200
   Pan2D: 0
   rolloffMode: 0
@@ -166,7 +165,7 @@ AudioSource:
     m_Curve:
     - serializedVersion: 3
       time: 0
-      value: 0
+      value: 1
       inSlope: 0
       outSlope: 0
       tangentMode: 0

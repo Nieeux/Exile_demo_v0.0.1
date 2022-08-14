@@ -12,24 +12,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d1d2c7165a9671f45b50c387379153c7, type: 3}
   m_Name: CaHop
   m_EditorClassIdentifier: 
-  important: 0
-  id: 6
+  itemType: 1
+  id: 1
   name: cahop
   nameViet: "C\xE1 h\u1ED9p"
-  description: "T\u1EEBng l\xE0 m\u1ED9t lo\u1EA1i th\u1EF1c ph\u1EA9m v\xF4 c\xF9ng
-    ph\u1ED5 bi\u1EBFn tr\u01B0\u1EDBc C\xE1ch M\u1EA1ng 12. Nh\u01B0ng \u0111\u1EBFn
-    nay \u0111\xE3 kh\xF4ng c\xF2n nh\xE0 m\xE1y n\xE0o c\xF3 th\u1EC3 s\u1EA3n xu\u1EA5t
-    \u0111\u01B0\u1EE3c n\xF3 n\u1EEFa."
+  description: "C\xF4 \u1EA5y r\u1EA5t th\xEDch m\xF3n n\xE0y"
   stackable: 1
   amount: 1
   max: 1
+  Weight: 1
   heal: 0
   hunger: 0
   stamina: 0
-  BuffFood: []
   GunDamage: 0
   fireRate: 0
-  Critical: 0
+  bulletsPerShot: 0
   CurrentDurability: 0
   Durability: 0
   CurrentMagazine: 0
@@ -37,15 +34,34 @@ MonoBehaviour:
   singleFire: 0
   ReloadTime: 0
   bulletPrefab: {fileID: 0}
+  AllBulletPrefab: []
   fireAudio: {fileID: 0}
   reloadAudio: {fileID: 0}
+  weaponType: 0
   Rare: 0
+  buffs: []
+  Debuffs: []
+  punchStrenght: 0.2
+  punchVibrato: 5
+  punchDuration: 0.3
+  punchElasticity: 0.5
+  punchDurationR: 0.3
+  PunchR: {x: 0, y: 0, z: 0}
+  randomness: 70
+  ShakeDuration: 1
+  ShakeStrenght: 1
   sprite: {fileID: 0}
   material: {fileID: 0}
   mesh: {fileID: 0}
   rotationOffset: {x: 0, y: 0, z: 0}
   positionOffset: {x: 0, y: 0, z: 0}
   scale: 0.5
-  type: 1
   prefab: {fileID: 2841471369595137429, guid: f2d30cc8554c77b44911832e2894a671, type: 3}
-  BuffWeapon: []
+  RareIndex: 
+  nameOriginal: 
+  nameUpgrade: 
+  nameAdvanced: 
+  colorIndex: {r: 1, g: 1, b: 1, a: 1}
+  colorOriginal: {r: 0, g: 0, b: 0, a: 0}
+  colorUpgrade: {r: 0, g: 0, b: 0, a: 0}
+  colorAdvanced: {r: 0, g: 0, b: 0, a: 0}

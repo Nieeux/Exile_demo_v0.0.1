@@ -5,6 +5,7 @@ using UnityEngine;
 public class DropItemAtPos : MonoBehaviour
 {
     public ItemStats CurrentItem;
+
     void Start()
     {
         Dropitem();
@@ -13,14 +14,16 @@ public class DropItemAtPos : MonoBehaviour
     {
         if (CurrentItem != null)
         {
-            Destroy(gameObject);
+            //Destroy(gameObject);
         }
     }
     void Dropitem()
     {
+
         ItemStats RandomWeapon = ItemManager.Instance.GetRandomWeapons();
         Buff buff = ItemManager.Instance.GetBuff();
-        ItemManager.Instance.DropWeaponAtPlace(RandomWeapon.id, buff.id, base.transform.position);
+        Buff Debuff = ItemManager.Instance.GetDeBuff();
+        ItemManager.Instance.DropWeaponAtPlace(RandomWeapon.id, buff.id, Debuff.id, base.transform.position);
         CurrentItem = RandomWeapon;
     }
 }

@@ -9,16 +9,16 @@ public class WeaponUIManager : MonoBehaviour
     public List<WeaponUI> weaponUI = new List<WeaponUI>();
     void Start()
     {
-        WeaponController activeWeapon = PlayerWeaponManager.Instance.GetActiveWeapon();
+        WeaponController activeWeapon = WeaponInventory.Instance.GetActiveWeapon();
         if (activeWeapon)
         {
-            AddWeapon(activeWeapon, PlayerWeaponManager.Instance.ActiveWeaponIndex);
+            AddWeapon(activeWeapon, WeaponInventory.Instance.ActiveWeaponIndex);
             ChangeWeapon(activeWeapon);
         }
 
-        PlayerWeaponManager.Instance.OnAddedWeapon += AddWeapon;
-        PlayerWeaponManager.Instance.OnRemovedWeapon += RemoveWeapon;
-        PlayerWeaponManager.Instance.OnSwitchedToWeapon += ChangeWeapon;
+        WeaponInventory.Instance.OnAddedWeapon += AddWeapon;
+        WeaponInventory.Instance.OnRemovedWeapon += RemoveWeapon;
+        WeaponInventory.Instance.OnSwitchedToWeapon += ChangeWeapon;
     }
 
     // Update is called once per frame

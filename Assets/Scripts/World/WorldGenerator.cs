@@ -18,8 +18,8 @@ public class WorldGenerator : MonoBehaviour {
 	int chunksVisibleInViewDst;
 	int chunkSize = 40;
 	public GameObject Ground;
-
 	public int StructureAmount;
+	public bool ItNghieng;
 
 	public WeightTerrain terrain;
 	public WeightTerrain[] Allstructure;
@@ -53,6 +53,7 @@ public class WorldGenerator : MonoBehaviour {
 		StructureGenerator.WeightedSpawn[] terr = this.FindObjectToSpawn(this.Allstructure, this.totalWeight, this.randomly);
 		terrChoice = terr;
 		chunksVisibleInViewDst = Mathf.RoundToInt(maxViewDst / chunkSize);
+		ItNghieng = UnityEngine.Random.value < 0.1f;
 
 	}
 

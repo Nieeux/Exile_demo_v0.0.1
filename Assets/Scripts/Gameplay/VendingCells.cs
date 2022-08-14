@@ -8,21 +8,19 @@ public class VendingCells : MonoBehaviour, Interact, SharedId
 
     public int price;
 
-    private int basePrice;
-
     private bool ready = true;
-
-    private bool opened;
 
     private WeaponController weapon;
 
+    public multiLanguage language;
 
     private void Start()
     {
         this.ready = true;
-        this.basePrice = this.price;
         AllExecute();
         weapon = GetComponentInChildren<WeaponController>();
+        Getprice();
+        weapon.GetComponent<Collider>().isTrigger = true;
     }
 
     public void Interact()
@@ -38,6 +36,7 @@ public class VendingCells : MonoBehaviour, Interact, SharedId
         this.ready = false;
         Inventory.Instance.UseMoney(this.price);
         weapon.GetComponent<Rigidbody>().isKinematic = false;
+        weapon.GetComponent<Collider>().isTrigger = false;
         weapon.transform.SetParent(null);
         RemoveObject();
     }
@@ -45,7 +44,9 @@ public class VendingCells : MonoBehaviour, Interact, SharedId
     public void AllExecute()
     {
         ItemStats RandomWeapon = ItemManager.Instance.GetRandomWeapons();
-        ItemManager.Instance.DropWeaponAtVending(RandomWeapon.id, base.transform.position, base.transform.rotation, transform);
+        Buff buff = ItemManager.Instance.GetBuff();
+        Buff Debuff = ItemManager.Instance.GetDeBuff();
+        ItemManager.Instance.DropWeaponAtVending(RandomWeapon.id, buff.id, Debuff.id, base.transform.position, base.transform.rotation, transform);
 
     }
     private void GetReady()
@@ -55,16 +56,36 @@ public class VendingCells : MonoBehaviour, Interact, SharedId
 
     public string GetName()
     {
-        this.price = (int)((float)this.basePrice);
-        if (this.price < 1)
-        {
-            return "Open chest";
-        }
-        return string.Format("{0} Money\n<size=75%>open chest", this.price);
+        return string.Format("{0} {1}\n<size=75%>E | {2}", this.price, language.VietNamese, this.weapon.GunStats.nameViet);
     }
 
+    public ItemStats GetItem()
+    {
+        return this.weapon.GunStats;
+    }
+    private void Getprice()
+    {
+        int n = (int)this.weapon.GunStats.CurrentDurability;
+        if(this.weapon.GunStats.Rare == ItemStats.ItemRare.original) 
+        {
+            n *= 2;
+        }
+        if (this.weapon.GunStats.Rare == ItemStats.ItemRare.upgrade)
+        {
+            n *= 4;
+        }
+        if (this.weapon.GunStats.Rare == ItemStats.ItemRare.advanced)
+        {
+            n *= 8;
+        }
+        if (this.weapon.GunStats.weaponType == ItemStats.WeaponType.AssaultRifles)
+        {
+            n *= 8;
+        }
 
 
+        price = n;
+    }
     public bool IsStarted()
     {
         return false;

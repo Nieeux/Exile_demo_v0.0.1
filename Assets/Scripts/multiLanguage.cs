@@ -5,5 +5,7 @@ using UnityEngine;
 [CreateAssetMenu]
 public class multiLanguage : ScriptableObject
 {
-	public string MultiLanguage;
+
+	public string English;
+	public string VietNamese;
 }

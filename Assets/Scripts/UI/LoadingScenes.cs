@@ -10,6 +10,7 @@ public class LoadingScenes : MonoBehaviour
     public RawImage background;
 
     public bool Show;
+    public bool Ingame;
 
     public float totalFadeTime { get; set; } = 1f;
 
@@ -25,20 +26,29 @@ public class LoadingScenes : MonoBehaviour
 
     void Start()
     {
-        
+        if(Ingame == true)
+        {
+            Show = true;
+            base.Invoke("fade", 3f);
+        }
+
+    }
+    void fade()
+    {
+        Show = false;
     }
     void Update()
     {
 
         if(Show == true)
         {
-            this.pad = Mathf.Lerp(this.pad, 1, Time.deltaTime * 20f);
+            this.pad = Mathf.Lerp(this.pad, 1, Time.deltaTime * 5f);
             this.canvasGroup.alpha = pad;
             this.background.gameObject.SetActive(true);
         }
         else
         {
-            this.pad = Mathf.Lerp(this.pad, 0, Time.deltaTime * 20f);
+            this.pad = Mathf.Lerp(this.pad, 0, Time.deltaTime * 5f);
             this.canvasGroup.alpha = pad;
             if (pad == 0)
             {

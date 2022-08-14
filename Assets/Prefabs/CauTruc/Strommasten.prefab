@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 5933331514334044215}
   - component: {fileID: 4855342434354793162}
   - component: {fileID: 5749901001601651433}
-  m_Layer: 12
+  m_Layer: 14
   m_Name: Strommasten
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -110,7 +110,7 @@ GameObject:
   - component: {fileID: 8179186207745697484}
   - component: {fileID: 6348164383343523601}
   - component: {fileID: 571864164224106458}
-  m_Layer: 12
+  m_Layer: 14
   m_Name: Plane
   m_TagString: Untagged
   m_Icon: {fileID: 0}

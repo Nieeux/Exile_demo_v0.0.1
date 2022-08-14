@@ -271,7 +271,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5938657296073191396}
   - component: {fileID: -844438719468562371}
-  - component: {fileID: 4167932347345096478}
+  - component: {fileID: -1807747408327108320}
   - component: {fileID: 6131745036830815417}
   - component: {fileID: 356237577419885835}
   - component: {fileID: 3160775077343360457}
@@ -317,7 +317,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   enemyRank: 1
   Agent: {fileID: 3160775077343360457}
-  enemyStats: {fileID: 11400000, guid: b62060ebdad9c8a45a02a08d4b7c87fa, type: 2}
+  EnemyStats: {fileID: 11400000, guid: a29f82aa67df0d44c95040a0de3c340a, type: 2}
   IndexState: 0
   ChangeState: 1
   radius: 50
@@ -332,24 +332,28 @@ MonoBehaviour:
     m_Bits: 512
   BlockTargetMask:
     serializedVersion: 2
-    m_Bits: 4160
+    m_Bits: 28736
   CanHideMask:
     serializedVersion: 2
     m_Bits: 4096
   canSee: 0
-  WeaponSocket: {fileID: 602710194895555247}
-  WeaponStats: {fileID: 0}
-  CurrentWeapon: {fileID: 0}
   radiusHide: 14
   HideSensitivity: -0.1
   MinPlayerDistance: 5
   MinObstacleHeight: 2.9
   UpdateFrequency: 0.25
+  healthLost: 0
+  onDamage: 0
+  remenberTarget: 0
   Targetposition: {x: 0, y: 0, z: 0}
   SeeTargetFirtTime: {x: 0, y: 0, z: 0}
   walkPointSet: 0
   walkPoint: {x: 0, y: 0, z: 0}
---- !u!114 &4167932347345096478
+  MaxHealth: 100
+  DamageMultiplier: 1
+  numberFx: {fileID: 6567150810459544244, guid: 199c2e0e5da209d498e21ee9b322ebdc, type: 3}
+  inventory: {fileID: -1807747408327108320}
+--- !u!114 &-1807747408327108320
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -358,12 +362,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 5940542461286528666}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 10ec911888739ee429dea17ae94234d3, type: 3}
+  m_Script: {fileID: 11500000, guid: 12b63eb4fb8ed2749b1501738be45bc1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MaxHealth: 100
-  DamageMultiplier: 1
-  numberFx: {fileID: 6567150810459544244, guid: 199c2e0e5da209d498e21ee9b322ebdc, type: 3}
+  CurrentWeapon: {fileID: 0}
+  WeaponStats: {fileID: 0}
+  WeaponContainer: {fileID: 602710194895555247}
 --- !u!114 &6131745036830815417
 MonoBehaviour:
   m_ObjectHideFlags: 0

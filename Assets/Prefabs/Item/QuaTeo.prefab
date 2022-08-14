@@ -11,7 +11,6 @@ GameObject:
   - component: {fileID: 5131584232702824516}
   - component: {fileID: 970678634167425708}
   - component: {fileID: 5994671264280317586}
-  - component: {fileID: 4590759904284055157}
   - component: {fileID: -8767461437359182012}
   - component: {fileID: -5455342751950699497}
   - component: {fileID: 1417362504154888248}
@@ -44,7 +43,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2841471369595137429}
-  m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+  m_Mesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
 --- !u!23 &5994671264280317586
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -87,23 +86,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!114 &4590759904284055157
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2841471369595137429}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 78f4bd6214a19e5499c68a820c896b13, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ItemStats: {fileID: 11400000, guid: 33a4b8cf8e229d746aa967ef1672b713, type: 2}
-  rb: {fileID: 1417362504154888248}
-  coll: {fileID: -5455342751950699497}
-  WeaponRoot: {fileID: 2841471369595137429}
-  ChangeWeaponSfx: {fileID: 0}
 --- !u!114 &-8767461437359182012
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -116,7 +98,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b54a36e40b073ad4ba3e4eb9e2626352, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ItemPrefab: {fileID: 4590759904284055157}
   item: {fileID: 11400000, guid: 33a4b8cf8e229d746aa967ef1672b713, type: 2}
   amount: 1
   id: 0

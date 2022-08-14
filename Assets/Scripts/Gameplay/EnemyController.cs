@@ -75,7 +75,7 @@ public class EnemyController : MonoBehaviour
                         Debug.DrawLine(firePoint.position, firePoint.position + firePoint.forward * attackDistance, Color.cyan);
 
                         PlayerStats player = hit.transform.GetComponent<PlayerStats>();
-                        player.Damage(enemyDamage);
+                        //player.Damage(enemyDamage);
                     }
                 }
             }

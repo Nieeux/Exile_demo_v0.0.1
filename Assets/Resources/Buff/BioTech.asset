@@ -15,6 +15,6 @@ MonoBehaviour:
   id: 0
   name: BioTech
   nameViet: "C\xF4ng ngh\u1EC7 lalo"
-  description: "V\u0169 kh\xED n\xE0y nh\u1EB9 h\u01A1n b\xECnh th\u01B0\u1EDDng
-    20%"
+  description: "V\u0169 kh\xED nh\u1EB9 h\u01A1n 20% v\xE0 th\xEAm 0.5 t\u1ED1c \u0111\u1ED9
+    di chuy\u1EC3n"
   sprite: {fileID: 21300000, guid: 8a4b13c7034b45446b96fd786ed9082b, type: 3}

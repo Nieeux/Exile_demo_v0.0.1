@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 5914463684901257746}
   - component: {fileID: 7118315871772277857}
   - component: {fileID: 5749901001601651433}
-  m_Layer: 6
+  m_Layer: 14
   m_Name: Bulding
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -62,7 +62,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 9846325dd5e198242b822057a6ef21f7, type: 2}
+  - {fileID: 2100000, guid: a8e5cbcdf9d5a8b4aaabd2788f7a8306, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

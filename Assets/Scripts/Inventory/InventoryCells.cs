@@ -12,6 +12,8 @@ public class InventoryCells : MonoBehaviour, IEventSystemHandler,IPointerEnterHa
     public ItemStats currentItem;
     public RawImage Equip;
 	public RawImage Select;
+	public Image Durability;
+	public Gradient GradientDurability;
 	public Color idle;
     public Color hover;
 	public Color EquipColor;
@@ -34,7 +36,7 @@ public class InventoryCells : MonoBehaviour, IEventSystemHandler,IPointerEnterHa
 		if (this.spawnItem)
 		{
 			this.currentItem = ScriptableObject.CreateInstance<ItemStats>();
-			this.currentItem.Getitem(this.spawnItem, this.spawnItem.amount);
+			this.currentItem.Getitem(this.spawnItem);
 		}
 		this.UpdateCell();
 	}
@@ -47,15 +49,30 @@ public class InventoryCells : MonoBehaviour, IEventSystemHandler,IPointerEnterHa
 			this.Name.text = "";
 			this.itemImage.sprite = null;
 			this.itemImage.color = Color.clear;
+			this.Durability.color = Color.clear;
 		}
 		else
 		{
 			this.amount.text = this.currentItem.GetAmount();
 			this.Name.text = this.currentItem.GetName();
 			this.itemImage.sprite = this.currentItem.sprite;
-			this.itemImage.color = Color.white;
+			this.itemImage.color = this.currentItem.colorIndex;
+
 		}
 		this.SetColor(this.idle);
+	}
+
+	public void UpdateDurability()
+    {
+		Durability.fillAmount = currentItem.CurrentDurability / currentItem.Durability;
+		if (currentItem.Durability > 0)
+		{
+			this.Durability.color = GradientDurability.Evaluate(Durability.fillAmount);
+		}
+		else
+		{
+			this.Durability.color = Color.clear;
+		}
 	}
 
 	public void Eat(int amount)
@@ -88,6 +105,8 @@ public class InventoryCells : MonoBehaviour, IEventSystemHandler,IPointerEnterHa
 		if (this.currentItem)
 		{
 			string text = this.currentItem.nameViet + "\n<size=70%>" + this.currentItem.description;
+			float Weight = this.currentItem.Weight;
+			ItemInfo.Instance.SetWeight(Weight);
 			ItemInfo.Instance.SetText(text);
 			return;
 		}

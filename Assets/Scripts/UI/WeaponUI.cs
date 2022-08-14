@@ -9,33 +9,40 @@ public class WeaponUI : MonoBehaviour, IPointerEnterHandler, IEventSystemHandler
 {
     public static WeaponUI Instance;
     public CanvasGroup CanvasGroup;
+
+    [Header("Image")]
     public Image WeaponImage;
     public Image VienImage;
     public Image VienImage2;
     public Image Ammotype;
     public Image buff;
-    WeaponController m_Weapon;
-    public Gradient GradientDurability;
+    public Image Debuff;
     public Image Durability;
-    private bool ActiveWeapon;
-
-    [Tooltip("Scale when weapon not selected")]
-    public Vector3 UnselectedScale = Vector3.one * 0.8f;
-    [Range(0, 1)]
-    [Tooltip("Opacity when weapon not selected")]
-    public float UnselectedOpacity = 0.5f;
-    public float SpeedTransform;
-    public GameObject ControlKeysRoot;
-    public GameObject WeaponStatus;
+    public Gradient GradientDurability;
+    [Header("Text")]
     public TextMeshProUGUI WeaponName;
     public TextMeshProUGUI AmmoUI;
-
     public TextMeshProUGUI TextDamage;
     public TextMeshProUGUI TextFireRate;
     public TextMeshProUGUI TextCritical;
     public TextMeshProUGUI TextMagazine;
     public TextMeshProUGUI TextDurability;
     public TextMeshProUGUI TextWeaponRare;
+
+    public WeaponController m_Weapon;
+
+    private bool ActiveWeapon;
+
+    public Vector3 UnselectedScale = Vector3.one * 0.8f;
+
+    [Range(0, 1)]
+
+    public float UnselectedOpacity = 0.5f;
+    public float SpeedTransform;
+    public GameObject ControlKeysRoot;
+    public GameObject WeaponStatus;
+
+
 
     public int WeaponUIIndex { get; set; }
 
@@ -74,7 +81,7 @@ public class WeaponUI : MonoBehaviour, IPointerEnterHandler, IEventSystemHandler
         else
         {
             WeaponStatus.SetActive(false);
-            bool isActiveWeapon = m_Weapon == PlayerWeaponManager.Instance.GetActiveWeapon();
+            bool isActiveWeapon = m_Weapon == WeaponInventory.Instance.GetActiveWeapon();
             CanvasGroup.alpha = Mathf.Lerp(CanvasGroup.alpha, isActiveWeapon ? 1f : UnselectedOpacity, Time.deltaTime * 10);
             transform.localScale = Vector3.Lerp(transform.localScale, isActiveWeapon ? Vector3.one : UnselectedScale, Time.deltaTime * 10);
             ControlKeysRoot.SetActive(!isActiveWeapon);
@@ -89,7 +96,7 @@ public class WeaponUI : MonoBehaviour, IPointerEnterHandler, IEventSystemHandler
 
         this.TextFireRate.text = m_Weapon.GunStats.fireRate.ToString("0.0");
 
-        this.TextCritical.text = m_Weapon.GunStats.Weight.ToString("00");
+        this.TextCritical.text = m_Weapon.GunStats.Weight.ToString("0.0 kg");
 
         this.TextMagazine.text = m_Weapon.GunStats.Magazine.ToString("00");
 
@@ -97,11 +104,12 @@ public class WeaponUI : MonoBehaviour, IPointerEnterHandler, IEventSystemHandler
 
     public void Initialize(WeaponController weapon, int weaponIndex)
     {
-        m_Weapon = weapon;
-        WeaponUIIndex = weaponIndex;
-        WeaponImage.sprite = weapon.GunStats.sprite;
-        WeaponName.text = weapon.GunStats.nameViet;
-        buff.sprite = weapon.GunStats.buffs[0].sprite;
+        this.m_Weapon = weapon;
+        this.WeaponUIIndex = weaponIndex;
+        this.WeaponImage.sprite = weapon.GunStats.sprite;
+        this.WeaponName.text = weapon.GunStats.nameViet;
+        this.buff.sprite = weapon.GunStats.buffs[0].sprite;
+        this.Debuff.sprite = weapon.GunStats.Debuffs[0].sprite;
 
     }
     private void UpdateAmmo(WeaponController weapon)

@@ -2,29 +2,30 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class AI_AttackCover : AIstate
+public class AI_AttackCover : MonoBehaviour, AIstate
 {
     public StateType GetState()
     {
         return StateType.AttackCover;
     }
-    public void Enter(AIController agent)
+    public void AiEnter(AIController agent)
     {
         agent.StartCoroutine(agent.Hide(agent.target));
     }
-    public void Update(AIController agent)
+    public void AiUpdate(AIController agent)
     {
-        if(agent.CurrentWeapon != null && agent.canSee)
+        if(agent.inventory.CurrentWeapon != null && agent.canSee)
         {
+            agent.LookAtTarget();
             agent.ReadyAttack();
-            agent.CurrentWeapon.canFire = true;
-            agent.CurrentWeapon.AiFire();
+            agent.inventory.CurrentWeapon.canFire = true;
+            agent.inventory.CurrentWeapon.AiFire();
 
-            if (agent.CurrentWeapon.GunStats.CurrentDurability <= 0)
-                agent.BrokeWeapon(agent.WeaponStats);
+            if (agent.inventory.CurrentWeapon.GunStats.CurrentDurability <= 0)
+                agent.inventory.BrokeWeapon(agent.inventory.WeaponStats);
 
         }
-        if (agent.CurrentWeapon == null)
+        if (agent.inventory.CurrentWeapon == null)
         {
             agent.stateMachine.ChangesState(StateType.Hide);
         }
@@ -37,7 +38,7 @@ public class AI_AttackCover : AIstate
 
 
     }
-    public void Exit(AIController agent)
+    public void AiExit(AIController agent)
     {
         agent.StopCoroutine(agent.Hide(agent.target));
     }

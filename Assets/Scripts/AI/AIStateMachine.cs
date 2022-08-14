@@ -26,14 +26,14 @@ public class AIStateMachine
 
     public void Update()
     {
-        GetState(currentState)?.Update(agent);
+        GetState(currentState)?.AiUpdate(agent);
     }
 
     public void ChangesState(StateType newstate)
     {
-        GetState(currentState)?.Exit(agent);
+        GetState(currentState)?.AiExit(agent);
         currentState = newstate;
-        GetState(currentState)?.Enter(agent);
+        GetState(currentState)?.AiEnter(agent);
     }
 
 }

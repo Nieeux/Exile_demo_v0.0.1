@@ -9,6 +9,7 @@ public class UIPlayerStats : MonoBehaviour
     public static UIPlayerStats Instance;
     private VerticalLayoutGroup layout;
     public GameObject bar;
+    public GameObject SleepButton;
     public float padBottom = 0;
     [Header("Player Stats UI")]
     public TextMeshProUGUI DamageNumber;
@@ -25,7 +26,7 @@ public class UIPlayerStats : MonoBehaviour
     public void Start()
     {
         bar.SetActive(false);
-
+        SleepButton.SetActive(false);
         base.Invoke("UpdateStatsPlayer", 0.1f);
 
         //this.weightNumber.text = m_Weapon.GunStats.Critical.ToString("0.0");
@@ -38,7 +39,10 @@ public class UIPlayerStats : MonoBehaviour
         if (StatusUI.Instance.IsShowStatus == true)
         {
             bar.SetActive(true);
-            UpdateStatsPlayer();
+            if (PlayerStats.Instance.IsSleep())
+            {
+                SleepButton.SetActive(true);
+            }
             this.padBottom = Mathf.Lerp(this.padBottom, 70, Time.deltaTime * 20f);
             RectOffset rectOffset = new RectOffset(this.layout.padding.left, this.layout.padding.right, this.layout.padding.top, this.layout.padding.bottom);
             rectOffset.bottom = (int)this.padBottom;
@@ -59,11 +63,11 @@ public class UIPlayerStats : MonoBehaviour
     }
     public void UpdateStatsPlayer()
     {
-
+        Debug.Log("UpdateStatsUI");
         this.DamageNumber.text = PlayerStats.Instance.damage.ToString("00");
-        this.SpeedNumber.text = PlayerMovement.Instance.Speed.ToString("00");
+        this.SpeedNumber.text = PlayerStats.Instance.CurrentSpeed().ToString("0.0");
         this.CritNumber.text = string.Format("{0:}", Inventory.Instance.GetCritical().ToString("#0.##" + '%'));
-
+        this.weightNumber.text = string.Format("{0:0.##}/ {1} kg", PlayerStats.Instance.Weight(), PlayerStats.Instance.maxWeight);
 
     }
 

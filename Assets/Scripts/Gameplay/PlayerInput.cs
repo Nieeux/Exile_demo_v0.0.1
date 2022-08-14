@@ -7,12 +7,12 @@ public class PlayerInput : MonoBehaviour
     public static PlayerInput Instance;
     public PlayerStats PlayerHealth;
     public PlayerMovement playerMovement;
-    public PlayerWeaponManager WeaponManager;
+    public WeaponInventory WeaponManager;
 
     private void Start()
     {
         PlayerInput.Instance = this;
-        this.WeaponManager = base.GetComponent<PlayerWeaponManager>();
+        this.WeaponManager = base.GetComponent<WeaponInventory>();
         this.PlayerHealth = base.GetComponent<PlayerStats>();
         this.playerMovement = base.GetComponent<PlayerMovement>();
         Cursor.lockState = CursorLockMode.Locked;
@@ -72,6 +72,14 @@ public class PlayerInput : MonoBehaviour
         if (LockState())
         {
             return Input.GetKey(KeyCode.LeftShift);
+        }
+        return false;
+    }
+    public bool GetJump()
+    {
+        if (LockState())
+        {
+            return Input.GetButtonDown("Jump");
         }
         return false;
     }

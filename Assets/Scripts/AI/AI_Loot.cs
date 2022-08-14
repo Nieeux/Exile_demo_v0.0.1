@@ -8,15 +8,15 @@ public class AI_Loot : AIstate
     {
         return StateType.Loot;
     }
-    public void Enter(AIController agent)
+    public void AiEnter(AIController agent)
     {
         PickupWeapon pickup = FindItem(agent);
         agent.Agent.destination = pickup.transform.position;
 
     }
-    public void Update(AIController agent)
+    public void AiUpdate(AIController agent)
     {
-        if(agent.CurrentWeapon != null)
+        if(agent.inventory.CurrentWeapon != null)
         {
             agent.stateMachine.ChangesState(StateType.Attack);
         }
@@ -26,7 +26,7 @@ public class AI_Loot : AIstate
 
     }
 
-    public void Exit(AIController agent)
+    public void AiExit(AIController agent)
     {
 
     }

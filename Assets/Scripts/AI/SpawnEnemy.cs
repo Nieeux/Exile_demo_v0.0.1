@@ -13,10 +13,6 @@ public class SpawnEnemy : MonoBehaviour
 	private WorldGenerator World;
 	GameObject EnemyManager;
 
-	int chunksVisibleInViewDst;
-	int chunkSize = 120;
-	private Vector2 viewerPosition;
-
     [SerializeField]
 	private int maxEnemy = 2;
 	private Vector3[] enemyPos;
@@ -34,25 +30,35 @@ public class SpawnEnemy : MonoBehaviour
 
 	}
 
-    void Start()
+	private void Start()
 	{
 		World = GetComponent<WorldGenerator>();
-		chunksVisibleInViewDst = Mathf.RoundToInt(maxViewDst / chunkSize);
 		EnemyManager = new GameObject("EnemyManager");
 		//EnemyManager.transform.parent = transform;
 
+		StartCoroutine(SpawnRoutine());
 	}
 
 	void Update()
 	{
-		if(enemyList.Count < maxEnemy)
-        {
-			Place();
-		}
-		
-	}		
 
-	public void Place()
+		
+	}
+	private IEnumerator SpawnRoutine()
+	{
+		WaitForSeconds wait = new WaitForSeconds(1f);
+
+		while (true)
+		{
+			yield return wait;
+			if (enemyList.Count < maxEnemy)
+			{
+				Spawn();
+			}
+		}
+	}
+
+	private void Spawn()
 	{
 		//this.Enemy = new List<GameObject>();
 		this.randomly = new Random();
@@ -61,12 +67,12 @@ public class SpawnEnemy : MonoBehaviour
 		for (int i = 0; i < this.maxEnemy; i++)
 		{
 
-			Vector3 position = World.player.transform.position + new Vector3(UnityEngine.Random.Range(-10f, 10f) * 50f, 0f, UnityEngine.Random.Range(-10f, 10f) * 50f);
+			Vector3 position = World.player.transform.position + new Vector3(UnityEngine.Random.Range(-10f, 10f) * 50f, 200f, UnityEngine.Random.Range(-10f, 10f) * 50f);
 			Vector3 startPoint = RandomPointAboveTerrain();
 			RaycastHit hit;
+			Debug.DrawLine(position, position + Vector3.down * 500f, Color.red, 50f);
 
-
-			if (Physics.Raycast(position, Vector3.down, out hit, 10f) && hit.transform.gameObject.layer == LayerMask.NameToLayer("Ground"))
+			if (Physics.Raycast(position, Vector3.down, out hit, 300f) && hit.transform.gameObject.layer == LayerMask.NameToLayer("Ground"))
 			{
 				this.enemyPos[i] = hit.point;
 				//Quaternion orientation = Quaternion.Euler(Vector3.up * UnityEngine.Random.Range(0f, 360f));

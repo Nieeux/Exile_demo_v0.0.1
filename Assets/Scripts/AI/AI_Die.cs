@@ -8,17 +8,18 @@ public class AI_Die : AIstate
     {
         return StateType.Die;
     }
-    public void Enter(AIController agent)
+    public void AiEnter(AIController agent)
     {
         Debug.Log("AiDie");
-        agent.DropWeapon(agent.WeaponStats);
+        agent.inventory.DropWeapon();
+        agent.inventory.DropItem();
         agent.Reward();
     }
-    public void Update(AIController agent)
+    public void AiUpdate(AIController agent)
     {
 
     }
-    public void Exit(AIController agent)
+    public void AiExit(AIController agent)
     {
 
     }

@@ -14,47 +14,68 @@ public class PlayerStats : MonoBehaviour
     public int speed { get; set; }
 
     [Header("Hunger")]
-    private float hungerDrainRate = 0.15f;
+    public float hungerDrainRate = 0.5f;
     public float hunger { get; set; }
     public float maxHunger { get; set; }
+    private bool Sleep;
+
+    [Header("Sleepy")]
+    public float SleepyDrainRate = 0.5f;
+    public float sleepy { get; set; }
+    public float maxSleepy { get; set; }
 
     [Header("Stamina")]
     private bool canRun = true;
     public float stamina { get; set; }
     public float maxStamina { get; set; }
-    private float staminaRegenRate = 15f;
+    private float staminaRegenRate = 12f;
     private float staminaDrainRate = 12f;
     private float staminaDrainMultiplier = 5f;
     private float healingDrainMultiplier = 2f;
-    private Coroutine regeneratingHealth;
+    private Coroutine regeneratingStamina;
 
     [Header("Healing")]
     private bool healing;
     private float healingRate = 5f;
 
     [Header("Damage")]
+    public float damageFinal;
     bool IsDead;
     public float damage { get; set; }
     public bool Invincible { get; set; }
     public float DamageMultiplier = 1f;
 
+    //Weight
+    public float currentWeight;
+    public float maxWeight { get; set; }
+
     private PlayerMovement player;
+    Inventory inventory;
+    WeaponInventory weaponInventory;
+
     public UnityAction<float> OnDamaged;
     public UnityAction<float> OnHealed;
+    public UnityAction OnExhausted;
     public UnityAction OnDie;
+
 
 
     private void Awake()
     {
         PlayerStats.Instance = this;
         this.player = base.GetComponent<PlayerMovement>();
+        weaponInventory = GetComponent<WeaponInventory>();
+        inventory = GetComponent<Inventory>();
         this.damage = 50f;
         this.stamina = 100f;
         this.hunger = 100f;
+        this.sleepy = 100f;
+        this.maxWeight = 20f;
         this.maxStamina = this.stamina;
         this.maxHunger = this.hunger;
+        this.maxSleepy = this.sleepy;
         this.CurrentHealth = this.MaxHealth;
-        
+
     }
     void Start()
     {
@@ -67,6 +88,8 @@ public class PlayerStats : MonoBehaviour
         Stamina();
         Hunger();
         Healing();
+        Hungry();
+        Sleepy();
     }
     private void Stamina()
     {
@@ -90,20 +113,20 @@ public class PlayerStats : MonoBehaviour
         if (this.stamina <= 0f)
         {
             this.stamina = 0;
-            regeneratingHealth = StartCoroutine(CanRegeneratingHealth());
+            regeneratingStamina = StartCoroutine(CanRegeneratingStamina());
         }
-        if (regeneratingHealth != null)
+        if (regeneratingStamina != null)
         {
-            StopCoroutine(CanRegeneratingHealth());
-            regeneratingHealth = null;
+            StopCoroutine(CanRegeneratingStamina());
+            regeneratingStamina = null;
         }
     }
-    private IEnumerator CanRegeneratingHealth()
+    private IEnumerator CanRegeneratingStamina()
     {
         canRun = false;
         yield return new WaitForSeconds(3);
         canRun = true;
-        regeneratingHealth = null;
+        regeneratingStamina = null;
 
     }
     private void Hunger()
@@ -133,15 +156,67 @@ public class PlayerStats : MonoBehaviour
         {
             return;
         }
-        float num = this.healingRate * Time.deltaTime * 0.1f;
+        float num = (this.healingRate + weaponInventory.GetBuffHealTech()) * Time.deltaTime * 0.1f;
         this.CurrentHealth += num;
     }
+    private void Hungry()
+    {
+        if (this.hunger <= 0f)
+        {
+            float num = this.healingRate * Time.deltaTime * 1f;
+            this.CurrentHealth -= num;
 
-    public void Eat(ItemStats item)
+            if (this.CurrentHealth <= 0)
+                this.CurrentHealth = 0;
+                HandleDeath();
+        }
+
+    }
+    private void Sleepy()
+    {
+        
+        if (this.sleepy >= 0f || this.CurrentHealth >= 0f)
+        {
+            exhausted();
+
+            if(this.sleepy == 0f || this.CurrentHealth == 0f)
+            {
+                return;
+            }
+            float num = 0.2f;
+
+            this.sleepy -= this.SleepyDrainRate * Time.deltaTime * num;
+
+            if (this.sleepy <= 25f)
+            {
+                Sleep = true;
+            }
+            else
+            {
+                Sleep = false;
+            }
+           
+        }
+        if (this.sleepy < 0f)
+        {
+            this.sleepy = 0f;
+
+        }
+    }
+    public bool IsSleep()
+    {
+        if (Sleep == true)
+        {
+            return true;
+        }
+        return false;
+    }
+
+    private void Eat(ItemStats item)
     {
 
     }
-    public void Armor(ItemStats item)
+    private void Armor(ItemStats item)
     {
 
     }
@@ -159,14 +234,42 @@ public class PlayerStats : MonoBehaviour
         }
     }
 
-    public void Damage(float damage)
+    public float Weight()
+    {
+        float n = inventory.GetWeight() + weaponInventory.GetWeight();
+        return n;
+    }
+
+    public float CurrentSpeed()
+    {
+        float n = 3 + inventory.GetSpeedUp() + weaponInventory.GetBuffSpeed();
+        if (Weight() >= maxWeight)
+        {
+            return n /= 2;
+        }
+        return n;
+    }
+
+    public void Damage(float damage, Bullet bulletType)
     {
         if (Invincible)
             return;
 
         CameraShake.Instance.Shake();
+
         float healthBefore = CurrentHealth;
-        CurrentHealth -= damage;
+
+        if (inventory.currentArmor != null)
+        {
+            DamageCalculations.ArmorResult damageMultiplier = DamageCalculations.Instance.GetDamageArmor(inventory.currentArmor, bulletType, damage);
+            damageFinal = damageMultiplier.damageResult;
+        }
+        else
+        {
+            damageFinal = damage;
+        }
+
+        CurrentHealth -= damageFinal;
         CurrentHealth = Mathf.Clamp(CurrentHealth, 0f, MaxHealth);
 
 
@@ -182,7 +285,8 @@ public class PlayerStats : MonoBehaviour
         
     }
 
-    public void InflictDamage(float damage, bool isExplosionDamage)
+    /*
+    public void InflictDamage(float damage, bool isExplosionDamage, Bullet bullet)
     {
         var totalDamage = damage;
 
@@ -195,6 +299,7 @@ public class PlayerStats : MonoBehaviour
         // apply the damages
         Damage(totalDamage);
     }
+    */
 
     public void Kill()
     {
@@ -204,6 +309,14 @@ public class PlayerStats : MonoBehaviour
         OnDamaged?.Invoke(MaxHealth);
 
         HandleDeath();
+    }
+
+    void exhausted()
+    {
+        if (sleepy <= 0f)
+        {
+            OnExhausted?.Invoke();
+        }
     }
 
     void HandleDeath()

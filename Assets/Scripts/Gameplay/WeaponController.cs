@@ -21,9 +21,9 @@ public class WeaponController : MonoBehaviour
     float nextFireTime = 0;
     public bool reloading;
     public bool canFire = false;
-    public bool AiEquip = false;
 
     private Vector3 BulletSpreadVariance = new Vector3(0.01f, 0.01f, 0.01f);
+    private Vector3 BulletShotGun = new Vector3(0.1f, 0.1f, 0.1f);
 
     public Rigidbody rb;
     public BoxCollider coll;
@@ -56,15 +56,13 @@ public class WeaponController : MonoBehaviour
         WeaponAmmoType = bullet.ammoTypeColor;
 
         audioSource = GetComponent<AudioSource>();
-        audioSource.playOnAwake = false;
-        //Make sound 3D
-        audioSource.spatialBlend = 1f;
+
     }
 
     void Update()
     {
 
-        if (canFire == true && AiEquip == false)
+        if (canFire == true)
         {
 
             if (PlayerInput.Instance.GetFireButtonDown() && singleFire)
@@ -76,12 +74,11 @@ public class WeaponController : MonoBehaviour
             {
                 Fire();
             }
-            if (Input.GetKeyDown(KeyCode.R) && canFire && GunStats.CurrentMagazine != GunStats.Magazine)
+            if (Input.GetKeyDown(KeyCode.R) && GunStats.CurrentMagazine < GunStats.Magazine)
             {
                 StartCoroutine(Reload(true));
             }
         }
-
 
         /*
         // Check Enemy đã vào tầm chưa?
@@ -98,11 +95,6 @@ public class WeaponController : MonoBehaviour
         */
 
     }
-    void CalculateStats()
-    {
-        //foreach(InventoryItem GunStats in GunStats)
-
-    }
     private void Fire()
     {
         if (canFire)
@@ -113,23 +105,47 @@ public class WeaponController : MonoBehaviour
 
                 if (GunStats.CurrentMagazine > 0)
                 {
-                    //Point fire point at the current center of Camera
-                    Vector3 firePointPointerPosition = firePoint.transform.position + firePoint.transform.forward * 100;
-
-                    RaycastHit hit;
-                    if (Physics.Raycast(firePoint.transform.position, firePoint.transform.forward, out hit, 100))
+                    
+                    if (this.GunStats.weaponType == ItemStats.WeaponType.ShotGuns)
                     {
-                        firePointPointerPosition = hit.point;
+                        for(int i = 0; i < GunStats.bulletsPerShot; i++)
+                        {
+                            Vector3 direction = ShotgunDirection();
+                            RaycastHit hit;
+                            Vector3 firePointPointerPosition = firePoint.transform.position + firePoint.transform.forward * 100;
+
+                            if (Physics.Raycast(firePoint.transform.position, direction, out hit, 100))
+                            {
+                                firePointPointerPosition = hit.point;
+                            }
+                            firePoint.LookAt(firePointPointerPosition);
+
+                            Bullet bulletobject = Instantiate(GunStats.bulletPrefab, firePoint.position, firePoint.rotation).GetComponent<Bullet>();
+                            bulletobject.BulletDamage = GunStats.GunDamage;
+                            this.WeaponAmmoType = bulletobject.ammoTypeColor;
+                        }
                     }
-                    firePoint.LookAt(firePointPointerPosition);
-                    //Fire
-                    Bullet bulletObject = Instantiate(GunStats.bulletPrefab, firePoint.position, firePoint.rotation).GetComponent<Bullet>();
-                    bulletObject.BulletDamage = GunStats.GunDamage;
-                    this.WeaponAmmoType = bulletObject.ammoTypeColor;
+                    else
+                    {
+                        Vector3 firePointPointerPosition = firePoint.transform.position + firePoint.transform.forward * 100;
+
+                        RaycastHit hit;
+                        if (Physics.Raycast(firePoint.transform.position, firePoint.transform.forward, out hit, 100))
+                        {
+                            firePointPointerPosition = hit.point;
+                        }
+                        firePoint.LookAt(firePointPointerPosition);
+                        //Fire
+                        Bullet bulletObject = Instantiate(GunStats.bulletPrefab, firePoint.position, firePoint.rotation).GetComponent<Bullet>();
+                        bulletObject.BulletDamage = GunStats.GunDamage;
+                        this.WeaponAmmoType = bulletObject.ammoTypeColor;
+                       
+                    }
+                    CameraShake.Instance.Shake();
                     // giam Durability khi ban
                     RecoilAni();
 
-                    PlayerWeaponManager.Instance.RecoilFire();
+                    WeaponInventory.Instance.RecoilFire();
                     //UIBob.Instance.RecoilHUD();
 
                     GunStats.CurrentMagazine--;
@@ -143,6 +159,7 @@ public class WeaponController : MonoBehaviour
                         base.Invoke("BrokenWeapon", 1f);
 
                     }
+
                 }
                 else
                 {
@@ -165,13 +182,13 @@ public class WeaponController : MonoBehaviour
 
     private void BrokenWeapon()
     {
-        PlayerWeaponManager.Instance.BrokeWeapon(this, GunStats);
+        WeaponInventory.Instance.BrokeWeapon(this, GunStats);
 
     }       
 
     public void AiFire()
     {
-        if (canFire)
+        if (!reloading)
         {
             if (Time.time > nextFireTime)
             {
@@ -179,18 +196,41 @@ public class WeaponController : MonoBehaviour
 
                 if (GunStats.CurrentMagazine > 0)
                 {
-                    Vector3 direction = GetDirection();
-                    Vector3 firePointPointerPosition = firePoint.transform.position + firePoint.transform.forward * 100;
-
-                    RaycastHit hit;
-                    if (Physics.Raycast(firePoint.transform.position, direction, out hit, 100))
+                    if (this.GunStats.weaponType == ItemStats.WeaponType.ShotGuns)
                     {
-                        firePointPointerPosition = hit.point;
+                        for (int i = 0; i < GunStats.bulletsPerShot; i++)
+                        {
+                            Vector3 direction = ShotgunDirection();
+                            RaycastHit hit;
+                            Vector3 firePointPointerPosition = firePoint.transform.position + firePoint.transform.forward * 100;
+
+                            if (Physics.Raycast(firePoint.transform.position, direction, out hit, 100))
+                            {
+                                firePointPointerPosition = hit.point;
+                            }
+                            firePoint.LookAt(firePointPointerPosition);
+
+                            Bullet bulletobject = Instantiate(GunStats.bulletPrefab, firePoint.position, firePoint.rotation).GetComponent<Bullet>();
+                            bulletobject.BulletDamage = GunStats.GunDamage;
+                            this.WeaponAmmoType = bulletobject.ammoTypeColor;
+                        }
                     }
-                    firePoint.LookAt(firePointPointerPosition);
-                    //Fire
-                    Bullet bulletObject = Instantiate(GunStats.bulletPrefab, firePoint.position, firePoint.rotation).GetComponent<Bullet>();
-                    bulletObject.BulletDamage = GunStats.GunDamage;
+                    else
+                    {
+                        Vector3 direction = GetDirection();
+                        Vector3 firePointPointerPosition = firePoint.transform.position + firePoint.transform.forward * 100;
+
+                        RaycastHit hit;
+                        if (Physics.Raycast(firePoint.transform.position, direction, out hit, 100))
+                        {
+                            firePointPointerPosition = hit.point;
+                        }
+                        firePoint.LookAt(firePointPointerPosition);
+                        //Fire
+                        Bullet bulletObject = Instantiate(GunStats.bulletPrefab, firePoint.position, firePoint.rotation).GetComponent<Bullet>();
+                        bulletObject.BulletDamage = GunStats.GunDamage;
+                    }
+
                     // giam Durability khi ban
                     GunStats.CurrentDurability -= 0.5f;
                     //UIBob.Instance.RecoilHUD();
@@ -205,22 +245,34 @@ public class WeaponController : MonoBehaviour
                 }
             }
         }
+
     }
 
     private Vector3 GetDirection()
     {
         Vector3 direction = transform.forward;
 
-        if (canFire)
-        {
-            direction += new Vector3(
-                Random.Range(-BulletSpreadVariance.x, BulletSpreadVariance.x),
-                Random.Range(-BulletSpreadVariance.y, BulletSpreadVariance.y),
-                Random.Range(-BulletSpreadVariance.z, BulletSpreadVariance.z)
-            );
+        direction += new Vector3(
+            Random.Range(-BulletSpreadVariance.x, BulletSpreadVariance.x),
+            Random.Range(-BulletSpreadVariance.y, BulletSpreadVariance.y),
+            Random.Range(-BulletSpreadVariance.z, BulletSpreadVariance.z)
+        );
 
-            direction.Normalize();
-        }
+        direction.Normalize();
+
+        return direction;
+    }
+    private Vector3 ShotgunDirection()
+    {
+        Vector3 direction = transform.forward;
+
+        direction += new Vector3(
+            Random.Range(-BulletShotGun.x, BulletShotGun.x),
+            Random.Range(-BulletShotGun.y, BulletShotGun.y),
+            Random.Range(-BulletShotGun.z, BulletShotGun.z)
+        );
+
+        direction.Normalize();
 
         return direction;
     }
@@ -231,6 +283,7 @@ public class WeaponController : MonoBehaviour
         canFire = !Reloading;
 
         audioSource.clip = reloadAudio;
+        audioSource.minDistance = 1;
         audioSource.Play();
 
         yield return new WaitForSeconds(GunStats.ReloadTime);
@@ -238,6 +291,7 @@ public class WeaponController : MonoBehaviour
         GunStats.CurrentMagazine = GunStats.Magazine;
         reloading = !Reloading;
         canFire = Reloading;
+        audioSource.minDistance = 10;
     }
 
     public void ShowWeapon(bool show)

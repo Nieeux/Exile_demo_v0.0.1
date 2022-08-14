@@ -1,72 +1,102 @@
 using UnityEngine;
+using System.Collections;
 
-[ExecuteAlways]
 public class DayNightCycle : MonoBehaviour
 {
-    //Scene References
-    [SerializeField] private Light DirectionalLight;
-    [SerializeField, Range(0, 24)] private float TimeOfDay;
+	public Light sun;
+	public static float totalTime { get; private set; }
+	public float dayDuration = 1f;
+	public float NightDuration = 0.25f;
+	public float timeSpeed = 0.001f;
+	public bool Day;
+	public bool Night;
 
-    public Gradient AmbientColor;
-    public Gradient DirectionalColor;
-    public Gradient FogColor;
+	[Range(0, 1)]
+	public float currentTimeOfDay = 0.45f;
+	public float timeMultiplier = 1f;
+	[Space(10)]
+	public Gradient nightDayColor;
+	public float maxIntensity = 2f;
+	public float minIntensity = 0f;
+	public float minPoint = -0.2f;
+	public float maxBounceIntensity = 1.0f;
+	public float minBounceIntensity = 0.5f;
+	public float maxAmbient = 1f;
+	public float minAmbient = 0f;
+	public float minAmbientPoint = -0.2f;
+	public float fogScale = 1f;
+	public float exposureMultiplier = 1f;
+	public float dayAtmosphereThickness = 0.4f;
+	public float nightAtmosphereThickness = 0.87f;
+	Material skyMat;
 
-    private void Update()
-    {
+	void Start()
+	{
+		sun = GetComponent<Light>();
+		skyMat = RenderSettings.skybox;
 
-        if (Application.isPlaying)
+	}
+	void Update()
+	{
+		UpdatePosition();
+		UpdateFX();
+
+		float n = 1f * timeSpeed / dayDuration;
+		if(currentTimeOfDay < 0.3f || currentTimeOfDay > 0.7f)
+		{
+			n /= NightDuration;
+			Night = true;
+			Day = false;
+		}
+		else
         {
-            //(Replace with a reference to the game time)
-            TimeOfDay += Time.deltaTime;
-            TimeOfDay %= 24; //Modulus to ensure always between 0-24
-            UpdateLighting(TimeOfDay / 24f);
-        }
-        else
-        {
-            UpdateLighting(TimeOfDay / 24f);
-        }
-    }
+			Night = false;
+			Day = true;
+		}
+
+		float n2 = n * Time.deltaTime;
+		currentTimeOfDay += n2;
+		totalTime += n2;
 
 
-    private void UpdateLighting(float timePercent)
-    {
-        //Set ambient and fog
-        RenderSettings.ambientLight = AmbientColor.Evaluate(timePercent);
-        RenderSettings.fogColor = FogColor.Evaluate(timePercent);
+		if (currentTimeOfDay >= 1)
+		{
+			currentTimeOfDay = 0;
 
-        //If the directional light is set then rotate and set it's color, I actually rarely use the rotation because it casts tall shadows unless you clamp the value
-        if (DirectionalLight != null)
-        {
-            DirectionalLight.color = DirectionalColor.Evaluate(timePercent);
+		}
+	}
 
-            DirectionalLight.transform.localRotation = Quaternion.Euler(new Vector3((timePercent * 360f) - 90f, 170f, 0));
-        }
+	void UpdateCycle()
+	{
 
-    }
+	}
 
-    //Try to find a directional light to use if we haven't set one
-    private void OnValidate()
-    {
-        if (DirectionalLight != null)
-            return;
+	void UpdatePosition()
+	{
+		sun.transform.localRotation = Quaternion.Euler((currentTimeOfDay * 360f) - 90, 170, 0);
+	}
 
-        //Search for lighting tab sun
-        if (RenderSettings.sun != null)
-        {
-            DirectionalLight = RenderSettings.sun;
-        }
-        //Search scene for light that fits criteria (directional)
-        else
-        {
-            Light[] lights = GameObject.FindObjectsOfType<Light>();
-            foreach (Light light in lights)
-            {
-                if (light.type == LightType.Directional)
-                {
-                    DirectionalLight = light;
-                    return;
-                }
-            }
-        }
-    }
+	void UpdateFX()
+	{
+		float tRange = 1 - minPoint;
+		float dot = Mathf.Clamp01((Vector3.Dot(sun.transform.forward, Vector3.down) - minPoint) / tRange);
+		float i = ((maxIntensity - minIntensity) * dot) + minIntensity;
+		sun.intensity = i;
+
+		i = ((maxBounceIntensity - minBounceIntensity) * dot) + minBounceIntensity;
+		sun.bounceIntensity = i;
+
+		tRange = 1 - minAmbientPoint;
+		dot = Mathf.Clamp01((Vector3.Dot(sun.transform.forward, Vector3.down) - minAmbientPoint) / tRange);
+		i = ((maxAmbient - minAmbient) * dot) + minAmbient;
+		RenderSettings.ambientIntensity = i;
+
+		sun.color = nightDayColor.Evaluate(dot);
+		RenderSettings.ambientLight = sun.color;
+
+		i = ((dayAtmosphereThickness - nightAtmosphereThickness) * dot) + nightAtmosphereThickness;
+		skyMat.SetFloat("_AtmosphereThickness", i);
+		skyMat.SetFloat("_Exposure", i * exposureMultiplier);
+		
+	}
 }

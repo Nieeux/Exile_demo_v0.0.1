@@ -8,11 +8,20 @@ public class Inventory : MonoBehaviour
 	public int BarSelect;
 	public Transform CamDrop;
 	public ItemStats currentItem;
+	public int Moneys;
+	public float ItemWeight;
+
 	public Transform inventoryBar;
 	public List<InventoryCells> inventoryCells;
-	//public InventoryCells[] inventoryCells;
 
-	public int Moneys { get; set; }
+	[Header("Armor")]
+	public int armorSlot;
+	public ItemStats currentArmor;
+	public float armorDurability;
+
+	//private int Moneys { get; set; }
+
+	PlayerStats playerStats;
 
 	[Header("Equipments")]
 	public List<ItemStats> Item;
@@ -25,7 +34,6 @@ public class Inventory : MonoBehaviour
 	public GameObject TipUseItem;
 
 	public static Inventory Instance;
-
 	private Vector2 randomDamageRange = new Vector2(0.7f, 1f);
 
     private void Awake()
@@ -35,6 +43,8 @@ public class Inventory : MonoBehaviour
 
     private void Start()
     {
+		playerStats = GetComponent<PlayerStats>();
+		playerStats.OnDamaged += OnDamagedArmor;
 		FillCellList();
 		//this.inventoryCells = inventoryBar.GetComponentsInChildren<InventoryCells>();
 		TipUseItem.SetActive(false);
@@ -82,6 +92,7 @@ public class Inventory : MonoBehaviour
 		}
 	}
 
+	#region Inventory
 	private void UpdateHotbar()
 	{
 
@@ -111,8 +122,11 @@ public class Inventory : MonoBehaviour
 	public int AddItemToInventory(ItemStats item)
 	{
 		ItemStats inventoryItem = ScriptableObject.CreateInstance<ItemStats>();
-		inventoryItem.Getitem(item, item.amount);
+		inventoryItem.Getitem(item);
+		//inventoryItem.Getitem(item, item.amount);
+		EquipWeightModified(item);
 		InventoryCells inventoryCell = null;
+
 		foreach (InventoryCells inventoryCell2 in this.inventoryCells)
 		{
 			if (inventoryCell2.currentItem == null)
@@ -122,6 +136,7 @@ public class Inventory : MonoBehaviour
 					inventoryCell = inventoryCell2;
 				}
 			}
+			/*
 			else if (inventoryCell2.currentItem.Compare(inventoryItem) && inventoryCell2.currentItem.stackable)
 			{
 				if (inventoryCell2.currentItem.amount + inventoryItem.amount <= inventoryCell2.currentItem.max)
@@ -135,7 +150,9 @@ public class Inventory : MonoBehaviour
 				inventoryItem.amount -= num;
 				inventoryCell2.UpdateCell();
 			}
+			*/
 		}
+
 		if (inventoryCell)
 		{
 			inventoryCell.currentItem = inventoryItem;
@@ -179,64 +196,41 @@ public class Inventory : MonoBehaviour
 		}
 		return num >= requirement.amount;
 	}
+	#endregion
 
+	#region UseEquipDrop
 	public void Use()
 	{
 		if (this.currentItem == null)
 		{
 			return;
 		}
-		if (this.currentItem.type == ItemStats.ItemType.Food)
+		if (this.currentItem.itemType == ItemStats.ItemType.Item)
+		{
+
+		}
+		if (this.currentItem.itemType == ItemStats.ItemType.Food)
 		{
 			UseFood(1);
 
 			PlayerStats.Instance.Heal(50);
 
 		}
-		if (this.currentItem.type == ItemStats.ItemType.Equipment
+		if (this.currentItem.itemType == ItemStats.ItemType.Equipment
 			&& this.inventoryCells[this.BarSelect].equipAble == false)
 		{
 			EquipItemUI(currentItem);
 			UpdateEquipmentsModified(currentItem);
-
 		}
-		if (this.currentItem.type == ItemStats.ItemType.Item)
+		if (this.currentItem.itemType == ItemStats.ItemType.Armor)
 		{
+			if (currentArmor != null)
+			{
+				return;
+			}
+			EquipItemUI(currentItem);
+			UpdateArmorSlot(currentItem, this.BarSelect);
 
-		}
-	}
-
-	public void EquipItemUI(ItemStats currentItem)
-	{
-		if (this.inventoryCells[this.BarSelect].currentItem == currentItem)
-		{
-			this.inventoryCells[BarSelect].Equip.color = this.inventoryCells[BarSelect].EquipColor;
-			this.inventoryCells[BarSelect].EquipItem();
-
-		}
-	}
-
-	public void DropItem()
-	{
-		if (this.currentItem == null)
-		{
-			return;
-		}
-
-		// Nem trang bi
-		if (this.inventoryCells[this.BarSelect].equipAble == false)
-		{
-			PickupItem pickup = Instantiate(currentItem.prefab, CamDrop.transform.position, Quaternion.identity).GetComponent<PickupItem>();
-			pickup.GetComponentInChildren<SharedId>().SetId(ResourceManager.Instance.GetNextId());
-			this.inventoryCells[this.BarSelect].RemoveItem();
-			this.UpdateHotbar();
-		}
-        // Huy trang bi
-        else
-        {
-			this.inventoryCells[this.BarSelect].equipAble = false;
-			this.inventoryCells[this.BarSelect].Equip.color = this.inventoryCells[this.BarSelect].idle;
-			UpdateEquipmentsModified(currentItem);
 		}
 	}
 
@@ -250,6 +244,52 @@ public class Inventory : MonoBehaviour
 		this.inventoryCells[this.BarSelect].UpdateCell();
 	}
 
+	public void UseMoney(int Money)
+	{
+		Moneys -= Money;
+		if (Moneys <= 0)
+		{
+			Moneys = 0;
+		}
+		MoneyUI.Instance.Value = Moneys;
+	}
+
+	public void DropItem()
+	{
+		if (this.currentItem == null)
+		{
+			return;
+		}
+
+		// Nem trang bi
+		if (this.inventoryCells[this.BarSelect].equipAble == false)
+		{
+
+			UnequipWeightModified(currentItem);
+
+			PickupItem pickup = Instantiate(currentItem.prefab, CamDrop.transform.position, Quaternion.identity).GetComponent<PickupItem>();
+			pickup.item = currentItem;
+			pickup.GetComponentInChildren<SharedId>().SetId(ResourceManager.Instance.GetNextId());
+			this.inventoryCells[this.BarSelect].RemoveItem();
+			this.UpdateHotbar();
+
+		}
+		// Huy trang bi
+		else
+		{
+			this.inventoryCells[this.BarSelect].equipAble = false;
+			this.inventoryCells[this.BarSelect].Equip.color = this.inventoryCells[this.BarSelect].idle;
+			UpdateEquipmentsModified(currentItem);
+			if (currentArmor != null)
+			{
+				UpdateArmorSlot(currentItem, this.BarSelect);
+			}
+		}
+	}
+
+	#endregion
+
+	#region EquipModified
 	private void UpdateEquipmentsModified(ItemStats Items)
 	{
 		if (Items.name == "khungtroluc" && this.inventoryCells[this.BarSelect].equipAble == true)
@@ -265,17 +305,94 @@ public class Inventory : MonoBehaviour
 		{
 			critcal = 0.2f;
 		}
-		else if(Items.name == "matkinh" && this.inventoryCells[this.BarSelect].equipAble == false)
+		else if (Items.name == "matkinh" && this.inventoryCells[this.BarSelect].equipAble == false)
 		{
 			critcal = 0;
 		}
 
-		base.Invoke("UpdateUI", 0.1f);
+		base.Invoke("UpdateUI", 0.2f);
 
 	}
+
+	private void EquipWeightModified(ItemStats Item)
+	{
+		ItemWeight += Item.Weight;
+
+		base.Invoke("UpdateUI", 0.2f);
+	}
+	private void UnequipWeightModified(ItemStats Item)
+	{
+		ItemWeight -= Item.Weight;
+
+		base.Invoke("UpdateUI", 0.2f);
+	}
+
+	private void UpdateArmorSlot(ItemStats Item, int armorslot)
+	{
+
+		if (Item.name == "LightArmor" && this.inventoryCells[this.BarSelect].equipAble == true)
+		{
+			currentArmor = Item;
+			armorSlot = armorslot;
+		}
+		else if (Item.name == "LightArmor" && this.inventoryCells[this.BarSelect].equipAble == false)
+		{
+			currentArmor = null;
+			armorSlot = 0;
+		}
+		if (Item.name == "NormalArmor" && this.inventoryCells[this.BarSelect].equipAble == true)
+		{
+			currentArmor = Item;
+			armorSlot = armorslot;
+
+		}
+		else if (Item.name == "NormalArmor" && this.inventoryCells[this.BarSelect].equipAble == false)
+		{
+			currentArmor = null;
+			armorSlot = 0;
+
+		}
+		if (Item.name == "HeavyArmor" && this.inventoryCells[this.BarSelect].equipAble == true)
+		{
+			currentArmor = Item;
+			armorSlot = armorslot;
+
+		}
+		else if (Item.name == "HeavyArmor" && this.inventoryCells[this.BarSelect].equipAble == false)
+		{
+			currentArmor = null;
+			armorSlot = 0;
+		}
+	}
+	public void OnDamagedArmor(float damage)
+	{
+		if (currentArmor == null)
+		{
+			return;
+		}
+
+		currentArmor.CurrentDurability--;
+		this.inventoryCells[armorSlot].UpdateDurability();
+
+		armorDurability = currentArmor.CurrentDurability;
+		if (currentArmor.CurrentDurability <= 0)
+		{
+			this.inventoryCells[armorSlot].equipAble = false;
+			this.inventoryCells[armorSlot].Equip.color = this.inventoryCells[armorSlot].idle;
+			this.inventoryCells[armorSlot].RemoveItem();
+			currentArmor = null;
+			this.UpdateHotbar();
+		}
+
+	}
+
+
+	#endregion
+
+	#region GetData
 	public float GetCritical()
 	{
-		float n = critcal;
+		float n = critcal + WeaponInventory.Instance.GetBuffCritical();
 		return 0.1f + n;
 	}
 	public float GetSpeedUp()
@@ -283,6 +400,99 @@ public class Inventory : MonoBehaviour
 		float n = speed;
 		return 0 + n;
 	}
+	public float GetWeight()
+	{
+		return ItemWeight;
+
+	}
+	public ItemStats GetArmor()
+	{
+		return currentArmor;
+
+	}
+
+	public int GetMoney()
+	{
+		int num = 0;
+		num += Moneys;
+		return num;
+	}
+
+	public void RewardMoney(int Money)
+	{
+		Moneys += Money;
+		MoneyUI.Instance.Value = Moneys;
+	}
+	#endregion
+
+	#region CalculateDamage 
+
+	public class DamageResult
+	{
+		public float damageMultiplier;
+		public bool ItCrit;
+		public float AmmoPiercing;
+
+		public DamageResult(float damage, bool crit)
+		{
+			this.damageMultiplier = damage;
+			this.ItCrit = crit;
+
+
+			//this.AmmoPiercing = AmmoPiercing;
+		}
+	}
+	public DamageResult GetDamage(Bullet ammoType)
+	{
+		float dmg = Random.Range(randomDamageRange.x, randomDamageRange.y);
+		bool ItCrit = Random.value < GetCritical();
+
+
+		if (ammoType.ammoType == Bullet.AmmoType.NormalAmmo)
+        {
+			dmg *= 1.2f;
+			Debug.Log("CalculateNormalAmmo");
+		}
+		if (ammoType.ammoType == Bullet.AmmoType.PiercingAmmo)
+		{
+			dmg *= 1.5f;
+			Debug.Log("CalculatePiercingAmmo");
+		}
+		if (ammoType.ammoType == Bullet.AmmoType.HighAmmo)
+		{
+			dmg *= 2;
+			Debug.Log("CalculateHighAmmo");
+		}
+		if (ItCrit)
+		{
+			dmg *= 2f;
+		}
+		return new DamageResult(dmg, ItCrit);
+	}
+
+	#endregion
+
+	#region UI
+	public void EquipItemUI(ItemStats currentItem)
+	{
+		if (this.inventoryCells[this.BarSelect].currentItem == currentItem)
+		{
+			this.inventoryCells[BarSelect].Equip.color = this.inventoryCells[BarSelect].EquipColor;
+			this.inventoryCells[BarSelect].EquipItem();
+
+		}
+	}
+
+	private void UpdateUI()
+	{
+		UIPlayerStats.Instance.UpdateStatsPlayer();
+	}
+
+	public bool ActiveMenu()
+	{
+		return Cursor.lockState == CursorLockMode.Locked;
+	}
+	#endregion
 
 	public ItemStats GetItemByName(string name)
 	{
@@ -296,70 +506,5 @@ public class Inventory : MonoBehaviour
 
 		}
 		return null;
-	}
-
-	public DamageResult GetDamage()
-	{
-		float dmg = Random.Range(randomDamageRange.x, randomDamageRange.y);
-		bool ItCrit = Random.value < GetCritical();
-
-		if (ItCrit)
-		{
-			dmg *= 2f;
-		}
-		return new DamageResult(dmg, ItCrit);
-	}
-
-	public class DamageResult
-	{
-		public float damageMultiplier;
-		public bool ItCrit;
-		public float AmmoPiercing;
-
-		public DamageResult(float damage, bool crit)
-		{
-			this.damageMultiplier = damage;
-			this.ItCrit = crit;
-
-			//this.AmmoPiercing = AmmoPiercing;
-		}
-	}
-	private void UpdateUI()
-    {
-		UIPlayerStats.Instance.UpdateStatsPlayer();
-	}
-	public void Removeitem()
-	{
-
-		if (currentItem != null)
-		{
-			this.inventoryCells[this.BarSelect].RemoveItem();
-			//this.UpdateHotbar();
-		}
-	}
-	public int GetMoney()
-	{
-		int num = 0;
-		num += Moneys;
-		return num;
-	}
-	public void UseMoney(int Money)
-	{
-		Moneys -= Money;
-		if (Moneys <= 0)
-		{
-			Moneys = 0;
-		}
-		MoneyUI.Instance.Value = Moneys;
-	}
-	public void RewardMoney(int Money)
-	{
-		Moneys += Money;
-		MoneyUI.Instance.Value = Moneys;
-	}
-
-	public bool ActiveMenu()
-	{
-		return Cursor.lockState == CursorLockMode.Locked;
 	}
 }

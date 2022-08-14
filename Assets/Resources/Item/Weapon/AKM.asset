@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d1d2c7165a9671f45b50c387379153c7, type: 3}
   m_Name: AKM
   m_EditorClassIdentifier: 
-  important: 0
+  itemType: 3
   id: 0
   name: AKM
   nameViet: AKM
@@ -21,12 +21,13 @@ MonoBehaviour:
   stackable: 0
   amount: 1
   max: 1
+  Weight: 3.6
   heal: 0
   hunger: 0
   stamina: 0
-  GunDamage: 50
+  GunDamage: 25
   fireRate: 0.1
-  Weight: 0
+  bulletsPerShot: 0
   CurrentDurability: 100
   Durability: 100
   CurrentMagazine: 30
@@ -40,8 +41,10 @@ MonoBehaviour:
   - {fileID: 4696296699401721060, guid: f249a1bd70a86df4496bbfc3e3e9c120, type: 3}
   fireAudio: {fileID: 0}
   reloadAudio: {fileID: 0}
+  weaponType: 3
   Rare: 0
   buffs: []
+  Debuffs: []
   punchStrenght: 0.03
   punchVibrato: 5
   punchDuration: 0.1
@@ -57,7 +60,6 @@ MonoBehaviour:
   rotationOffset: {x: 0, y: 0, z: 0}
   positionOffset: {x: 0, y: 0, z: 0}
   scale: 1
-  type: 3
   prefab: {fileID: 7474613660059752366, guid: dd3dee70bed210d43b4e221b77e84836, type: 3}
   RareIndex: 
   nameOriginal: "Nguy\xEAn b\u1EA3n"
@@ -67,4 +69,3 @@ MonoBehaviour:
   colorOriginal: {r: 1, g: 1, b: 1, a: 1}
   colorUpgrade: {r: 0, g: 1, b: 1, a: 1}
   colorAdvanced: {r: 1, g: 0, b: 0.3333335, a: 1}
-  BuffWeapon: []

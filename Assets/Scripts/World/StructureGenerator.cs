@@ -4,7 +4,7 @@ using Random = System.Random;
 
 public class StructureGenerator : MonoBehaviour
 {
-	public float totalWeight { get; set; }
+	public float totalRare { get; set; }
 
 	private List<GameObject> structures;
 	protected Random randomly;
@@ -27,15 +27,15 @@ public class StructureGenerator : MonoBehaviour
 		{
 			Place();
 		}
-		//Destroy(this);
+		Destroy(this);
 	}
 
-	public void CalculateWeight()
+	public void CalculateRare()
 	{
-		this.totalWeight = 0f;
+		this.totalRare = 0f;
 		foreach (WeightedSpawn weightedSpawn in this.TerrainController.terrChoice)
 		{
-			this.totalWeight += weightedSpawn.weight;
+			this.totalRare += weightedSpawn.Rare;
 		}
 	}
 	public void Place()
@@ -43,7 +43,7 @@ public class StructureGenerator : MonoBehaviour
 		this.structures = new List<GameObject>();
 		this.randomly = new Random();
 		this.shrines = new Vector3[this.TerrainController.StructureAmount];
-		this.CalculateWeight();
+		this.CalculateRare();
 		int num = 0;
 		for (int i = 0; i < this.TerrainController.StructureAmount; i++)
 		{
@@ -57,31 +57,37 @@ public class StructureGenerator : MonoBehaviour
 			{
 				this.shrines[i] = hit.point;
 				num++;
+				GameObject gameObject = this.FindStructureToSpawn(this.TerrainController.terrChoice, this.totalRare, this.randomly);
+
 				Quaternion orientation = Quaternion.Euler(Vector3.up * UnityEngine.Random.Range(0f, 360f));
-				GameObject gameObject = this.FindObjectToSpawn(this.TerrainController.terrChoice, this.totalWeight, this.randomly);
-				GameObject gameObject2 = Object.Instantiate<GameObject>(gameObject, hit.point, orientation, transform);
+				Quaternion orientation2 = gameObject.transform.rotation;
+				Quaternion orientation3 = orientation;
+
+				if (TerrainController.ItNghieng)
+                {
+					orientation3 = orientation2;
+				}
+
+				GameObject gameObject2 = Object.Instantiate<GameObject>(gameObject, hit.point, orientation3, transform);
 				//GameObject gameObject2 = Object.Instantiate<GameObject>(gameObject, hit.point, gameObject.transform.rotation, transform);
 				this.structures.Add(gameObject2);
-				this.Process(gameObject2, hit);
+
 			}
 		}
 	}
-	public GameObject FindObjectToSpawn(WeightedSpawn[] structurePrefabs, float totalWeight, Random rand)
+	public GameObject FindStructureToSpawn(WeightedSpawn[] structurePrefabs, float totalRare, Random rand)
 	{
 		float num = (float)rand.NextDouble();
 		float num2 = 0f;
 		for (int i = 0; i < structurePrefabs.Length; i++)
 		{
-			num2 += structurePrefabs[i].weight;
-			if (num < num2 / totalWeight)
+			num2 += structurePrefabs[i].Rare;
+			if (num < num2 / totalRare)
 			{
 				return structurePrefabs[i].prefab;
 			}
 		}
 		return structurePrefabs[0].prefab;
-	}
-	public virtual void Process(GameObject newStructure, RaycastHit hit)
-	{
 	}
 
 	private Vector3 RandomPointAboveTerrain()
@@ -98,7 +104,7 @@ public class StructureGenerator : MonoBehaviour
 	public class WeightedSpawn
 	{
 		public GameObject prefab;
-		public float weight;
+		public float Rare;
 	}
 }
 

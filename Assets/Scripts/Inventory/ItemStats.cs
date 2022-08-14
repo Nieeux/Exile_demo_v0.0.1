@@ -8,26 +8,31 @@ using System;
 public class ItemStats : ScriptableObject
 {
 	[Header("Main")]
-	public bool important;
+	public ItemStats.ItemType itemType;
 	public int id;
 	public new string name;
 	public string nameViet;
 	public string description;
 
+
 	[Header("Details")]
 	public bool stackable = true;
 	public int amount;
 	public int max;
+	public float Weight;
 
 	[Header("Food")]
 	public float heal;
 	public float hunger;
 	public float stamina;
 
+	[Header("Armor")]
+	public ItemStats.ArmorType armorType;
+
 	[Header("Gun")]
 	public float GunDamage;
 	public float fireRate;
-	public float Weight;
+	public float bulletsPerShot;
 	public float CurrentDurability;
 	public float Durability;
 	public int CurrentMagazine;
@@ -39,8 +44,10 @@ public class ItemStats : ScriptableObject
 	public GameObject[] AllBulletPrefab;
 	public AudioClip fireAudio;
 	public AudioClip reloadAudio;
+	public ItemStats.WeaponType weaponType;
 	public ItemStats.ItemRare Rare;
 	public List<Buff> buffs = new List<Buff>();
+	public List<Buff> Debuffs = new List<Buff>();
 
 	[Header("Weapon Recoil Animation")]
 	public float punchStrenght = .2f;
@@ -66,7 +73,6 @@ public class ItemStats : ScriptableObject
 	public Vector3 rotationOffset;
 	public Vector3 positionOffset;
 	public float scale = 1f;
-	public ItemStats.ItemType type;
 	public GameObject prefab;
 
 	public string RareIndex;
@@ -79,12 +85,35 @@ public class ItemStats : ScriptableObject
 	public Color colorUpgrade;
 	public Color colorAdvanced;
 
-	[Header("Buff")]
-
-	public ScriptableObject[] BuffWeapon;
-
-	public void Getitem(ItemStats item, int amount)
+	public void Getitem(ItemStats item)
 	{
+		this.itemType = item.itemType;
+		this.id = item.id;
+		this.name = item.name;
+		this.nameViet = item.nameViet;
+		this.description = item.description;
+
+		this.stackable = item.stackable;
+		this.amount = item.amount;
+		this.max = item.max;
+		this.Weight = item.Weight;
+		this.Rare = item.Rare;
+		this.CurrentDurability = item.CurrentDurability;
+		this.Durability = item.Durability;
+		this.armorType = item.armorType;
+
+		this.sprite = item.sprite;
+		this.colorIndex = item.colorIndex;
+		this.material = item.material;
+		this.mesh = item.mesh;
+		this.prefab = item.prefab;
+		this.rotationOffset = item.rotationOffset;
+		this.positionOffset = item.positionOffset;
+		this.scale = item.scale;
+	}
+	public void GetitemStack(ItemStats item, int amount)
+	{
+		this.itemType = item.itemType;
 		this.id = item.id;
 		this.name = item.name;
 		this.nameViet = item.nameViet;
@@ -93,11 +122,16 @@ public class ItemStats : ScriptableObject
 		this.stackable = item.stackable;
 		this.amount = amount;
 		this.max = item.max;
+		this.Weight = item.Weight;
+		this.Rare = item.Rare;
+		this.CurrentDurability = item.CurrentDurability;
+		this.Durability = item.Durability;
+		this.armorType = item.armorType;
 
 		this.sprite = item.sprite;
+		this.colorIndex = item.colorIndex;
 		this.material = item.material;
 		this.mesh = item.mesh;
-		this.type = item.type;
 		this.prefab = item.prefab;
 		this.rotationOffset = item.rotationOffset;
 		this.positionOffset = item.positionOffset;
@@ -113,8 +147,9 @@ public class ItemStats : ScriptableObject
 
 		//Weapon Stats
 		this.GunDamage = item.GunDamage;
-		this.singleFire = item.singleFire;
 		this.fireRate = item.fireRate;
+		this.bulletsPerShot = item.bulletsPerShot;
+		this.singleFire = item.singleFire;
 		this.Weight = item.Weight;
 		this.CurrentDurability = item.CurrentDurability;
 		this.Durability = item.Durability;
@@ -141,26 +176,25 @@ public class ItemStats : ScriptableObject
 		this.sprite = item.sprite;
 		this.material = item.material;
 		this.mesh = item.mesh;
-		this.type = item.type;
+		this.itemType = item.itemType;
 		this.prefab = item.prefab;
 		this.rotationOffset = item.rotationOffset;
 		this.positionOffset = item.positionOffset;
 		this.scale = item.scale;
-
-		//Buff
-		this.BuffWeapon = item.BuffWeapon;
 	}
 	public void GetweaponOriginal(ItemStats item)
 	{
-
+		//Main
 		this.id = item.id;
 		this.name = item.name;
 		this.nameViet = item.nameViet;
 		this.description = item.description;
 
+		//Weapon Stats
 		this.GunDamage = item.GunDamage;
-		this.singleFire = item.singleFire;
 		this.fireRate = item.fireRate;
+		this.bulletsPerShot = item.bulletsPerShot;
+		this.singleFire = item.singleFire;
 		this.Weight = item.Weight;
 		this.CurrentDurability = item.CurrentDurability;
 		this.Durability = item.Durability;
@@ -168,8 +202,12 @@ public class ItemStats : ScriptableObject
 		this.CurrentMagazine = item.CurrentMagazine;
 		this.ReloadTime = item.ReloadTime;
 		this.AllBulletPrefab = item.AllBulletPrefab;
+		this.weaponType = item.weaponType;
 		this.Rare = item.Rare = ItemRare.original;
+
+		//Buff
 		item.buffs = new List<Buff>();
+		item.Debuffs = new List<Buff>();
 
 		//ItemRare name
 		this.nameOriginal = item.nameOriginal;
@@ -205,7 +243,7 @@ public class ItemStats : ScriptableObject
 		this.sprite = item.sprite;
 		this.material = item.material;
 		this.mesh = item.mesh;
-		this.type = item.type;
+		this.itemType = item.itemType;
 		this.prefab = item.prefab;
 
 		this.colorOriginal = item.colorOriginal;
@@ -217,20 +255,20 @@ public class ItemStats : ScriptableObject
 		this.positionOffset = item.positionOffset;
 		this.scale = item.scale;
 
-		//Buff
-		this.BuffWeapon = item.BuffWeapon;
 	}
 	public void GetweaponUpgrade(ItemStats item)
 	{
-
+		//Main
 		this.id = item.id;
 		this.name = item.name;
 		this.nameViet = item.nameViet;
 		this.description = item.description;
 
+		//Weapon Stats
 		this.GunDamage = item.GunDamage * 1.5f;
-		this.singleFire = item.singleFire;
 		this.fireRate = item.fireRate;
+		this.bulletsPerShot = item.bulletsPerShot;
+		this.singleFire = item.singleFire;
 		this.Weight = item.Weight;
 		this.CurrentDurability = item.CurrentDurability;
 		this.Durability = item.Durability;
@@ -238,8 +276,12 @@ public class ItemStats : ScriptableObject
 		this.CurrentMagazine = item.CurrentMagazine;
 		this.ReloadTime = item.ReloadTime;
 		this.AllBulletPrefab = item.AllBulletPrefab;
+		this.weaponType = item.weaponType;
 		this.Rare = item.Rare = ItemRare.upgrade;
+
+		//Buff
 		item.buffs = new List<Buff>();
+		item.Debuffs = new List<Buff>();
 
 		//ItemRare name
 		this.nameOriginal = item.nameOriginal;
@@ -270,7 +312,7 @@ public class ItemStats : ScriptableObject
 		this.sprite = item.sprite;
 		this.material = item.material;
 		this.mesh = item.mesh;
-		this.type = item.type;
+		this.itemType = item.itemType;
 		this.prefab = item.prefab;
 
 		this.colorOriginal = item.colorOriginal;
@@ -281,19 +323,20 @@ public class ItemStats : ScriptableObject
 		this.rotationOffset = item.rotationOffset;
 		this.positionOffset = item.positionOffset;
 		this.scale = item.scale;
-		this.BuffWeapon = item.BuffWeapon;
 	}
 	public void GetweaponAdvanced(ItemStats item)
 	{
-
+		//Main
 		this.id = item.id;
 		this.name = item.name;
 		this.nameViet = item.nameViet;
 		this.description = item.description;
 
+		//Weapon Stats
 		this.GunDamage = item.GunDamage * 2f;
-		this.singleFire = item.singleFire;
 		this.fireRate = item.fireRate;
+		this.bulletsPerShot = item.bulletsPerShot;
+		this.singleFire = item.singleFire;
 		this.Weight = item.Weight;
 		this.CurrentDurability = item.CurrentDurability * 2;
 		this.Durability = item.Durability * 2;
@@ -301,8 +344,12 @@ public class ItemStats : ScriptableObject
 		this.CurrentMagazine = item.CurrentMagazine * 2;
 		this.ReloadTime = item.ReloadTime;
 		this.AllBulletPrefab = item.AllBulletPrefab;
+		this.weaponType = item.weaponType;
 		this.Rare = item.Rare = ItemRare.advanced;
+
+		//Buff
 		item.buffs = new List<Buff>();
+		item.Debuffs = new List<Buff>();
 
 		//ItemRare name
 		this.nameOriginal = item.nameOriginal;
@@ -333,7 +380,7 @@ public class ItemStats : ScriptableObject
 		this.sprite = item.sprite;
 		this.material = item.material;
 		this.mesh = item.mesh;
-		this.type = item.type;
+		this.itemType = item.itemType;
 		this.prefab = item.prefab;
 
 		this.colorOriginal = item.colorOriginal;
@@ -344,7 +391,6 @@ public class ItemStats : ScriptableObject
 		this.rotationOffset = item.rotationOffset;
 		this.positionOffset = item.positionOffset;
 		this.scale = item.scale;
-		this.BuffWeapon = item.BuffWeapon;
 	}
 	/*
 	private static Random random = new Random();
@@ -402,6 +448,7 @@ public class ItemStats : ScriptableObject
 		Food,
 		Equipment,
 		Weapon,
+		Armor,
 	}
 	[Serializable]
 	public enum ItemRare
@@ -411,30 +458,22 @@ public class ItemStats : ScriptableObject
 		advanced,//Tân ti?n
 	}
 	[Serializable]
-	public enum ItemTag
+	public enum WeaponType
 	{
-		None,
-		Food,
-		Support
+		Null,
+		HandGuns,
+		Sub_MachineGuns,
+		AssaultRifles,
+		ShotGuns,
+		SniperRifles,
+		MachineGuns,
 	}
 	[Serializable]
-	public enum StatType
+	public enum ArmorType
 	{
-		GunDamage,
-		fireRate,
-		Durability,
+		Null,
+		LightArmor,
+		NormalArmor,
+		HeavyArmor,
 	}
-
-	[Serializable]
-	public class ItemBuff
-	{
-		public StatType stat;
-		public int value;
-
-		public int min;
-
-		public int max;
-
-	}
-
 }

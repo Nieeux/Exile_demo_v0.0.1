@@ -2,23 +2,24 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class AI_Attack : AIstate
+public class AI_Attack : MonoBehaviour, AIstate
 {
     public StateType GetState()
     {
         return StateType.Attack;
     }
 
-    public void Enter(AIController agent)
+    public void AiEnter(AIController agent)
     {
         agent.Agent.destination = agent.Targetposition;
     }
 
-    public void Update(AIController agent)
+    public void AiUpdate(AIController agent)
     {
         
         if (agent.canSee == true)
         {
+            agent.LookAtTarget();
             agent.Agent.destination = agent.Targetposition;
             agent.stateMachine.ChangesState(StateType.AttackCover);
         }
@@ -28,7 +29,7 @@ public class AI_Attack : AIstate
         }
 
     }
-    public void Exit(AIController agent)
+    public void AiExit(AIController agent)
     {
 
     }

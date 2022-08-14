@@ -27,14 +27,6 @@ public class Bullet : MonoBehaviour
 
     IEnumerator Start()
     {
-        if (ammoType == AmmoType.HighAmmo)
-        {
-            BulletDamage *= 2f;
-        }
-        if (ammoType == AmmoType.PiercingAmmo)
-        {
-            BulletDamage *= 1.5f;
-        }
         newPos = transform.position;
         oldPos = newPos;
 
@@ -79,20 +71,21 @@ public class Bullet : MonoBehaviour
             PlayerStats damageablePlayer = collider.GetComponent<PlayerStats>();
             if (damageablePlayer)
             {
-                DamageCalculations.DamageResult damageMultiplier = DamageCalculations.Instance.GetDamage();
-                float damageMultiplier2 = damageMultiplier.damageMultiplier;
+                DamageCalculations.DamageResult damageMultiplier = DamageCalculations.Instance.GetDamage(this);
+                float damageMultiplier2 = damageMultiplier.damageResult;
                 float Damage = (int)(BulletDamage * damageMultiplier2);
 
-                damageablePlayer.Damage(Damage);
+                damageablePlayer.Damage(Damage, this);
                 
             }
         }
         // Player gay damage cho Enemy
-        HitAble damageable = collider.GetComponent<HitAble>();
+        AIController damageable = collider.GetComponent<AIController>();
         if (damageable)
         {
-            Inventory.DamageResult damageMultiplier = Inventory.Instance.GetDamage();
-            float damageMultiplier2 = damageMultiplier.damageMultiplier;
+
+            DamageCalculations.DamageResult damageMultiplier = DamageCalculations.Instance.GetDamage(this);
+            float damageMultiplier2 = damageMultiplier.damageResult;
             bool crit = damageMultiplier.ItCrit;
             float Damage = (int)(BulletDamage * damageMultiplier2);
             HitEffect hitEffect = HitEffect.AmmoNormal;
@@ -102,10 +95,10 @@ public class Bullet : MonoBehaviour
             }
             pos = collider.transform.position;
 
-            damageable.Damage(Damage, (int)hitEffect, pos);
+            damageable.Damage(Damage, this, (int)hitEffect, pos);
         }
-        Destroy(this.bulletLight);
 
+        Destroy(this.bulletLight,0.01f);
 
     }
     IEnumerator DestroyBullet()

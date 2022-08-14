@@ -13,7 +13,7 @@ public class PlayerMovement : MonoBehaviour
     public float Sensitivity = 2.0f;
     public float lookXLimit = 90f;
     public float Speed { get; private set; }
-    public float currentSpeed { get; private set; }
+    public float currentSpeed;
     public bool IsMoving;
     public bool isRunning;
     PlayerStats Stats;
@@ -30,6 +30,7 @@ public class PlayerMovement : MonoBehaviour
     PlayerInput InputHandler;
     CharacterController characterController;
     Inventory inventory;
+    WeaponInventory weaponInventory;
     Vector3 moveDirection = Vector3.zero;
     Vector2 rotation = Vector2.zero;
     public float rotationX = 0;
@@ -40,7 +41,7 @@ public class PlayerMovement : MonoBehaviour
     public bool IsCrouching { get; private set; }
     public bool IsDead { get; private set; }
 
-    PlayerWeaponManager WeaponsManager;
+
 
 
     private void Awake()
@@ -52,34 +53,27 @@ public class PlayerMovement : MonoBehaviour
     private void Start()
     {
         characterController = GetComponent<CharacterController>();
-        WeaponsManager = GetComponent<PlayerWeaponManager>();
+        weaponInventory = GetComponent<WeaponInventory>();
         InputHandler = GetComponent<PlayerInput>();
         Stats = GetComponent<PlayerStats>();
         inventory = GetComponent<Inventory>();
         Stats.OnDie += OnDie;
+        Stats.OnExhausted += OnExhausted;
         rotation.y = transform.eulerAngles.y;
 
         // force the crouch state to false when starting
         SetCrouchingState(false, true);
         UpdateCharacterHeight(true);
+        GetSpeed();
 
     }
 
     private void Update()
     {
-
-        //Input
-        if (InputHandler.GetCrouch())
-        {
-            Debug.Log("Crouch");
-            SetCrouchingState(!IsCrouching, false);
-
-        }
-
         if (characterController.isGrounded)
         {
-            isRunning = Input.GetKey(KeyCode.LeftShift) && IsMoving && Stats.CanRun() && !IsCrouching;
-            currentSpeed = CurrentSpeed();
+
+            isRunning = InputHandler.GetRunning() && IsMoving && Stats.CanRun() && !IsCrouching;
 
             Vector3 forward = transform.TransformDirection(Vector3.forward);
             Vector3 right = transform.TransformDirection(Vector3.right);
@@ -90,27 +84,32 @@ public class PlayerMovement : MonoBehaviour
             moveDirection = (forward * curSpeedX) + (right * curSpeedY);
             var forwardsAmount = Vector3.Dot(transform.forward, moveDirection);
 
-            if (Input.GetButtonDown("Jump") && canMove)
+            if (InputHandler.GetJump())
             {
                 moveDirection.y = currentSpeed;
             }
 
             IsMoving = moveDirection != Vector3.zero;
 
-
             if (IsMoving && ActiveMenu())
             {
                 HeadBob.Instance.Headbob();
                 WeaponAnimation.Instance.WeaponBob();
                 UIBob.Instance.UIbob();
+                GetSpeed();
+
+            }
+
+            if (InputHandler.GetCrouch())
+            {
+                SetCrouchingState(!IsCrouching, false);
+
             }
         }
 
         moveDirection.y -= gravity * Time.deltaTime;
 
-        // di chuyen character
         characterController.Move(moveDirection * Time.deltaTime);
-
 
         // di chuyen camera
         if (ActiveMenu())
@@ -124,19 +123,17 @@ public class PlayerMovement : MonoBehaviour
             }
         }
 
-        // crouching
-
         UpdateCharacterHeight(false);
     }
 
-    public float CurrentSpeed()
+    private void GetSpeed()
     {
-        Speed = 3 + Inventory.Instance.GetSpeedUp();
+        Speed = Stats.CurrentSpeed();
         float run = Speed * 2;
         float crouch = Speed / 2;
         float current = isRunning && IsMoving ? run : Speed;
         current = IsCrouching && IsMoving ? crouch : current;
-        return current;
+        currentSpeed = current;
     }
 
     void UpdateCharacterHeight(bool force)
@@ -210,6 +207,21 @@ public class PlayerMovement : MonoBehaviour
         return IsCrouching;
     }
 
+    void OnExhausted()
+    {
+        characterController.enabled = false;
+        playerCamera.GetComponent<Rigidbody>().isKinematic = false;
+        playerCamera.GetComponent<Collider>().enabled = true;
+        weaponInventory.SwitchToWeaponIndex(-1, true);
+        this.enabled = false;
+        base.Invoke("CloseEye", 2f);
+        
+    }
+    void CloseEye()
+    {
+        LoadingScenes.Instance.Show = true;
+    }
+
     void OnDie()
     {
         Debug.Log("Player Die");
@@ -217,7 +229,7 @@ public class PlayerMovement : MonoBehaviour
         characterController.enabled = false;
         playerCamera.GetComponent<Rigidbody>().isKinematic = false;
         playerCamera.GetComponent<Collider>().enabled = true;
-        WeaponsManager.SwitchToWeaponIndex(-1, true);
+        weaponInventory.SwitchToWeaponIndex(-1, true);
         Destroy(this);
     }
 }

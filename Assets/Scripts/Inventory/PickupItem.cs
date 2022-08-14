@@ -3,7 +3,6 @@ using UnityEngine;
 
 public class PickupItem : MonoBehaviour, Interact, SharedId
 {
-	public Item ItemPrefab;
 
 	public ItemStats item;
 
@@ -21,7 +20,7 @@ public class PickupItem : MonoBehaviour, Interact, SharedId
 		if (!Inventory.Instance.IsInventoryFull())
         {
 			ItemStats inventoryItem = ScriptableObject.CreateInstance<ItemStats>();
-			inventoryItem.Getitem(this.item, this.amount);
+			inventoryItem.Getitem(this.item);
 			Inventory.Instance.AddItemToInventory(inventoryItem);
 
 			//ClientSend.PickupInteract(this.id);
@@ -46,6 +45,11 @@ public class PickupItem : MonoBehaviour, Interact, SharedId
 	{
 		return "E | " + this.item.nameViet;
 	}
+
+	public ItemStats GetItem()
+    {
+		return item;
+    }
 
 	public bool IsStarted()
 	{
