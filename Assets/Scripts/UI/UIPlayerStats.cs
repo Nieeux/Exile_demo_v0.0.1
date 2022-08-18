@@ -39,9 +39,13 @@ public class UIPlayerStats : MonoBehaviour
         if (StatusUI.Instance.IsShowStatus == true)
         {
             bar.SetActive(true);
-            if (PlayerStats.Instance.IsSleep())
+            if (PlayerStats.Instance.CanSleep())
             {
                 SleepButton.SetActive(true);
+            }
+            else
+            {
+                SleepButton.SetActive(false);
             }
             this.padBottom = Mathf.Lerp(this.padBottom, 70, Time.deltaTime * 20f);
             RectOffset rectOffset = new RectOffset(this.layout.padding.left, this.layout.padding.right, this.layout.padding.top, this.layout.padding.bottom);
@@ -63,12 +67,10 @@ public class UIPlayerStats : MonoBehaviour
     }
     public void UpdateStatsPlayer()
     {
-        Debug.Log("UpdateStatsUI");
         this.DamageNumber.text = PlayerStats.Instance.damage.ToString("00");
         this.SpeedNumber.text = PlayerStats.Instance.CurrentSpeed().ToString("0.0");
         this.CritNumber.text = string.Format("{0:}", Inventory.Instance.GetCritical().ToString("#0.##" + '%'));
         this.weightNumber.text = string.Format("{0:0.##}/ {1} kg", PlayerStats.Instance.Weight(), PlayerStats.Instance.maxWeight);
-
     }
 
 }

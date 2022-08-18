@@ -2,8 +2,6 @@
 using UnityEngine.UI;
 using TMPro;
 using UnityEngine.EventSystems;
-using UnityEngine.SceneManagement;
-using System.Collections;
 
 public class StatusUI : MonoBehaviour
 {
@@ -56,9 +54,9 @@ public class StatusUI : MonoBehaviour
     {
         ZoomUI.fieldOfView = Mathf.Lerp(ZoomUI.fieldOfView, ViewZoom, Time.deltaTime * SpeedZoom);
 
-        this.stamina.fillAmount = Player.stamina / Player.maxStamina;
-        this.hunger.fillAmount = Player.hunger / Player.maxHunger;
-        this.sleepy.fillAmount = Player.sleepy / Player.maxSleepy;
+        this.stamina.fillAmount = Mathf.Lerp(this.stamina.fillAmount, (Player.stamina / Player.maxStamina), Time.deltaTime * 10f);
+        this.hunger.fillAmount = Mathf.Lerp(this.hunger.fillAmount, (Player.hunger / Player.maxHunger), Time.deltaTime * 10f);
+        this.sleepy.fillAmount = Mathf.Lerp(this.sleepy.fillAmount, (Player.sleepy / Player.maxSleepy), Time.deltaTime * 10f);
 
         if (Input.GetButtonDown("Status") && !PauseMenu.activeSelf)
         {
@@ -72,15 +70,15 @@ public class StatusUI : MonoBehaviour
         //Load lai game khi Player chet
         if (Player.CurrentHealth <= 0)
         {
-            ClosePauseMenu();        
+            Gameover();        
 
         }
 
         //Update thanh mau khi HP Player khac MaxHP
-        if (Player.CurrentHealth != Player.MaxHealth)
+        if (Player.CurrentHealth != 100)
         {
-            FillBarStatus();
         }
+        FillBarStatus();
 
         if (IsShowStatus == true)
         {
@@ -91,7 +89,7 @@ public class StatusUI : MonoBehaviour
 
     private void FillBarStatus()
     {
-        HealthBar.fillAmount = Player.CurrentHealth / Player.MaxHealth;
+        HealthBar.fillAmount = Mathf.Lerp(this.HealthBar.fillAmount, (Player.GetHealthBar()), Time.deltaTime * 10f);
         if (HurtBar.fillAmount > HealthBar.fillAmount)
         {
             //yield return new WaitForSeconds(0.4f);
@@ -142,7 +140,7 @@ public class StatusUI : MonoBehaviour
     {
         string text = "";
         float num = Player.CurrentHealth;
-        float num2 = Player.MaxHealth;
+        float num2 = Player.GetMaxHealth();
         text += string.Format("Máu {0:0.} | {1:0.}", num, num2);
         this.HealthNumber.text = text;
 
@@ -162,7 +160,7 @@ public class StatusUI : MonoBehaviour
         */
     }
 
-    private void ClosePauseMenu()
+    private void Gameover()
     {
         GameOver.SetActive(true);
         SetStatusActivation(true);

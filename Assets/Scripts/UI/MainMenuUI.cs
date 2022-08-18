@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using System.Collections;
-using UnityEngine.AI;
+
 
 
 public class MainMenuUI : MonoBehaviour
@@ -10,11 +10,17 @@ public class MainMenuUI : MonoBehaviour
 	public GameObject MenuMain;
 	public GameObject MenuSetting;
 	public GameObject MenuAboutMe;
-
+	GameManager gameManager;
 	private Resolution[] resolutions;
 
+    private void Awake()
+    {
+		
+
+	}
     private void Start()
     {
+		gameManager = FindObjectOfType<GameManager>();
 		MenuSetting.SetActive(false);
 
 		if(MenuAboutMe != null)
@@ -24,17 +30,12 @@ public class MainMenuUI : MonoBehaviour
 
 	}
 
-    public void ReturnToMenu()
-	{
-		Time.timeScale = 1;
-		NavMesh.RemoveAllNavMeshData();
-		SceneManager.LoadScene(0);
-	}
+
 
 	public void Play()
 	{
 
-		base.Invoke("StartPlay", 3f);
+		base.Invoke("Startplay", 3f);
 		LoadingScenes.Instance.Show = true;
 
 	}
@@ -85,9 +86,10 @@ public class MainMenuUI : MonoBehaviour
 		Resolution resolution = this.resolutions[resolutionIndex];
 		Screen.SetResolution(resolution.width, resolution.height, Screen.fullScreen);
 	}
-	private void StartPlay()
+	private void Startplay()
 	{
-		SceneManager.LoadScene(1);
+
+		gameManager.StartPlay();
 
 	}
 

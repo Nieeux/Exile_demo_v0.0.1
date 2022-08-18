@@ -11,7 +11,6 @@ public class AI_Die : AIstate
     public void AiEnter(AIController agent)
     {
         Debug.Log("AiDie");
-        agent.inventory.DropWeapon();
         agent.inventory.DropItem();
         agent.Reward();
     }

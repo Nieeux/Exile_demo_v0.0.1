@@ -2,7 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Random = System.Random;
-using UnityEngine.AI;
 
 public class SpawnEnemy : MonoBehaviour
 {
@@ -14,15 +13,19 @@ public class SpawnEnemy : MonoBehaviour
 	GameObject EnemyManager;
 
     [SerializeField]
-	private int maxEnemy = 2;
+	private int maxEnemy = 5;
 	private Vector3[] enemyPos;
 
-    [Header("Randomly")]
-	public WeightedSpawn[] structurePrefabs;
+	public bool IsChange;
+	[Header("Randomly")]
+	public WeightedSpawn[] StateChoice;
+	public AddStateSpawn[] AddState;
+
 	public float totalWeight { get; set; }
 	protected Random randomly;
 
 	public List<AIController> enemyList;
+	DaySystem daySystem;
 
     private void Awake()
     {
@@ -32,6 +35,9 @@ public class SpawnEnemy : MonoBehaviour
 
 	private void Start()
 	{
+		daySystem = FindObjectOfType<DaySystem>();
+		daySystem.NextDay += nextDay;
+		daySystem.IsNight += IsNight;
 		World = GetComponent<WorldGenerator>();
 		EnemyManager = new GameObject("EnemyManager");
 		//EnemyManager.transform.parent = transform;
@@ -39,11 +45,18 @@ public class SpawnEnemy : MonoBehaviour
 		StartCoroutine(SpawnRoutine());
 	}
 
-	void Update()
-	{
-
-		
+	private void nextDay()
+    {
+		maxEnemy++;
+		WeightedSpawn[] state = NightState(AddState, false);
+		StateChoice = state;
 	}
+	private void IsNight()
+    {
+		WeightedSpawn[] state = NightState(AddState, true);
+		StateChoice = state;
+	}
+
 	private IEnumerator SpawnRoutine()
 	{
 		WaitForSeconds wait = new WaitForSeconds(1f);
@@ -76,7 +89,7 @@ public class SpawnEnemy : MonoBehaviour
 			{
 				this.enemyPos[i] = hit.point;
 				//Quaternion orientation = Quaternion.Euler(Vector3.up * UnityEngine.Random.Range(0f, 360f));
-				AIController gameObject = this.FindEnemyToSpawn(this.structurePrefabs, this.totalWeight, this.randomly);
+				AIController gameObject = this.FindEnemyToSpawn(this.StateChoice, this.totalWeight, this.randomly);
 				AIController gameObject2 = Instantiate(gameObject, hit.point, gameObject.transform.rotation, EnemyManager.transform);
 				//GameObject gameObject2 = Object.Instantiate<GameObject>(gameObject, hit.point, gameObject.transform.rotation, transform);
 				this.enemyList.Add(gameObject2);
@@ -87,7 +100,7 @@ public class SpawnEnemy : MonoBehaviour
 	public void CalculateWeight()
 	{
 		this.totalWeight = 0f;
-		foreach (WeightedSpawn weightedSpawn in this.structurePrefabs)
+		foreach (WeightedSpawn weightedSpawn in this.StateChoice)
 		{
 			this.totalWeight += weightedSpawn.weight;
 		}
@@ -118,11 +131,30 @@ public class SpawnEnemy : MonoBehaviour
 		return structurePrefabs[0].prefab;
 	}
 
+	public WeightedSpawn[] NightState(AddStateSpawn[] structurePrefabs, bool IsNight)
+	{
+		for (int i = 0; i < structurePrefabs.Length; i++)
+		{
+			if (structurePrefabs[i].Night == IsNight)
+			{
+				return structurePrefabs[i].StateSpawn;
+			}
+		}
+		return structurePrefabs[0].StateSpawn;
+	}
+
 
 	[System.Serializable]
 	public class WeightedSpawn
 	{
 		public AIController prefab;
 		public float weight;
+	}
+
+	[System.Serializable]
+	public class AddStateSpawn
+	{
+		public WeightedSpawn[] StateSpawn;
+		public bool Night;
 	}
 }

@@ -20,6 +20,8 @@ public class WeaponController : MonoBehaviour
 
     float nextFireTime = 0;
     public bool reloading;
+    public float delay;
+    public bool canDrop;
     public bool canFire = false;
 
     private Vector3 BulletSpreadVariance = new Vector3(0.01f, 0.01f, 0.01f);
@@ -33,6 +35,8 @@ public class WeaponController : MonoBehaviour
     public GameObject WeaponRoot;
     public AudioClip ChangeWeaponSfx;
     AudioSource m_ShootAudioSource;
+
+    public Bullet Pullet;
 
     public UnityAction onDamaged;
     public Interact WeaponIndex { get; private set; }
@@ -54,6 +58,7 @@ public class WeaponController : MonoBehaviour
 
         Bullet bullet = GunStats.bulletPrefab.GetComponent<Bullet>();
         WeaponAmmoType = bullet.ammoTypeColor;
+        this.Pullet = bullet;
 
         audioSource = GetComponent<AudioSource>();
 
@@ -64,15 +69,30 @@ public class WeaponController : MonoBehaviour
 
         if (canFire == true)
         {
-
+            if (delay > 0)
+            {
+                delay -= Time.deltaTime;
+                canDrop = false;
+                if (delay <= 0)
+                {
+                    
+                    delay = 0;
+                }
+            }
+            if(delay == 0)
+            {
+                canDrop = true;
+            }
             if (PlayerInput.Instance.GetFireButtonDown() && singleFire)
             {
                 Fire();
-
+                delay = 0.25f;
             }
+
             if (PlayerInput.Instance.GetFireButton() && !singleFire)
             {
                 Fire();
+                delay = 0.25f;
             }
             if (Input.GetKeyDown(KeyCode.R) && GunStats.CurrentMagazine < GunStats.Magazine)
             {
@@ -97,7 +117,7 @@ public class WeaponController : MonoBehaviour
     }
     private void Fire()
     {
-        if (canFire)
+        if (!reloading)
         {
             if (Time.time > nextFireTime)
             {
@@ -105,10 +125,10 @@ public class WeaponController : MonoBehaviour
 
                 if (GunStats.CurrentMagazine > 0)
                 {
-                    
-                    if (this.GunStats.weaponType == ItemStats.WeaponType.ShotGuns)
+
+                    if (this.Pullet.IsShotGunShell == true)
                     {
-                        for(int i = 0; i < GunStats.bulletsPerShot; i++)
+                        for(int i = 0; i < Pullet.bulletsPerShot; i++)
                         {
                             Vector3 direction = ShotgunDirection();
                             RaycastHit hit;
@@ -145,7 +165,7 @@ public class WeaponController : MonoBehaviour
                     // giam Durability khi ban
                     RecoilAni();
 
-                    WeaponInventory.Instance.RecoilFire();
+                    //WeaponInventory.Instance.RecoilFire();
                     //UIBob.Instance.RecoilHUD();
 
                     GunStats.CurrentMagazine--;
@@ -196,9 +216,9 @@ public class WeaponController : MonoBehaviour
 
                 if (GunStats.CurrentMagazine > 0)
                 {
-                    if (this.GunStats.weaponType == ItemStats.WeaponType.ShotGuns)
+                    if (this.Pullet.IsShotGunShell == true)
                     {
-                        for (int i = 0; i < GunStats.bulletsPerShot; i++)
+                        for (int i = 0; i < Pullet.bulletsPerShot; i++)
                         {
                             Vector3 direction = ShotgunDirection();
                             RaycastHit hit;
@@ -280,7 +300,6 @@ public class WeaponController : MonoBehaviour
     IEnumerator Reload(bool Reloading)
     {
         reloading = Reloading;
-        canFire = !Reloading;
 
         audioSource.clip = reloadAudio;
         audioSource.minDistance = 1;
@@ -289,9 +308,8 @@ public class WeaponController : MonoBehaviour
         yield return new WaitForSeconds(GunStats.ReloadTime);
 
         GunStats.CurrentMagazine = GunStats.Magazine;
-        reloading = !Reloading;
-        canFire = Reloading;
         audioSource.minDistance = 10;
+        reloading = !Reloading;
     }
 
     public void ShowWeapon(bool show)

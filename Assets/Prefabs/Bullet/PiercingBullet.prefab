@@ -86,7 +86,7 @@ Light:
   m_Lightmapping: 4
   m_LightShadowCasterMode: 0
   m_AreaSize: {x: 1, y: 1}
-  m_BounceIntensity: 1
+  m_BounceIntensity: 0
   m_ColorTemperature: 6570
   m_UseColorTemperature: 0
   m_BoundingSphereOverride: {x: 0, y: 0, z: 0, w: 0}
@@ -251,6 +251,8 @@ MonoBehaviour:
   bulletSpeed: 400
   hitForce: 50
   destroyAfter: 3.5
+  IsShotGunShell: 0
+  bulletsPerShot: 0
   ammoType: 2
   ammoTypeColor: {r: 0, g: 1, b: 1, a: 1}
   bulletLight: {fileID: 3515437197170951018}

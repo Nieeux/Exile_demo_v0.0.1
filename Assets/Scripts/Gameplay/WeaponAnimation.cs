@@ -12,14 +12,14 @@ public class WeaponAnimation : MonoBehaviour
     public float rotationalRecoilSpeed = 8f;
     public float pad = 0;
 
-    public Vector3 DownPosition = new Vector3(0.124f, -0.12f, 0);
-    public Vector3 DownRotation = new Vector3(-70f, 0, -30f);
+    private Vector3 DownPosition = new Vector3(0.11f, -0.12f, 0.17f);
+    private Vector3 DownRotation = new Vector3(-60f, -20f, 10f);
 
-    public Vector3 RunPosition = new Vector3(0, 0, 0);
-    public Vector3 RunRotation = new Vector3(0, 0, 0);
+    private Vector3 RunPosition = new Vector3(-0.02f, -0.12f, 0.33f);
+    private Vector3 RunRotation = new Vector3(20, -40, 19);
 
-    public Vector3 defuPotation = new Vector3(0.124f, -0.12f, 0.451f);
-    public Vector3 defuRotation = new Vector3(0, 0, 0);
+    private Vector3 defuPotation = new Vector3(0.124f, -0.12f, 0.451f);
+    private Vector3 defuRotation = new Vector3(0, 0, 0);
 
     Vector3 Rot;
 
@@ -56,7 +56,7 @@ public class WeaponAnimation : MonoBehaviour
         else
         {
             RaycastHit Hit;
-            if (Physics.Raycast(rotationPoint.transform.position, rotationPoint.transform.forward, out Hit, 1f, wall))
+            if (Physics.Raycast(rotationPoint.transform.position, rotationPoint.transform.forward, out Hit, 1f, wall) || ActiveMenu())
             {
                 PutDownWeapons();
             }
@@ -68,11 +68,12 @@ public class WeaponAnimation : MonoBehaviour
                 }
             }
         }
-
-
-
-
     }
+    private bool ActiveMenu()
+    {
+        return Cursor.lockState == CursorLockMode.None;
+    }
+
     private void PutDownWeapons()
     {
         this.pad = Mathf.Lerp(this.pad, 300, Time.deltaTime * 10f);

@@ -9,6 +9,7 @@ public class PlayerMovement : MonoBehaviour
     [Header("Movement")]
     private float gravity = 20.0f;
     public Transform playerCamera;
+    public Transform CameraPos;
     public Transform cameraCrouching;
     public float Sensitivity = 2.0f;
     public float lookXLimit = 90f;
@@ -35,8 +36,6 @@ public class PlayerMovement : MonoBehaviour
     Vector2 rotation = Vector2.zero;
     public float rotationX = 0;
 
-
-    public UnityAction<bool> OnStanceChanged;
     public bool IsGrounded { get; private set; }
     public bool IsCrouching { get; private set; }
     public bool IsDead { get; private set; }
@@ -57,8 +56,11 @@ public class PlayerMovement : MonoBehaviour
         InputHandler = GetComponent<PlayerInput>();
         Stats = GetComponent<PlayerStats>();
         inventory = GetComponent<Inventory>();
-        Stats.OnDie += OnDie;
+        Stats.OnSleep += Sleep;
+        Stats.OnWakeUp += WakeUp;
         Stats.OnExhausted += OnExhausted;
+        Stats.OnDie += OnDie;
+
         rotation.y = transform.eulerAngles.y;
 
         // force the crouch state to false when starting
@@ -72,8 +74,11 @@ public class PlayerMovement : MonoBehaviour
     {
         if (characterController.isGrounded)
         {
-
-            isRunning = InputHandler.GetRunning() && IsMoving && Stats.CanRun() && !IsCrouching;
+            isRunning = InputHandler.GetRunning() && IsMoving && Stats.CanRun() && ActiveMenu() && IgnoreObstructions(false);
+            if (isRunning)
+            {
+                SetCrouchingState(false, true);
+            }
 
             Vector3 forward = transform.TransformDirection(Vector3.forward);
             Vector3 right = transform.TransformDirection(Vector3.right);
@@ -91,7 +96,7 @@ public class PlayerMovement : MonoBehaviour
 
             IsMoving = moveDirection != Vector3.zero;
 
-            if (IsMoving && ActiveMenu())
+            if (IsMoving)
             {
                 HeadBob.Instance.Headbob();
                 WeaponAnimation.Instance.WeaponBob();
@@ -100,7 +105,7 @@ public class PlayerMovement : MonoBehaviour
 
             }
 
-            if (InputHandler.GetCrouch())
+            if (InputHandler.GetCrouch() && !isRunning)
             {
                 SetCrouchingState(!IsCrouching, false);
 
@@ -162,42 +167,42 @@ public class PlayerMovement : MonoBehaviour
         }
         else
         {
-            // Detect obstructions
-            if (!ignoreObstructions)
-            {
-                Collider[] standingOverlaps = Physics.OverlapCapsule(GetCapsuleBottomHemisphere(),GetCapsuleTopHemisphere(CapsuleHeightStanding),characterController.radius, -1, QueryTriggerInteraction.Ignore);
-                foreach (Collider c in standingOverlaps)
-                {
-                    if (c != characterController)
-                    {
-                        return false;
-                    }
-                }
-            }
-
-            m_TargetCharacterHeight = CapsuleHeightStanding;
-        }
-
-        if (OnStanceChanged != null)
-        {
-            OnStanceChanged.Invoke(crouched);
+            IgnoreObstructions(ignoreObstructions);
         }
 
         IsCrouching = crouched;
         return true;
     }
-    // Gets the center point of the bottom hemisphere of the character controller capsule    
+
+    bool IgnoreObstructions(bool ignoreObstructions)
+    {
+        // Detect obstructions
+        if (!ignoreObstructions)
+        {
+            Collider[] standingOverlaps = Physics.OverlapCapsule(GetCapsuleBottomHemisphere(), GetCapsuleTopHemisphere(CapsuleHeightStanding), characterController.radius, -1, QueryTriggerInteraction.Ignore);
+            foreach (Collider c in standingOverlaps)
+            {
+                if (c != characterController)
+                {
+                    return false;
+                }
+            }
+        }
+        m_TargetCharacterHeight = CapsuleHeightStanding;
+        return true;
+    }
+
     Vector3 GetCapsuleBottomHemisphere()
     {
         return transform.position + (transform.up * characterController.radius);
     }
-    // Gets the center point of the top hemisphere of the character controller capsule    
+  
     Vector3 GetCapsuleTopHemisphere(float atHeight)
     {
         return transform.position + (transform.up * (1f - characterController.radius));
     }
 
-    public bool ActiveMenu()
+    private bool ActiveMenu()
     {
         return Cursor.lockState == CursorLockMode.Locked;
     }
@@ -207,7 +212,32 @@ public class PlayerMovement : MonoBehaviour
         return IsCrouching;
     }
 
-    void OnExhausted()
+    private void Sleep()
+    {
+        characterController.enabled = false;
+        playerCamera.GetComponent<Rigidbody>().isKinematic = false;
+        playerCamera.GetComponent<Rigidbody>().drag = 10;
+        playerCamera.GetComponent<Collider>().enabled = true;
+        weaponInventory.SwitchToWeaponIndex(-1, true);
+        this.enabled = false;
+        base.Invoke("CloseEye", 2f);
+
+    }
+    private void WakeUp()
+    {
+
+        playerCamera.transform.position = CameraPos.position;
+        playerCamera.transform.rotation = CameraPos.rotation;
+        playerCamera.GetComponent<Rigidbody>().isKinematic = true;
+        playerCamera.GetComponent<Rigidbody>().drag = 0;
+        playerCamera.GetComponent<Collider>().enabled = false;
+        weaponInventory.SwitchToWeaponIndex(1, true);
+        characterController.enabled = true;
+        LoadingScenes.Instance.Show = false;
+        this.enabled = true;
+    }
+
+    private void OnExhausted()
     {
         characterController.enabled = false;
         playerCamera.GetComponent<Rigidbody>().isKinematic = false;
@@ -217,12 +247,12 @@ public class PlayerMovement : MonoBehaviour
         base.Invoke("CloseEye", 2f);
         
     }
-    void CloseEye()
+    private void CloseEye()
     {
         LoadingScenes.Instance.Show = true;
     }
 
-    void OnDie()
+    private void OnDie()
     {
         Debug.Log("Player Die");
         IsDead = true;

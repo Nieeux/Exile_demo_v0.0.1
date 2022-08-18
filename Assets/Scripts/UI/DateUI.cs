@@ -2,11 +2,16 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
+using UnityEngine.UI;
 
 public class DateUI : MonoBehaviour
 {
     public static DateUI Instance;
     public GameObject dateUI;
+    public Image DayBar;
+    public Image Vien;
+    public Gradient DayBarColor;
+    public TextMeshProUGUI dayNumberInUI;
     public TextMeshProUGUI dayNumber;
     public CanvasGroup canvasGroup;
     public float pad = 0;
@@ -33,8 +38,13 @@ public class DateUI : MonoBehaviour
         }
         this.dayNumber.text = string.Format("{0} {1}", language.VietNamese, day);
         Show = true;
+        UpdateDay(day);
         base.Invoke("fade", 3f);
 
+    }
+    private void UpdateDay(int day)
+    {
+        this.dayNumberInUI.text = day.ToString("00");
     }
     void fade()
     {
@@ -42,6 +52,11 @@ public class DateUI : MonoBehaviour
     }
     void Update()
     {
+
+        this.DayBar.fillAmount = DayNightCycle.Instance.GetcurrentTimeOfDay() / 1;
+        this.DayBar.color = DayBarColor.Evaluate(DayBar.fillAmount);
+        this.dayNumberInUI.color = DayBarColor.Evaluate(DayBar.fillAmount);
+        this.Vien.color = DayBarColor.Evaluate(DayBar.fillAmount);
 
         if (Show == true)
         {

@@ -3,16 +3,18 @@ using System.Collections;
 
 public class DayNightCycle : MonoBehaviour
 {
+	public static DayNightCycle Instance;
 	public Light sun;
-	public static float totalTime { get; private set; }
+	public float CurrentTime;
+	public float Tomorrow;
 	public float dayDuration = 1f;
 	public float NightDuration = 0.25f;
 	public float timeSpeed = 0.001f;
 	public bool Day;
 	public bool Night;
 
-	[Range(0, 1)]
-	public float currentTimeOfDay = 0.45f;
+    [Range(0,1)]
+	public float currentTimeOfDay = 0.3f;
 	public float timeMultiplier = 1f;
 	[Space(10)]
 	public Gradient nightDayColor;
@@ -30,13 +32,17 @@ public class DayNightCycle : MonoBehaviour
 	public float nightAtmosphereThickness = 0.87f;
 	Material skyMat;
 
-	void Start()
+    private void Awake()
+    {
+		DayNightCycle.Instance = this;
+    }
+	private void Start()
 	{
 		sun = GetComponent<Light>();
 		skyMat = RenderSettings.skybox;
 
 	}
-	void Update()
+	private void Update()
 	{
 		UpdatePosition();
 		UpdateFX();
@@ -45,18 +51,16 @@ public class DayNightCycle : MonoBehaviour
 		if(currentTimeOfDay < 0.3f || currentTimeOfDay > 0.7f)
 		{
 			n /= NightDuration;
-			Night = true;
 			Day = false;
 		}
 		else
         {
-			Night = false;
 			Day = true;
 		}
 
 		float n2 = n * Time.deltaTime;
 		currentTimeOfDay += n2;
-		totalTime += n2;
+		CurrentTime += n2;
 
 
 		if (currentTimeOfDay >= 1)
@@ -66,17 +70,47 @@ public class DayNightCycle : MonoBehaviour
 		}
 	}
 
-	void UpdateCycle()
+	public void NewDay()
 	{
-
+        if (Day)
+        {
+			int n = Mathf.FloorToInt(CurrentTime + 0.5f);
+			currentTimeOfDay = 0.7f;
+			CurrentTime = n;
+		}
+        else
+        {
+			int n = Mathf.FloorToInt(CurrentTime + 0.5f);
+			currentTimeOfDay = 0.3f;
+			CurrentTime = n;
+		}
 	}
 
-	void UpdatePosition()
+	public float GetCurrentTime()
+	{
+		return CurrentTime;
+	}
+	public float GetcurrentTimeOfDay()
+	{
+		return currentTimeOfDay;
+	}
+	public bool IsDay()
+	{
+		if(Day == true)
+        {
+			return true;
+		}
+		return false;
+	}
+
+
+
+	private void UpdatePosition()
 	{
 		sun.transform.localRotation = Quaternion.Euler((currentTimeOfDay * 360f) - 90, 170, 0);
 	}
 
-	void UpdateFX()
+	private void UpdateFX()
 	{
 		float tRange = 1 - minPoint;
 		float dot = Mathf.Clamp01((Vector3.Dot(sun.transform.forward, Vector3.down) - minPoint) / tRange);
@@ -99,4 +133,5 @@ public class DayNightCycle : MonoBehaviour
 		skyMat.SetFloat("_Exposure", i * exposureMultiplier);
 		
 	}
+
 }

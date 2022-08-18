@@ -25,7 +25,9 @@ MonoBehaviour:
   heal: 0
   hunger: 0
   stamina: 0
-  GunDamage: 25
+  sleep: 0
+  armorType: 0
+  GunDamage: 15
   fireRate: 0.1
   bulletsPerShot: 0
   CurrentDurability: 100
@@ -42,18 +44,18 @@ MonoBehaviour:
   fireAudio: {fileID: 0}
   reloadAudio: {fileID: 0}
   weaponType: 3
-  Rare: 0
+  Rare: 1
   buffs: []
   Debuffs: []
   punchStrenght: 0.03
   punchVibrato: 5
   punchDuration: 0.1
   punchElasticity: 0.5
-  punchDurationR: 0.1
+  punchDurationR: 0.01
   PunchR: {x: -2, y: 0, z: -1}
   randomness: 70
-  ShakeDuration: 1
-  ShakeStrenght: 1
+  ShakeDuration: 0.2
+  ShakeStrenght: 0.5
   sprite: {fileID: 21300000, guid: 9962eb46544fecf4f9d9783754c8086d, type: 3}
   material: {fileID: 0}
   mesh: {fileID: 0}

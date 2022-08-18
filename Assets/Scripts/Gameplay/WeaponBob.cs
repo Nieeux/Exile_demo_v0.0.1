@@ -26,7 +26,6 @@ public class WeaponBob : MonoBehaviour
     [Header("Rotation Step sway")]
     public float rotSmoothAmount = 6f;
 
-
     public float stepRotMultiplier = 1f;
 
     public Vector3 initPos;
@@ -43,16 +42,28 @@ public class WeaponBob : MonoBehaviour
 
     private float ZAxis;
 
+    PlayerStats player;
+    bool playerDead = false;
+
     private void Start()
     {
+        player = FindObjectOfType<PlayerStats>();
+        player.OnDie += PlayerDead;
         this.Weight = 1f;
         this.initPos = base.transform.localPosition;
         this.initRot = base.transform.localRotation;
     }
-
+    private void PlayerDead()
+    {
+        playerDead = true;
+    }
     // Update is called once per frame
     void Update()
     {
+        if (playerDead)
+        {
+            return;
+        }
         this.InputAxis();
         if(finalPosToMove != Vector3.zero)
         {

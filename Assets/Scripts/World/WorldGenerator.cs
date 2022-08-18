@@ -52,12 +52,21 @@ public class WorldGenerator : MonoBehaviour {
 		this.randomly = new Random();
 		StructureGenerator.WeightedSpawn[] terr = this.FindObjectToSpawn(this.Allstructure, this.totalWeight, this.randomly);
 		terrChoice = terr;
+
+        if (terrChoice[0].Secret == true)
+        {
+			ItNghieng = true;
+		}
+        else
+        {
+			ItNghieng = UnityEngine.Random.value < 0.1f;
+		}
 		chunksVisibleInViewDst = Mathf.RoundToInt(maxViewDst / chunkSize);
-		ItNghieng = UnityEngine.Random.value < 0.1f;
+		
 
 	}
 
-	void FixedUpdate() {
+	void Update() {
 		viewerPosition = new Vector2 (player.position.x, player.position.z);
 		UpdateVisibleChunks ();
 	}

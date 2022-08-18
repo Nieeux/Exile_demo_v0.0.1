@@ -19,12 +19,12 @@ public class PickupWeapon : MonoBehaviour, Interact, SharedId
 		{
 			if (WeaponInventory.Instance.AddWeapon(WeaponPrefab, item))
 			{
-				// Handle auto-switching to weapon if no weapons currently
+
 				if (WeaponInventory.Instance.GetActiveWeapon() == null)
 				{
-					WeaponInventory.Instance.SwitchWeapon(true);
+					WeaponInventory.Instance.SwitchWeapon();
 				}
-				//Destroy(this.gameObject);
+
 			}
 		}
 
@@ -33,8 +33,6 @@ public class PickupWeapon : MonoBehaviour, Interact, SharedId
 	public void RemoveObject()
 	{
 		WeaponInventory.Instance.DropWeapon(WeaponPrefab, item);
-		//UnityEngine.Object.Destroy(base.gameObject);
-		ResourceManager.Instance.RemoveInteractItem(this.id);
 	}
 
 	public string GetName()

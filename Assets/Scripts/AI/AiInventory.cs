@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Random = System.Random;
 
 public class AiInventory : MonoBehaviour
 {
@@ -10,11 +11,18 @@ public class AiInventory : MonoBehaviour
     WeaponIK weaponIK;
     AIController controller;
     private WeaponController brokeWeapon;
-
     public Transform WeaponContainer;
+    private Random random;
+
+    [Header("Rare")]
+    public float Original;
+    public float Upgrade;
+    public float Advanced;
+
 
     private void Start()
     {
+        this.random = new Random();
         controller = GetComponent<AIController>();
         weaponIK = GetComponent<WeaponIK>();
         StarterArmor();
@@ -39,8 +47,36 @@ public class AiInventory : MonoBehaviour
 
         weaponIK.SetAimTransform(WeaponContainer);
     }
-
     public void DropItem()
+    {
+        GetRandomDrop(Original, Upgrade, Advanced);
+    }
+    public void GetRandomDrop(float Original, float Upgrade, float Advanced)
+    {
+        float num = Original + Upgrade + Advanced;
+        float num2 = (float)random.NextDouble();
+        if (num2 < Original / num)
+        {
+            DropHeal();
+            return;
+        }
+        if (num2 < (Original + Upgrade) / num)
+        {
+            DropHeal();
+            DropArmor();
+            return;
+        }
+        DropWeapon();
+    }
+    public void DropHeal()
+    {
+        ItemStats heal = ItemManager.Instance.GetHeal();
+        ItemStats inventoryItem = ScriptableObject.CreateInstance<ItemStats>();
+        inventoryItem.Getitem(heal);
+        PickupItem pickup = Instantiate(inventoryItem.prefab, transform.position, transform.rotation).GetComponent<PickupItem>();
+        pickup.item = inventoryItem;
+    }
+    public void DropArmor()
     {
         if (currentArmor != null)
         {
@@ -57,10 +93,10 @@ public class AiInventory : MonoBehaviour
                 pickup.transform.SetParent(null);
             }
         }
-
     }
     public void DropWeapon()
     {
+
         if (WeaponStats != null)
         {
             WeaponController Weapon = Instantiate(WeaponStats.prefab, transform.position, Quaternion.identity).GetComponent<WeaponController>();
@@ -113,48 +149,39 @@ public class AiInventory : MonoBehaviour
     {
         ItemStats RandomWeapon = ItemManager.Instance.GetRandomWeapons();
 
-        Buff buff = ItemManager.Instance.GetBuff();
-        Buff Debuff = ItemManager.Instance.GetDeBuff();
-
-        ItemManager.Instance.getWeaponOriginal(RandomWeapon.id, buff.id, Debuff.id, WeaponContainer.transform.position, WeaponContainer.transform.rotation, WeaponContainer);
+        ItemManager.Instance.getWeaponOriginal(RandomWeapon.id, WeaponContainer.transform.position, WeaponContainer.transform.rotation, WeaponContainer);
         CurrentWeapon = GetComponentInChildren<WeaponController>();
 
         WeaponStats = CurrentWeapon.GunStats;
         CurrentWeapon.coll.enabled = false;
         CurrentWeapon.rb.isKinematic = true;
         CurrentWeapon.canFire = false;
-        weaponIK.SetAimTransform(WeaponContainer);
+        //weaponIK.SetAimTransform(WeaponContainer);
     }
     public void StarterWeaponUpgrade()
     {
         ItemStats RandomWeapon = ItemManager.Instance.GetRandomWeapons();
 
-        Buff buff = ItemManager.Instance.GetBuff();
-        Buff Debuff = ItemManager.Instance.GetDeBuff();
-
-        ItemManager.Instance.getWeaponUpgrade(RandomWeapon.id, buff.id, Debuff.id, WeaponContainer.transform.position, WeaponContainer.transform.rotation, WeaponContainer);
+        ItemManager.Instance.getWeaponUpgrade(RandomWeapon.id, WeaponContainer.transform.position, WeaponContainer.transform.rotation, WeaponContainer);
         CurrentWeapon = GetComponentInChildren<WeaponController>();
 
         WeaponStats = CurrentWeapon.GunStats;
         CurrentWeapon.coll.enabled = false;
         CurrentWeapon.rb.isKinematic = true;
         CurrentWeapon.canFire = false;
-        weaponIK.SetAimTransform(WeaponContainer);
+        //weaponIK.SetAimTransform(WeaponContainer);
     }
     public void StarterWeaponAdvanced()
     {
         ItemStats RandomWeapon = ItemManager.Instance.GetRandomWeapons();
 
-        Buff buff = ItemManager.Instance.GetBuff();
-        Buff Debuff = ItemManager.Instance.GetDeBuff();
-
-        ItemManager.Instance.getweaponAdvanced(RandomWeapon.id, buff.id, Debuff.id, WeaponContainer.transform.position, WeaponContainer.transform.rotation, WeaponContainer);
+        ItemManager.Instance.getweaponAdvanced(RandomWeapon.id, WeaponContainer.transform.position, WeaponContainer.transform.rotation, WeaponContainer);
         CurrentWeapon = GetComponentInChildren<WeaponController>();
 
         WeaponStats = CurrentWeapon.GunStats;
         CurrentWeapon.coll.enabled = false;
         CurrentWeapon.rb.isKinematic = true;
         CurrentWeapon.canFire = false;
-        weaponIK.SetAimTransform(WeaponContainer);
+        //weaponIK.SetAimTransform(WeaponContainer);
     }
 }

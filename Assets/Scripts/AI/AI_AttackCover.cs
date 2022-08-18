@@ -18,7 +18,6 @@ public class AI_AttackCover : MonoBehaviour, AIstate
         {
             agent.LookAtTarget();
             agent.ReadyAttack();
-            agent.inventory.CurrentWeapon.canFire = true;
             agent.inventory.CurrentWeapon.AiFire();
 
             if (agent.inventory.CurrentWeapon.GunStats.CurrentDurability <= 0)

@@ -44,14 +44,8 @@ public class VendingCells : MonoBehaviour, Interact, SharedId
     public void AllExecute()
     {
         ItemStats RandomWeapon = ItemManager.Instance.GetRandomWeapons();
-        Buff buff = ItemManager.Instance.GetBuff();
-        Buff Debuff = ItemManager.Instance.GetDeBuff();
-        ItemManager.Instance.DropWeaponAtVending(RandomWeapon.id, buff.id, Debuff.id, base.transform.position, base.transform.rotation, transform);
+        ItemManager.Instance.DropWeaponAtVending(RandomWeapon.id, base.transform.position, base.transform.rotation, transform);
 
-    }
-    private void GetReady()
-    {
-        this.ready = true;
     }
 
     public string GetName()

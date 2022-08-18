@@ -53,8 +53,10 @@ public class UIBob : MonoBehaviour
 
 	public Quaternion stepRot = Quaternion.identity;
 
-
 	private float ZAxis;
+
+	PlayerStats player;
+	bool playerDead = false;
 
 	private void Awake()
 	{
@@ -63,15 +65,24 @@ public class UIBob : MonoBehaviour
 	}
 	private void Start()
 	{
-
+		player = FindObjectOfType<PlayerStats>();
+		player.OnDie += PlayerDead;
 		this.defaultPosY = base.transform.localPosition.y;
 
 		this.Weight = 1f;
 		this.initPos = base.transform.localPosition;
 		this.initRot = base.transform.localRotation;
 	}
+	private void PlayerDead()
+	{
+		playerDead = true;
+	}
 	void Update()
 	{
+		if (playerDead)
+		{
+			return;
+		}
 		this.InputAxis();
 
 		if (finalPosToMove != Vector3.zero)

@@ -105,6 +105,7 @@ public class StructureGenerator : MonoBehaviour
 	{
 		public GameObject prefab;
 		public float Rare;
+		public bool Secret;
 	}
 }
 

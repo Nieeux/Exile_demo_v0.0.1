@@ -8,4 +8,5 @@ public class multiLanguage : ScriptableObject
 
 	public string English;
 	public string VietNamese;
+	public string VietNamese2;
 }

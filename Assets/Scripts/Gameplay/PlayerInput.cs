@@ -46,16 +46,6 @@ public class PlayerInput : MonoBehaviour
             }
         }
 
-        // Player ch?t load l?i game 
-        if (PlayerHealth.CurrentHealth <= 0)
-        {
-           // playerMovement.
-            if (Input.GetKeyDown(KeyCode.Space))
-            {
-                GameManager.Instance.Relife();
-
-            }
-        }
     }
 
     // Movement

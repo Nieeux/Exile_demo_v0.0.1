@@ -351,6 +351,8 @@ MonoBehaviour:
   walkPoint: {x: 0, y: 0, z: 0}
   MaxHealth: 100
   DamageMultiplier: 1
+  damageFinal: 0
+  damageFinalEffect: 0
   numberFx: {fileID: 6567150810459544244, guid: 199c2e0e5da209d498e21ee9b322ebdc, type: 3}
   inventory: {fileID: 6366492155532933429}
 --- !u!114 &6366492155532933429
@@ -367,7 +369,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   CurrentWeapon: {fileID: 0}
   WeaponStats: {fileID: 0}
+  currentArmor: {fileID: 0}
   WeaponContainer: {fileID: 602710194895555247}
+  Original: 0.5
+  Upgrade: 0.3
+  Advanced: 0.2
 --- !u!114 &6131745036830815417
 MonoBehaviour:
   m_ObjectHideFlags: 0

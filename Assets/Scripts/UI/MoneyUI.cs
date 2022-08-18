@@ -8,16 +8,33 @@ public class MoneyUI : MonoBehaviour
 	public static MoneyUI Instance;
 
 	public TextMeshProUGUI money;
-	//public TextMeshProUGUI Text;
+
 	public int CountFPS = 30;
 	public float Duration = 1f;
 	public string NumberFormat = "N0";
 	private int _value;
 	private Coroutine CountingCoroutine;
 
+	public GameObject pickupPrefab;
+
+	public Transform pickupParent;
+
 	private void Awake()
 	{
 		MoneyUI.Instance = this;
+	}
+
+	public void AddMoney(float money)
+	{
+		GameObject gameObject = UnityEngine.Object.Instantiate<GameObject>(this.pickupPrefab, this.pickupParent);
+		gameObject.GetComponent<PickedupMoney>().SetMoney(money);
+		gameObject.transform.SetSiblingIndex(0);
+	}
+	public void RemoveMoney(float money)
+	{
+		GameObject gameObject = UnityEngine.Object.Instantiate<GameObject>(this.pickupPrefab, this.pickupParent);
+		gameObject.GetComponent<PickedupMoney>().removeMoney(money);
+		gameObject.transform.SetSiblingIndex(0);
 	}
 
 	public int Value

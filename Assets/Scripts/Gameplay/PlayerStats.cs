@@ -7,27 +7,30 @@ public class PlayerStats : MonoBehaviour
 {
     public static PlayerStats Instance;
 
-    [Header("Heath")]
-    public float MaxHealth = 100;
-    public float CurrentHealth { get; set; }
-    public float armor { get; set; }
-    public int speed { get; set; }
+    [SerializeField]
+    private float MaxHealth = 100;
+    public float CurrentHealth { get; private set; }
+    public float armor { get; private set; }
 
     [Header("Hunger")]
-    public float hungerDrainRate = 0.5f;
-    public float hunger { get; set; }
-    public float maxHunger { get; set; }
-    private bool Sleep;
+    [SerializeField]
+    private float hungerDrainRate = 1f;
+    public float hunger { get; private set; }
+    public float maxHunger { get; private set; }
+
 
     [Header("Sleepy")]
-    public float SleepyDrainRate = 0.5f;
-    public float sleepy { get; set; }
-    public float maxSleepy { get; set; }
+    [SerializeField]
+    private float SleepyDrainRate = 1f;
+    public float sleepy { get; private set; }
+    public float maxSleepy { get; private set; }
+    private bool Sleeping;
+    private bool canSleep;
 
     [Header("Stamina")]
     private bool canRun = true;
-    public float stamina { get; set; }
-    public float maxStamina { get; set; }
+    public float stamina { get; private set; }
+    public float maxStamina { get; private set; }
     private float staminaRegenRate = 12f;
     private float staminaDrainRate = 12f;
     private float staminaDrainMultiplier = 5f;
@@ -40,9 +43,9 @@ public class PlayerStats : MonoBehaviour
 
     [Header("Damage")]
     public float damageFinal;
-    bool IsDead;
-    public float damage { get; set; }
-    public bool Invincible { get; set; }
+    private bool IsDead;
+    public float damage { get; private set; }
+    public bool Invincible { get; private set; }
     public float DamageMultiplier = 1f;
 
     //Weight
@@ -55,6 +58,8 @@ public class PlayerStats : MonoBehaviour
 
     public UnityAction<float> OnDamaged;
     public UnityAction<float> OnHealed;
+    public UnityAction OnSleep;
+    public UnityAction OnWakeUp;
     public UnityAction OnExhausted;
     public UnityAction OnDie;
 
@@ -85,6 +90,10 @@ public class PlayerStats : MonoBehaviour
     // Update is called once per frame
     private void Update()
     {
+        if (IsDead)
+        {
+            return;
+        }
         Stamina();
         Hunger();
         Healing();
@@ -172,14 +181,22 @@ public class PlayerStats : MonoBehaviour
         }
 
     }
+    public float GetHealthBar()
+    {
+        return CurrentHealth / MaxHealth;
+    }
+    public float GetMaxHealth()
+    {
+        return MaxHealth;
+    }
+
     private void Sleepy()
     {
         
         if (this.sleepy >= 0f || this.CurrentHealth >= 0f)
         {
-            exhausted();
 
-            if(this.sleepy == 0f || this.CurrentHealth == 0f)
+            if (this.sleepy == 0f || this.CurrentHealth == 0f || Sleeping == true)
             {
                 return;
             }
@@ -189,41 +206,135 @@ public class PlayerStats : MonoBehaviour
 
             if (this.sleepy <= 25f)
             {
-                Sleep = true;
+                canSleep = true;
             }
             else
             {
-                Sleep = false;
+                canSleep = false;
             }
            
         }
         if (this.sleepy < 0f)
         {
+            Sleep();
             this.sleepy = 0f;
 
         }
     }
-    public bool IsSleep()
+    public bool CanSleep()
     {
-        if (Sleep == true)
+        if (canSleep == true)
         {
             return true;
         }
         return false;
     }
 
-    private void Eat(ItemStats item)
+    public void Sleep()
     {
-
+        Sleeping = true;
+        OnSleep?.Invoke();
+        CheckPlatformSleep();
     }
-    private void Armor(ItemStats item)
-    {
 
-    }
-    public void Heal(float healAmount)
+    private void WakeUp()
     {
+        OnWakeUp?.Invoke();
+        hunger /= 2f;
+        sleepy = maxSleepy;
+        Sleeping = false;
+        DayNightCycle.Instance.NewDay();
+    }
+
+    void exhausted()
+    {
+        if (sleepy <= 0f)
+        {
+            Sleep();
+        }
+    }
+    private void CheckPlatformSleep()
+    {
+        RaycastHit hit;
+
+        if (Physics.Raycast(transform.position, Vector3.down, out hit, 10))
+        {
+            if (hit.transform.gameObject.layer == LayerMask.NameToLayer("Ground"))
+            {
+                Debug.Log("SleepOnGround");
+                bool dead = Random.Range(0f, 1f) < 0.8f;
+                if (dead)
+                {
+                    float random = Random.Range(5, 10);
+                    base.Invoke("Dead", random);
+                }
+                else
+                {
+                    base.Invoke("WakeUp", 5f);
+                }
+            }
+
+            if (hit.transform.gameObject.layer == LayerMask.NameToLayer("Hide"))
+            {
+                Debug.Log("SleepOnHide");
+                bool dead = Random.Range(0f, 1f) < 0.5f;
+                if (dead)
+                {
+                    float random = Random.Range(5, 10);
+                    base.Invoke("Dead", random);
+                }
+                else
+                {
+                    base.Invoke("WakeUp", 5f);
+                }
+            }
+
+            if (hit.transform.gameObject.layer == LayerMask.NameToLayer("Base"))
+            {
+                Debug.Log("SleepOnBase");
+                base.Invoke("WakeUp", 5f);
+            }
+
+            if (hit.transform.gameObject.layer == LayerMask.NameToLayer("Structure"))
+            {
+                Debug.Log("SleepOnStructure");
+                base.Invoke("WakeUp", 5f);
+            }
+        }
+    }
+
+    public bool Coffee(ItemStats item)
+    {
+        if (sleepy >= maxSleepy)
+        {
+            return false;
+        }
+
+        sleepy += item.sleep;
+        sleepy = Mathf.Clamp(sleepy, 0f, maxSleepy);
+        return true;
+    }
+
+    public bool Eat(ItemStats item)
+    {
+        if(hunger >= maxHunger)
+        {
+            return false;
+        }
+
+        hunger += item.hunger;
+        hunger = Mathf.Clamp(hunger, 0f, maxHunger);
+        return true;
+    }
+
+    public bool Heal(ItemStats item)
+    {
+        if (CurrentHealth >= MaxHealth || IsDead)
+        {
+            return false;
+        }
         float healthBefore = CurrentHealth;
-        CurrentHealth += healAmount;
+        CurrentHealth += item.heal;
         CurrentHealth = Mathf.Clamp(CurrentHealth, 0f, MaxHealth);
 
         // call OnHeal action
@@ -232,6 +343,7 @@ public class PlayerStats : MonoBehaviour
         {
             OnHealed?.Invoke(trueHealAmount);
         }
+        return true;
     }
 
     public float Weight()
@@ -258,10 +370,11 @@ public class PlayerStats : MonoBehaviour
         CameraShake.Instance.Shake();
 
         float healthBefore = CurrentHealth;
+        bool Crit = false;
 
         if (inventory.currentArmor != null)
         {
-            DamageCalculations.ArmorResult damageMultiplier = DamageCalculations.Instance.GetDamageArmor(inventory.currentArmor, bulletType, damage);
+            DamageCalculations.ArmorResult damageMultiplier = DamageCalculations.Instance.GetDamageArmor(inventory.currentArmor,bulletType, Crit, damage);
             damageFinal = damageMultiplier.damageResult;
         }
         else
@@ -301,7 +414,7 @@ public class PlayerStats : MonoBehaviour
     }
     */
 
-    public void Kill()
+    public void Dead()
     {
         CurrentHealth = 0f;
 
@@ -311,13 +424,6 @@ public class PlayerStats : MonoBehaviour
         HandleDeath();
     }
 
-    void exhausted()
-    {
-        if (sleepy <= 0f)
-        {
-            OnExhausted?.Invoke();
-        }
-    }
 
     void HandleDeath()
     {
@@ -335,8 +441,8 @@ public class PlayerStats : MonoBehaviour
     {
         return this.stamina > 0f && canRun == true;
     }
-    public bool Weak()
+    public bool PlayerDead()
     {
-        return this.stamina == 100f;
+        return IsDead;
     }
 }

@@ -24,12 +24,13 @@ MonoBehaviour:
   heal: 0
   hunger: 0
   stamina: 0
+  sleep: 0
   armorType: 2
   GunDamage: 0
   fireRate: 0
   bulletsPerShot: 0
-  CurrentDurability: 50
-  Durability: 50
+  CurrentDurability: 25
+  Durability: 25
   CurrentMagazine: 0
   Magazine: 0
   singleFire: 0

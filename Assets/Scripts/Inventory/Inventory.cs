@@ -1,10 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class Inventory : MonoBehaviour
 {
-    [Header("Inventory")]
+	public static Inventory Instance;
+
+	[Header("Inventory")]
 	public int BarSelect;
 	public Transform CamDrop;
 	public ItemStats currentItem;
@@ -27,16 +30,16 @@ public class Inventory : MonoBehaviour
 	public List<ItemStats> Item;
 	private float critcal = 0;
 	private float speed = 0;
+	public float damage = 0;
 	public Dictionary<int, ItemStats> equipments;
 	public Dictionary<string, int> GetNameEquipments;
 
     [Header("Tutorial")]
 	public GameObject TipUseItem;
 
-	public static Inventory Instance;
-	private Vector2 randomDamageRange = new Vector2(0.7f, 1f);
+	public UnityAction UpdateUi;
 
-    private void Awake()
+	private void Awake()
     {
 		Inventory.Instance = this;
 	}
@@ -52,7 +55,7 @@ public class Inventory : MonoBehaviour
 
     private void Update()
     {
-		if (!ActiveMenu())
+		if (!ActiveMenu() && !playerStats.PlayerDead())
 		{
 			for (int i = 1; i <= 5; i++)
 			{
@@ -100,7 +103,14 @@ public class Inventory : MonoBehaviour
 		{
 			this.currentItem = this.inventoryCells[this.BarSelect].currentItem;
 		}
+	}
+	private void RemoveHotbar()
+	{
 
+		if (this.inventoryCells[this.BarSelect].currentItem != this.currentItem)
+		{
+			this.currentItem = null;
+		}
 	}
 	//Tim o inventory
 	private void FillCellList()
@@ -136,7 +146,7 @@ public class Inventory : MonoBehaviour
 					inventoryCell = inventoryCell2;
 				}
 			}
-			/*
+
 			else if (inventoryCell2.currentItem.Compare(inventoryItem) && inventoryCell2.currentItem.stackable)
 			{
 				if (inventoryCell2.currentItem.amount + inventoryItem.amount <= inventoryCell2.currentItem.max)
@@ -150,7 +160,7 @@ public class Inventory : MonoBehaviour
 				inventoryItem.amount -= num;
 				inventoryCell2.UpdateCell();
 			}
-			*/
+
 		}
 
 		if (inventoryCell)
@@ -207,14 +217,11 @@ public class Inventory : MonoBehaviour
 		}
 		if (this.currentItem.itemType == ItemStats.ItemType.Item)
 		{
-
+			useItem();
 		}
 		if (this.currentItem.itemType == ItemStats.ItemType.Food)
 		{
-			UseFood(1);
-
-			PlayerStats.Instance.Heal(50);
-
+			UseFood();
 		}
 		if (this.currentItem.itemType == ItemStats.ItemType.Equipment
 			&& this.inventoryCells[this.BarSelect].equipAble == false)
@@ -230,19 +237,43 @@ public class Inventory : MonoBehaviour
 			}
 			EquipItemUI(currentItem);
 			UpdateArmorSlot(currentItem, this.BarSelect);
-
 		}
+		this.UpdateHotbar();
 	}
-
-	public void UseFood(int n)
+	private void useItem()
+    {
+		if (currentItem.heal > 0)
+		{
+			if(PlayerStats.Instance.Heal(currentItem))
+			this.inventoryCells[this.BarSelect].RemoveItem();
+		}
+		
+	}
+	private void UseFood()
 	{
+		if (currentItem.hunger > 0)
+		{
+			if (PlayerStats.Instance.Eat(currentItem))
+			this.inventoryCells[this.BarSelect].RemoveItem();
+		}
+		if (currentItem.sleep > 0)
+		{
+			if (PlayerStats.Instance.Coffee(currentItem))
+			this.inventoryCells[this.BarSelect].RemoveItem();
+		}
+
+	}
+	public void UseFoodAmount(int n)
+	{
+
 		this.currentItem.amount -= n;
 		if (this.currentItem.amount <= 0)
 		{
 			this.inventoryCells[this.BarSelect].RemoveItem();
 		}
-		this.inventoryCells[this.BarSelect].UpdateCell();
+		this.inventoryCells[this.BarSelect].RemoveItem();
 	}
+
 
 	public void UseMoney(int Money)
 	{
@@ -252,6 +283,7 @@ public class Inventory : MonoBehaviour
 			Moneys = 0;
 		}
 		MoneyUI.Instance.Value = Moneys;
+		MoneyUI.Instance.RemoveMoney(Money);
 	}
 
 	public void DropItem()
@@ -269,7 +301,16 @@ public class Inventory : MonoBehaviour
 
 			PickupItem pickup = Instantiate(currentItem.prefab, CamDrop.transform.position, Quaternion.identity).GetComponent<PickupItem>();
 			pickup.item = currentItem;
-			pickup.GetComponentInChildren<SharedId>().SetId(ResourceManager.Instance.GetNextId());
+
+			RaycastHit hit;
+			if (Physics.Raycast(pickup.transform.position, Vector3.down, out hit, 10, LayerMask.GetMask("Ground")))
+			{
+				pickup.transform.SetParent(hit.collider.gameObject.transform.parent);
+			}
+			else
+			{
+				pickup.transform.SetParent(null);
+			}
 			this.inventoryCells[this.BarSelect].RemoveItem();
 			this.UpdateHotbar();
 
@@ -309,8 +350,21 @@ public class Inventory : MonoBehaviour
 		{
 			critcal = 0;
 		}
+		if (Items.name == "maygiatoc" && this.inventoryCells[this.BarSelect].equipAble == true)
+		{
+			damage = 0.2f;
+		}
+		else if (Items.name == "maygiatoc" && this.inventoryCells[this.BarSelect].equipAble == false)
+		{
+			damage = 0;
+		}
 
 		base.Invoke("UpdateUI", 0.2f);
+
+		if (UpdateUi != null)
+		{
+			UpdateUi.Invoke();
+		}
 
 	}
 
@@ -324,6 +378,10 @@ public class Inventory : MonoBehaviour
 	{
 		ItemWeight -= Item.Weight;
 
+		if(ItemWeight <= 0)
+        {
+			ItemWeight = 0;
+		}
 		base.Invoke("UpdateUI", 0.2f);
 	}
 
@@ -390,6 +448,11 @@ public class Inventory : MonoBehaviour
 	#endregion
 
 	#region GetData
+	public float GetDamage()
+	{
+		float n = damage;
+		return 1f + n;
+	}
 	public float GetCritical()
 	{
 		float n = critcal + WeaponInventory.Instance.GetBuffCritical();
@@ -410,7 +473,6 @@ public class Inventory : MonoBehaviour
 		return currentArmor;
 
 	}
-
 	public int GetMoney()
 	{
 		int num = 0;
@@ -422,54 +484,8 @@ public class Inventory : MonoBehaviour
 	{
 		Moneys += Money;
 		MoneyUI.Instance.Value = Moneys;
+		MoneyUI.Instance.AddMoney(Money);
 	}
-	#endregion
-
-	#region CalculateDamage 
-
-	public class DamageResult
-	{
-		public float damageMultiplier;
-		public bool ItCrit;
-		public float AmmoPiercing;
-
-		public DamageResult(float damage, bool crit)
-		{
-			this.damageMultiplier = damage;
-			this.ItCrit = crit;
-
-
-			//this.AmmoPiercing = AmmoPiercing;
-		}
-	}
-	public DamageResult GetDamage(Bullet ammoType)
-	{
-		float dmg = Random.Range(randomDamageRange.x, randomDamageRange.y);
-		bool ItCrit = Random.value < GetCritical();
-
-
-		if (ammoType.ammoType == Bullet.AmmoType.NormalAmmo)
-        {
-			dmg *= 1.2f;
-			Debug.Log("CalculateNormalAmmo");
-		}
-		if (ammoType.ammoType == Bullet.AmmoType.PiercingAmmo)
-		{
-			dmg *= 1.5f;
-			Debug.Log("CalculatePiercingAmmo");
-		}
-		if (ammoType.ammoType == Bullet.AmmoType.HighAmmo)
-		{
-			dmg *= 2;
-			Debug.Log("CalculateHighAmmo");
-		}
-		if (ItCrit)
-		{
-			dmg *= 2f;
-		}
-		return new DamageResult(dmg, ItCrit);
-	}
-
 	#endregion
 
 	#region UI

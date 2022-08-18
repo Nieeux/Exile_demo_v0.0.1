@@ -9,6 +9,9 @@ public class Bullet : MonoBehaviour
     public float hitForce = 50f;
     public float destroyAfter = 3.5f;
 
+    public bool IsShotGunShell;
+    public float bulletsPerShot;
+
     public Bullet.AmmoType ammoType;
     public Color ammoTypeColor;
     public GameObject bulletLight;
@@ -71,7 +74,7 @@ public class Bullet : MonoBehaviour
             PlayerStats damageablePlayer = collider.GetComponent<PlayerStats>();
             if (damageablePlayer)
             {
-                DamageCalculations.DamageResult damageMultiplier = DamageCalculations.Instance.GetDamage(this);
+                DamageCalculations.DamageResult damageMultiplier = DamageCalculations.Instance.GetAiDamage(this);
                 float damageMultiplier2 = damageMultiplier.damageResult;
                 float Damage = (int)(BulletDamage * damageMultiplier2);
 
@@ -84,20 +87,29 @@ public class Bullet : MonoBehaviour
         if (damageable)
         {
 
-            DamageCalculations.DamageResult damageMultiplier = DamageCalculations.Instance.GetDamage(this);
+            DamageCalculations.DamageResult damageMultiplier = DamageCalculations.Instance.GetPlayerDamage(this);
             float damageMultiplier2 = damageMultiplier.damageResult;
             bool crit = damageMultiplier.ItCrit;
             float Damage = (int)(BulletDamage * damageMultiplier2);
-            HitEffect hitEffect = HitEffect.AmmoNormal;
-            if (crit)
-            {
-                hitEffect = HitEffect.Crit;
-            }
+
             pos = collider.transform.position;
 
-            damageable.Damage(Damage, this, (int)hitEffect, pos);
+            damageable.Damage(Damage, this, crit, pos);
         }
 
+        HitAble hitable = collider.GetComponent<HitAble>();
+        if (hitable)
+        {
+
+            DamageCalculations.DamageResult damageMultiplier = DamageCalculations.Instance.GetPlayerDamage(this);
+            float damageMultiplier2 = damageMultiplier.damageResult;
+            bool crit = damageMultiplier.ItCrit;
+            float Damage = (int)(BulletDamage * damageMultiplier2);
+
+            pos = collider.transform.position;
+
+            hitable.Damage(Damage, this, crit, pos);
+        }
         Destroy(this.bulletLight,0.01f);
 
     }

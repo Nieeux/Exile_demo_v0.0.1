@@ -8,16 +8,18 @@ public class WeaponInventory : MonoBehaviour
 {
     public static WeaponInventory Instance;
 
-    public enum WeaponSwitchState
+    public enum WeaponState
     {
-        Up,
-        Down,
-        PutDownPrevious,
+        PutUp,
+        PutDown,
+        Switch,
         PutUpNew,
+
     }
 
     public WeaponController[] WeaponSlots = new WeaponController[2];
     public WeaponController WeaponInActive;
+    public List<Buff> buffsInActive;
 
     public Transform WeaponContainer;
 
@@ -28,10 +30,9 @@ public class WeaponInventory : MonoBehaviour
     public UnityAction<WeaponController, int> OnAddedWeapon;
     public UnityAction<WeaponController, int> OnRemovedWeapon;
 
-
     int m_WeaponSwitchNewWeaponIndex;
     float m_TimeStartedWeaponSwitch;
-    WeaponSwitchState m_WeaponSwitchState;
+    public WeaponState WeaponSwitchState;
 
     public float WeaponSwitchDelay = 1f;
     PlayerInput InputHandler;
@@ -48,10 +49,10 @@ public class WeaponInventory : MonoBehaviour
 
     public float weaponWeight;
     [Header("Buff")]
-    private float critcal;
-    private float heal;
-    private float bioTech;
-    private float speed;
+    public float critcal;
+    public float heal;
+    public float bioTech;
+    public float speed;
 
    [Header("Gun Recoil")]
     public Transform CameraRecoil;
@@ -82,7 +83,7 @@ public class WeaponInventory : MonoBehaviour
     void Start()
     {
         //ActiveWeaponIndex = -1;
-        m_WeaponSwitchState = WeaponSwitchState.Down;
+        //WeaponSwitchState = WeaponState.PutDown;
         OnSwitchedToWeapon += OnWeaponSwitched;
         InputHandler = GetComponent<PlayerInput>();
         playerMovement = GetComponent<PlayerMovement>();
@@ -95,8 +96,8 @@ public class WeaponInventory : MonoBehaviour
     {
         WeaponController activeWeapon = GetActiveWeapon();
 
-        currentReturnSpeed = playerMovement.isCrouching() ? CrouchreturnSpeed : returnSpeed;
-        currentrecoilY = playerMovement.isCrouching() ? CrouchrecoilY : recoilY;
+        //currentReturnSpeed = playerMovement.isCrouching() ? CrouchreturnSpeed : returnSpeed;
+        //currentrecoilY = playerMovement.isCrouching() ? CrouchrecoilY : recoilY;
         //Recoil sung
 
         targetRotation = Vector3.Lerp(targetRotation, Vector3.zero, currentReturnSpeed * Time.deltaTime);
@@ -104,20 +105,19 @@ public class WeaponInventory : MonoBehaviour
         CameraRecoil.transform.localRotation = Quaternion.Euler(currentRotation);
 
         // weapon switch handling
-        if (ActiveWeaponIndex != -1 && (activeWeapon == null || !activeWeapon.IsCharging) && (m_WeaponSwitchState == WeaponSwitchState.Up || m_WeaponSwitchState == WeaponSwitchState.Down))
+        if (ActiveWeaponIndex != -1 && (activeWeapon == null || !activeWeapon.IsCharging) && (WeaponSwitchState == WeaponState.PutUp || WeaponSwitchState == WeaponState.PutDown))
         {
             int switchWeaponInput = InputHandler.GetSwitchWeapon();
             if (switchWeaponInput != 0)
             {
-                bool switchUp = switchWeaponInput > 0;
-                SwitchWeapon(switchUp);
+                SwitchWeapon();
             }
 
         }
         //Drop Weapon
         if (activeWeapon != null)
         {
-            if (InputHandler.GetDropWeapon())
+            if (InputHandler.GetDropWeapon() && activeWeapon.canDrop)
             {
                 Debug.Log("DropWeapon");
                 Interact weaponIndex = activeWeapon.WeaponIndex;
@@ -131,10 +131,10 @@ public class WeaponInventory : MonoBehaviour
         }
 
     }
-    public void RecoilFire()
-    {
-        targetRotation += new Vector3(recoilX, Random.Range(-currentrecoilY, currentrecoilY), Random.Range(-recoilZ, recoilZ));
-    }
+    //public void RecoilFire()
+    //{
+       // targetRotation += new Vector3(recoilX, Random.Range(-currentrecoilY, currentrecoilY), Random.Range(-recoilZ, recoilZ));
+    //}
 
     private void LateUpdate()
     {
@@ -155,10 +155,9 @@ public class WeaponInventory : MonoBehaviour
             switchingTimeFactor = Mathf.Clamp01((Time.time - m_TimeStartedWeaponSwitch) / WeaponSwitchDelay);
         }
 
-        // Handle transiting to new switch state
         if (switchingTimeFactor >= 1f)
         {
-            if (m_WeaponSwitchState == WeaponSwitchState.PutDownPrevious)
+            if (WeaponSwitchState == WeaponState.Switch)
             {
                 // Deactivate old weapon
                 WeaponController oldWeapon = GetWeaponAtSlotIndex(ActiveWeaponIndex);
@@ -166,7 +165,7 @@ public class WeaponInventory : MonoBehaviour
                 {
                     oldWeapon.ShowWeapon(false);
                     this.WeaponInActive = oldWeapon;
-                    UpdateBuffsModified(WeaponInActive);
+                   
                 }
 
                 ActiveWeaponIndex = m_WeaponSwitchNewWeaponIndex;
@@ -178,78 +177,92 @@ public class WeaponInventory : MonoBehaviour
                 {
                     OnSwitchedToWeapon.Invoke(newWeapon);
                     this.WeaponInActive = newWeapon;
-                    UpdateBuffsModified(WeaponInActive);
                 }
 
                 if (newWeapon)
                 {
                     m_TimeStartedWeaponSwitch = Time.time;
-                    m_WeaponSwitchState = WeaponSwitchState.PutUpNew;
+                    WeaponSwitchState = WeaponState.PutUpNew;
+                    RefreshBuffsModified();
+                    UpdateBuffsModified(WeaponInActive);
                 }
                 else
                 {
                     // if new weapon is null, don't follow through with putting weapon back up
-                    m_WeaponSwitchState = WeaponSwitchState.Down;
+                    WeaponSwitchState = WeaponState.PutDown;
                 }
             }
-            else if (m_WeaponSwitchState == WeaponSwitchState.PutUpNew)
+            else if (WeaponSwitchState == WeaponState.PutUpNew)
             {
-                m_WeaponSwitchState = WeaponSwitchState.Up;
+                WeaponSwitchState = WeaponState.PutUp;
             }
         }
 
+        // Handle transiting to new switch state
+
+
         // Handle moving the weapon socket position for the animated weapon switching
-        if (m_WeaponSwitchState == WeaponSwitchState.PutDownPrevious)
+        if (WeaponSwitchState == WeaponState.Switch)
         {
             Rot = Vector3.Slerp(Rot, DownRotation, switchingTimeFactor);
             WeaponContainer.localRotation = Quaternion.Euler(Rot);
             WeaponContainer.localPosition = Vector3.Lerp(defuPosition, DownPosition, switchingTimeFactor);
         }
-        else if (m_WeaponSwitchState == WeaponSwitchState.PutUpNew)
+        if (WeaponSwitchState == WeaponState.PutUpNew)
         {
             Rot = Vector3.Slerp(Rot, defuRotation, switchingTimeFactor);
             WeaponContainer.localRotation = Quaternion.Euler(Rot);
             WeaponContainer.localPosition = Vector3.Lerp(DownPosition, defuPosition, switchingTimeFactor);
         }
+        if (WeaponSwitchState == WeaponState.PutDown)
+        {
+            Rot = Vector3.Slerp(Rot, DownRotation, 5f * Time.deltaTime);
+            WeaponContainer.localRotation = Quaternion.Euler(Rot);
+            WeaponContainer.localPosition = Vector3.Lerp(WeaponContainer.localPosition, DownPosition, switchingTimeFactor);
+        }
     }
 
     private void UpdateBuffsModified(WeaponController WeaponActive)
     {
-        if(WeaponActive == null)
+        
+        if (WeaponActive == null)
         {
             return;
         }
+        this.buffsInActive = WeaponActive.GunStats.buffs;
 
-        if(WeaponActive.GunStats.buffs[0].name == "Critical")
+        for (int i = 0; i < this.buffsInActive.Count; i++)
         {
-            critcal = 0.1f;
-        }
-        else
-        {
-            critcal = 0f;
-        }
-        if (WeaponActive.GunStats.buffs[0].name == "HealTech")
-        {
-            heal = 5f;
-        }
-        else
-        {
-            heal = 0f;
-        }
-        if (WeaponActive.GunStats.buffs[0].name == "BioTech")
-        {
-            bioTech = 1.2f;
-            speed = 0.5f;
-        }
-        else
-        {
-            bioTech = 0;
-            speed = 0;
+
+            if (buffsInActive[i].name == "Critical")
+            {
+                critcal += 0.1f;
+
+            }
+
+            if (buffsInActive[i].name == "HealTech")
+            {
+                heal += 5f;
+            }
+
+            if (buffsInActive[i].name == "BioTech")
+            {
+                bioTech += 1.2f;
+                speed += 0.5f;
+            }
+
         }
 
         base.Invoke("UpdateUI", 0.2f);
     }
+    private void RefreshBuffsModified()
+    {
+        critcal = 0;
+        heal = 0;
+        bioTech = 0;
+        speed = 0;
 
+    }
     public float GetBuffCritical()
     {
         float n = critcal;
@@ -293,37 +306,38 @@ public class WeaponInventory : MonoBehaviour
     {
         UIPlayerStats.Instance.UpdateStatsPlayer();
     }
-
-    public bool AddWeapon(WeaponController weaponPrefab, ItemStats item)
+    private bool inventoryFull()
     {
-        // search our weapon slots for the first free one, assign the weapon to it, and return true if we found one. Return false otherwise
         for (int i = 0; i < WeaponSlots.Length; i++)
         {
-            // only add the weapon if the slot is free
             if (WeaponSlots[i] == null)
             {
-                // spawn the weapon prefab as child of the weapon socket
+                return false;
+            }
+        }
+        return true;
+    }
+    public bool AddWeapon(WeaponController weaponPrefab, ItemStats item)
+    {
 
-                //weaponPrefab.transform.localPosition = WeaponContainer.localPosition;
+        for (int i = 0; i < WeaponSlots.Length; i++)
+        {
+
+            if (WeaponSlots[i] == null)
+            {
                 weaponPrefab.transform.SetParent(WeaponContainer);
-                //WeaponController weaponInstance = Instantiate(weaponPrefab, WeaponContainer);
                 weaponPrefab.transform.localPosition = Vector3.zero;
                 weaponPrefab.transform.localRotation = Quaternion.identity;
-                //Tat collider
                 weaponPrefab.coll.enabled = false;
-
                 weaponPrefab.rb.isKinematic = true;
-
-                
-                // tao thuoc tinh moi cho Weapon
-                //weaponInstance.GunStats = item;
-                //weaponInstance.GetComponent<PickupWeapon>().item = item;
 
                 if (WeaponInActive == null)
                 {
                     this.WeaponInActive = weaponPrefab;
-                    UpdateBuffsModified(WeaponInActive);
+
+                    UpdateBuffsModified(weaponPrefab);
                 }
+
                 EquipWeightModified(item);
 
                 weaponPrefab.ShowWeapon(false);
@@ -333,15 +347,14 @@ public class WeaponInventory : MonoBehaviour
                 {
                     OnAddedWeapon.Invoke(weaponPrefab, i);
                 }
-
+                UIEvents.Instance.AddPickup(item);
                 return true;
             }
         }
 
-        // Handle auto-switching to weapon if no weapons currently
         if (GetActiveWeapon() == null)
         {
-            SwitchWeapon(true);
+            SwitchWeapon();
         }
 
         return false;
@@ -353,7 +366,7 @@ public class WeaponInventory : MonoBehaviour
     }
     public WeaponController GetWeaponAtSlotIndex(int index)
     {
-        // find the active weapon in our weapon slots based on our active weapon index
+
         if (index >= 0 && index < WeaponSlots.Length)
         {
             return WeaponSlots[index];
@@ -362,69 +375,37 @@ public class WeaponInventory : MonoBehaviour
         return null;
     }
 
-    // Iterate on all weapon slots to find the next valid weapon to switch to
-    public void SwitchWeapon(bool ascendingOrder)
+
+    public void SwitchWeapon()
     {
         int newWeaponIndex = -1;
-        int closestSlotDistance = WeaponSlots.Length;
         for (int i = 0; i < WeaponSlots.Length; i++)
         {
-            // If the weapon at this slot is valid, calculate its "distance" from the active slot index (either in ascending or descending order)
-            // and select it if it's the closest distance yet
+
             if (i != ActiveWeaponIndex && GetWeaponAtSlotIndex(i) != null)
             {
-                int distanceToActiveIndex = GetDistanceBetweenWeaponSlots(ActiveWeaponIndex, i, ascendingOrder);
-
-                if (distanceToActiveIndex < closestSlotDistance)
-                {
-                    closestSlotDistance = distanceToActiveIndex;
-                    newWeaponIndex = i;
-                }
+                newWeaponIndex = i;
             }
         }
-
-        // Handle switching to the new weapon index
         SwitchToWeaponIndex(newWeaponIndex);
     }
-    // Calculates the "distance" between two weapon slot indexes
-    // For example: if we had 5 weapon slots, the distance between slots #2 and #4 would be 2 in ascending order, and 3 in descending order
-    int GetDistanceBetweenWeaponSlots(int fromSlotIndex, int toSlotIndex, bool ascendingOrder)
-    {
-        int distanceBetweenSlots = 0;
 
-        if (ascendingOrder)
-        {
-            distanceBetweenSlots = toSlotIndex - fromSlotIndex;
-        }
-        else
-        {
-            distanceBetweenSlots = -1 * (toSlotIndex - fromSlotIndex);
-        }
-
-        if (distanceBetweenSlots < 0)
-        {
-            distanceBetweenSlots = WeaponSlots.Length + distanceBetweenSlots;
-        }
-
-        return distanceBetweenSlots;
-    }
-    // Switches to the given weapon index in weapon slots if the new index is a valid weapon that is different from our current one
     public void SwitchToWeaponIndex(int newWeaponIndex, bool force = false)
     {
         if (force || (newWeaponIndex != ActiveWeaponIndex && newWeaponIndex >= 0))
         {
-            // Store data related to weapon switching animation
+
             m_WeaponSwitchNewWeaponIndex = newWeaponIndex;
             m_TimeStartedWeaponSwitch = Time.time;
 
-            // Handle case of switching to a valid weapon for the first time (simply put it up without putting anything down first)
             if (GetActiveWeapon() == null)
             {
-                m_WeaponSwitchState = WeaponSwitchState.PutUpNew;
+                WeaponSwitchState = WeaponState.PutUpNew;
                 ActiveWeaponIndex = m_WeaponSwitchNewWeaponIndex;
 
                 WeaponController newWeapon = GetWeaponAtSlotIndex(m_WeaponSwitchNewWeaponIndex);
                 this.WeaponInActive = newWeapon;
+                RefreshBuffsModified();
                 UpdateBuffsModified(WeaponInActive);
 
                 if (OnSwitchedToWeapon != null)
@@ -432,13 +413,13 @@ public class WeaponInventory : MonoBehaviour
                     OnSwitchedToWeapon.Invoke(newWeapon);
                 }
             }
-            // otherwise, remember we are putting down our current weapon for switching to the next one
             else
             {
-                m_WeaponSwitchState = WeaponSwitchState.PutDownPrevious;
+                WeaponSwitchState = WeaponState.Switch;
             }
         }
     }
+
     void OnWeaponSwitched(WeaponController newWeapon)
     {
         if (newWeapon != null)
@@ -448,10 +429,9 @@ public class WeaponInventory : MonoBehaviour
     }
     public bool DropWeapon(WeaponController weaponInstance, ItemStats item)
     {
-        // Look through our slots for that weapon
+
         for (int i = 0; i < WeaponSlots.Length; i++)
         {
-            // when weapon found, remove it
             if (WeaponSlots[i] == weaponInstance)
             {
                 WeaponSlots[i] = null;
@@ -461,27 +441,14 @@ public class WeaponInventory : MonoBehaviour
                     OnRemovedWeapon.Invoke(weaponInstance, i);
                 }
 
-                //Destroy(weaponInstance.gameObject);
-                //WeaponController Instance = Instantiate(weaponInstance.GunStats.prefab, CamDrop.transform.position, Quaternion.identity).GetComponent<WeaponController>();
-                //Instance.GunStats = item;
-                //Instance.GetComponent<PickupWeapon>().item = item;
                 this.WeaponInActive = null;
-                UpdateBuffsModified(WeaponInActive);
+                RefreshBuffsModified();
 
                 weaponInstance.canFire = false;
-                weaponInstance.rb.isKinematic = false;
                 weaponInstance.GetComponent<Collider>().enabled = true;
-                weaponInstance.rb.velocity = GetComponent<CharacterController>().velocity;
-                weaponInstance.rb.AddForce(WeaponContainer.transform.forward * dropForwardForce, ForceMode.Impulse);
-                weaponInstance.rb.AddForce(WeaponContainer.transform.up * dropUpwardForce, ForceMode.Impulse);
+                weaponInstance.rb.isKinematic = false;
 
                 UnequipWeightModified(item);
-                //inventory.Unequipments(item);
-                //Add random rotation
-                float random = Random.Range(-1f, 1f);
-                weaponInstance.rb.AddTorque(new Vector3(random, random, random) * 10);
-
-                //weaponInstance.transform.SetParent(null);
 
                 RaycastHit hit;
                 if (Physics.Raycast(weaponInstance.transform.position,Vector3.down,out hit, 10, LayerMask.GetMask("Ground")))
@@ -493,12 +460,9 @@ public class WeaponInventory : MonoBehaviour
                     weaponInstance.transform.SetParent(null);
                 }
 
-
-                //OnHit(weaponInstance.GetComponent<Collider>());
-                // Handle case of removing active weapon (switch to next weapon)
                 if (i == ActiveWeaponIndex)
                 {
-                    SwitchWeapon(true);
+                    SwitchWeapon();
                 }
 
                 return true;
@@ -507,12 +471,12 @@ public class WeaponInventory : MonoBehaviour
 
         return false;
     }
+
     public bool BrokeWeapon(WeaponController weaponInstance, ItemStats item)
     {
-        // Look through our slots for that weapon
+       
         for (int i = 0; i < WeaponSlots.Length; i++)
         {
-            // when weapon found, remove it
             if (WeaponSlots[i] == weaponInstance)
             {
                 WeaponSlots[i] = null;
@@ -522,11 +486,9 @@ public class WeaponInventory : MonoBehaviour
                     OnRemovedWeapon.Invoke(weaponInstance, i);
                 }
                 this.WeaponInActive = null;
-                UpdateBuffsModified(WeaponInActive);
-
+                RefreshBuffsModified();
                 UnequipWeightModified(item);
-                //Destroy(weaponInstance.gameObject);
-                //WeaponController Instance = Instantiate(weaponInstance.GunStats.prefab, CamDrop.transform.position, Quaternion.identity).GetComponent<WeaponController>();
+
                 weaponInstance.GunStats = null;
                 weaponInstance.GetComponent<PickupWeapon>().item = null;
                 brokeWeapon = weaponInstance;
@@ -537,10 +499,10 @@ public class WeaponInventory : MonoBehaviour
                 weaponInstance.GetComponent<Collider>().enabled = true;
 
                 weaponInstance.transform.SetParent(null);
-                // Handle case of removing active weapon (switch to next weapon)
+
                 if (i == ActiveWeaponIndex)
                 {
-                    SwitchWeapon(true);
+                    SwitchWeapon();
                 }
 
                 return true;

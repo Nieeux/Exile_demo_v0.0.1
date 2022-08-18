@@ -2,14 +2,24 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 public class BuffUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
+    public Image BuffsSprite;
+    public Buff buff;
     public WeaponUI weaponUI;
+
+
+    public void SetBuffs(WeaponController weapon, int number)
+    {
+        buff = weapon.GunStats.buffs[number];
+        this.BuffsSprite.sprite = buff.sprite;
+    }
 
     public void OnPointerEnter(PointerEventData eventData)
     {
-        ItemInfo.Instance.SetText(weaponUI.m_Weapon.GunStats.buffs[0].nameViet + "\n<size=70%>" + weaponUI.m_Weapon.GunStats.buffs[0].description);
+        ItemInfo.Instance.SetText(buff.nameViet + "\n<size=70%>" + buff.description);
     }
 
     public void OnPointerExit(PointerEventData eventData)

@@ -67,6 +67,7 @@ public class AIController : MonoBehaviour
     public float MaxHealth = 100;
     public float DamageMultiplier = 1f;
     public float damageFinal;
+    public int damageFinalEffect;
     public GameObject numberFx;
 
     bool IsDead;
@@ -101,11 +102,6 @@ public class AIController : MonoBehaviour
 
         stateMachine.ChangesState(ChangeState);
 
-        if (PlayerMovement.Instance.transform != null)
-        {
-            target = PlayerMovement.Instance.transform;
-        }
-
         PlayerStats.Instance.OnDie += PlayerOnDie;
 
         Agent = GetComponent<NavMeshAgent>();
@@ -134,6 +130,14 @@ public class AIController : MonoBehaviour
 
         StartCoroutine(FOVRoutine());
 
+        if(PlayerMovement.Instance.transform == null)
+        {
+            return;
+        }
+        if (PlayerMovement.Instance.transform != null)
+        {
+            target = PlayerMovement.Instance.transform;
+        }
     }
 
     private void Update()
@@ -395,7 +399,7 @@ public class AIController : MonoBehaviour
 
     }
 
-    public void Damage(float damage,Bullet bulletType, int hitEffect, Vector3 pos)
+    public void Damage(float damage,Bullet bulletType, bool crit, Vector3 pos)
     {
         if (Invincible)
             return;
@@ -404,8 +408,9 @@ public class AIController : MonoBehaviour
         
         if (inventory.currentArmor != null)
         {
-            DamageCalculations.ArmorResult damageMultiplier = DamageCalculations.Instance.GetDamageArmor(inventory.currentArmor, bulletType, damage);
+            DamageCalculations.ArmorResult damageMultiplier = DamageCalculations.Instance.GetDamageArmor(inventory.currentArmor, bulletType, crit, damage);
             damageFinal = damageMultiplier.damageResult;
+            damageFinalEffect = (int)damageMultiplier.hitType;
         }
         else
         {
@@ -423,7 +428,7 @@ public class AIController : MonoBehaviour
 
         if (Vector3.Distance(PlayerMovement.Instance.playerCamera.position, base.transform.position) < 100f)
         {
-            Object.Instantiate<GameObject>(this.numberFx, pos, Quaternion.identity).GetComponent<HitNumber>().SetTextAndDir((int)trueDamageAmount, normalized, (HitEffect)hitEffect);
+            Object.Instantiate<GameObject>(this.numberFx, pos, Quaternion.identity).GetComponent<HitEffect>().SetTextAndDir((int)trueDamageAmount, normalized, (HitEffect.HitType)damageFinalEffect);
         }
 
         if (trueDamageAmount > 0f)

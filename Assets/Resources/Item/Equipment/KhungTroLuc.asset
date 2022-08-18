@@ -13,17 +13,19 @@ MonoBehaviour:
   m_Name: KhungTroLuc
   m_EditorClassIdentifier: 
   itemType: 2
-  id: 1
+  id: 0
   name: khungtroluc
   nameViet: "Khung tr\u1EE3 l\u1EF1c"
   description: "T\u0103ng 1 t\u1ED1c \u0111\u1ED9 di chuy\u1EC3n"
   stackable: 0
   amount: 1
   max: 1
-  Weight: 10.7
+  Weight: 7.7
   heal: 0
   hunger: 0
   stamina: 0
+  sleep: 0
+  armorType: 0
   GunDamage: 0
   fireRate: 0
   bulletsPerShot: 0

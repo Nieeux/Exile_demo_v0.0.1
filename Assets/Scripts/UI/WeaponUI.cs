@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using UnityEngine.EventSystems;
+using UnityEngine.Events;
 
 public class WeaponUI : MonoBehaviour, IPointerEnterHandler, IEventSystemHandler, IPointerExitHandler
 {
@@ -15,8 +16,6 @@ public class WeaponUI : MonoBehaviour, IPointerEnterHandler, IEventSystemHandler
     public Image VienImage;
     public Image VienImage2;
     public Image Ammotype;
-    public Image buff;
-    public Image Debuff;
     public Image Durability;
     public Gradient GradientDurability;
     [Header("Text")]
@@ -28,6 +27,12 @@ public class WeaponUI : MonoBehaviour, IPointerEnterHandler, IEventSystemHandler
     public TextMeshProUGUI TextMagazine;
     public TextMeshProUGUI TextDurability;
     public TextMeshProUGUI TextWeaponRare;
+    [Header("ColorUpdate")]
+    public Color colorInceate;
+
+    [Header("Buffs")]
+    public GameObject pickupPrefab;
+    public Transform pickupParent;
 
     public WeaponController m_Weapon;
 
@@ -42,7 +47,7 @@ public class WeaponUI : MonoBehaviour, IPointerEnterHandler, IEventSystemHandler
     public GameObject ControlKeysRoot;
     public GameObject WeaponStatus;
 
-
+    Inventory player;
 
     public int WeaponUIIndex { get; set; }
 
@@ -52,7 +57,10 @@ public class WeaponUI : MonoBehaviour, IPointerEnterHandler, IEventSystemHandler
     }
     void Start()
     {
+        player = FindObjectOfType<Inventory>();
+        player.UpdateUi += UpdateStatsWeaponincrease;
         WeaponStatus.SetActive(false);
+        AddBuffs(m_Weapon);
         UpdateStatsWeapon();
         this.WeaponImage.color = m_Weapon.GunStats.colorIndex;
         this.VienImage.color = m_Weapon.GunStats.colorIndex;
@@ -61,6 +69,9 @@ public class WeaponUI : MonoBehaviour, IPointerEnterHandler, IEventSystemHandler
 
         this.TextWeaponRare.text = m_Weapon.GunStats.RareIndex;
         this.TextWeaponRare.color = m_Weapon.GunStats.colorIndex;
+
+        UpdateStatsWeaponincrease();
+
     }
 
     // Update is called once per frame
@@ -101,6 +112,17 @@ public class WeaponUI : MonoBehaviour, IPointerEnterHandler, IEventSystemHandler
         this.TextMagazine.text = m_Weapon.GunStats.Magazine.ToString("00");
 
     }
+    public void UpdateStatsWeaponincrease()
+    {
+        this.TextDamage.text = string.Format("{0:0.##}", m_Weapon.GunStats.GunDamage * Inventory.Instance.GetDamage());
+        this.TextDamage.color = colorInceate;
+        if (Inventory.Instance.GetDamage() == 1)
+        {
+            this.TextDamage.text = m_Weapon.GunStats.GunDamage.ToString("00");
+            this.TextDamage.color = Color.white;
+        }
+
+    }
 
     public void Initialize(WeaponController weapon, int weaponIndex)
     {
@@ -108,9 +130,6 @@ public class WeaponUI : MonoBehaviour, IPointerEnterHandler, IEventSystemHandler
         this.WeaponUIIndex = weaponIndex;
         this.WeaponImage.sprite = weapon.GunStats.sprite;
         this.WeaponName.text = weapon.GunStats.nameViet;
-        this.buff.sprite = weapon.GunStats.buffs[0].sprite;
-        this.Debuff.sprite = weapon.GunStats.Debuffs[0].sprite;
-
     }
     private void UpdateAmmo(WeaponController weapon)
     {
@@ -123,6 +142,18 @@ public class WeaponUI : MonoBehaviour, IPointerEnterHandler, IEventSystemHandler
         Durability.fillAmount = weapon.GunStats.CurrentDurability / weapon.GunStats.Durability;
         Durability.color = GradientDurability.Evaluate(Durability.fillAmount);
     }
+
+    public void AddBuffs(WeaponController weapon)
+    {
+        for (int i = 0; i < weapon.GunStats.buffs.Count; i++)
+        {
+            GameObject gameObject = UnityEngine.Object.Instantiate<GameObject>(this.pickupPrefab, this.pickupParent);
+            gameObject.GetComponent<BuffUI>().SetBuffs(weapon, i) ;
+            gameObject.transform.SetSiblingIndex(0);
+        }
+ 
+    }
+
     public void OnPointerEnter(PointerEventData eventData)
     {
         ItemInfo.Instance.SetText(m_Weapon.GunStats.nameViet + "\n<size=70%>" + m_Weapon.GunStats.description);

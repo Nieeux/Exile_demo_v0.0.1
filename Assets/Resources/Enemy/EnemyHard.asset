@@ -16,7 +16,7 @@ MonoBehaviour:
   health: 400
   ranged: 0
   speed: 0
-  minMoneyReward: 0
-  maxMoneyReward: 200
+  minMoneyReward: 400
+  maxMoneyReward: 800
   DeadPrefab: {fileID: 6311155719092591399, guid: 299ae4a929cba10488146ecb68aefa0b, type: 3}
   EnemyPrefab: {fileID: 5940542461286528666, guid: 011af73d88c71a246ae4fb9947ea0035, type: 3}

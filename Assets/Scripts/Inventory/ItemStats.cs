@@ -25,6 +25,7 @@ public class ItemStats : ScriptableObject
 	public float heal;
 	public float hunger;
 	public float stamina;
+	public float sleep;
 
 	[Header("Armor")]
 	public ItemStats.ArmorType armorType;
@@ -39,15 +40,12 @@ public class ItemStats : ScriptableObject
 	public int Magazine;
 	public bool singleFire;
 	public float ReloadTime;
-	private GameObject IndexbulletPrefab;
 	public GameObject bulletPrefab;
-	public GameObject[] AllBulletPrefab;
 	public AudioClip fireAudio;
 	public AudioClip reloadAudio;
 	public ItemStats.WeaponType weaponType;
 	public ItemStats.ItemRare Rare;
 	public List<Buff> buffs = new List<Buff>();
-	public List<Buff> Debuffs = new List<Buff>();
 
 	[Header("Weapon Recoil Animation")]
 	public float punchStrenght = .2f;
@@ -93,10 +91,17 @@ public class ItemStats : ScriptableObject
 		this.nameViet = item.nameViet;
 		this.description = item.description;
 
+		//Details
 		this.stackable = item.stackable;
 		this.amount = item.amount;
 		this.max = item.max;
 		this.Weight = item.Weight;
+
+		//Food
+		this.heal = item.heal;
+		this.hunger = item.hunger;
+		this.sleep = item.sleep;
+
 		this.Rare = item.Rare;
 		this.CurrentDurability = item.CurrentDurability;
 		this.Durability = item.Durability;
@@ -155,9 +160,10 @@ public class ItemStats : ScriptableObject
 		this.Durability = item.Durability;
 		this.Magazine = item.Magazine;
 		this.CurrentMagazine = item.CurrentMagazine;
+		this.bulletPrefab = item.bulletPrefab;
 		this.ReloadTime = item.ReloadTime;
 		this.bulletPrefab = item.bulletPrefab;
-		this.AllBulletPrefab = item.AllBulletPrefab;
+
 		item.buffs = new List<Buff>();
 
 		//Weapon Recoil Animation
@@ -200,14 +206,13 @@ public class ItemStats : ScriptableObject
 		this.Durability = item.Durability;
 		this.Magazine = item.Magazine;
 		this.CurrentMagazine = item.CurrentMagazine;
+		this.bulletPrefab = item.bulletPrefab;
 		this.ReloadTime = item.ReloadTime;
-		this.AllBulletPrefab = item.AllBulletPrefab;
 		this.weaponType = item.weaponType;
 		this.Rare = item.Rare = ItemRare.original;
 
 		//Buff
 		item.buffs = new List<Buff>();
-		item.Debuffs = new List<Buff>();
 
 		//ItemRare name
 		this.nameOriginal = item.nameOriginal;
@@ -227,18 +232,6 @@ public class ItemStats : ScriptableObject
 		this.randomness = item.randomness;
 		this.ShakeDuration = item.ShakeDuration;
 		this.ShakeStrenght = item.ShakeStrenght;
-
-		//Random Bullet
-		int index = UnityEngine.Random.Range(0, item.AllBulletPrefab.Length);
-		item.IndexbulletPrefab = item.AllBulletPrefab[index];
-		this.bulletPrefab = item.IndexbulletPrefab;
-
-		if(bulletPrefab.GetComponent<Bullet>().ammoType == Bullet.AmmoType.HighAmmo)
-        {
-
-        }
-		//this.ammoType = GetAmmoType<AmmoType>();
-		//this.Rare = GetItemRare<ItemRare>(0.7f,0.2f,0.1f);
 
 		this.sprite = item.sprite;
 		this.material = item.material;
@@ -274,14 +267,13 @@ public class ItemStats : ScriptableObject
 		this.Durability = item.Durability;
 		this.Magazine = item.Magazine;
 		this.CurrentMagazine = item.CurrentMagazine;
+		this.bulletPrefab = item.bulletPrefab;
 		this.ReloadTime = item.ReloadTime;
-		this.AllBulletPrefab = item.AllBulletPrefab;
 		this.weaponType = item.weaponType;
 		this.Rare = item.Rare = ItemRare.upgrade;
 
 		//Buff
 		item.buffs = new List<Buff>();
-		item.Debuffs = new List<Buff>();
 
 		//ItemRare name
 		this.nameOriginal = item.nameOriginal;
@@ -301,10 +293,6 @@ public class ItemStats : ScriptableObject
 		this.randomness = item.randomness;
 		this.ShakeDuration = item.ShakeDuration;
 		this.ShakeStrenght = item.ShakeStrenght;
-
-		int index = UnityEngine.Random.Range(0, item.AllBulletPrefab.Length);
-		item.IndexbulletPrefab = item.AllBulletPrefab[index];
-		this.bulletPrefab = item.IndexbulletPrefab;
 
 		//this.ammoType = GetAmmoType<AmmoType>();
 		//this.Rare = GetItemRare<ItemRare>(0.7f,0.2f,0.1f);
@@ -342,14 +330,13 @@ public class ItemStats : ScriptableObject
 		this.Durability = item.Durability * 2;
 		this.Magazine = item.Magazine * 2;
 		this.CurrentMagazine = item.CurrentMagazine * 2;
+		this.bulletPrefab = item.bulletPrefab;
 		this.ReloadTime = item.ReloadTime;
-		this.AllBulletPrefab = item.AllBulletPrefab;
 		this.weaponType = item.weaponType;
 		this.Rare = item.Rare = ItemRare.advanced;
 
 		//Buff
 		item.buffs = new List<Buff>();
-		item.Debuffs = new List<Buff>();
 
 		//ItemRare name
 		this.nameOriginal = item.nameOriginal;
@@ -370,13 +357,6 @@ public class ItemStats : ScriptableObject
 		this.ShakeDuration = item.ShakeDuration;
 		this.ShakeStrenght = item.ShakeStrenght;
 
-		int index = UnityEngine.Random.Range(0, item.AllBulletPrefab.Length);
-		item.IndexbulletPrefab = item.AllBulletPrefab[index];
-		this.bulletPrefab = item.IndexbulletPrefab;
-
-		//this.ammoType = GetAmmoType<AmmoType>();
-		//this.Rare = GetItemRare<ItemRare>(0.7f,0.2f,0.1f);
-
 		this.sprite = item.sprite;
 		this.material = item.material;
 		this.mesh = item.mesh;
@@ -393,27 +373,6 @@ public class ItemStats : ScriptableObject
 		this.scale = item.scale;
 	}
 	/*
-	private static Random random = new Random();
-	public static ItemRare GetItemRare<ItemRare>(float whiteWeight, float blueWeight, float orangeWeight)
-	{
-		//string[] y = Enum.GetNames(typeof(ItemRare));
-		Array y = Enum.GetNames(typeof(ItemRare));
-		//ItemRare e = ;
-		float num = whiteWeight + blueWeight + orangeWeight;
-		float num2 = (float)random.NextDouble();
-		if (num2 < whiteWeight / num)
-		{
-			//ItemRare f = (ItemRare)(Enum.GetValues(e.GetType())).GetValue(1);
-			//return f;
-		}
-		if (num2 < (whiteWeight + blueWeight) / num)
-		{
-			//return (ItemRare)y.GetValue(UnityEngine.Random.Range(0, y.Length));
-		}
-		return (ItemRare)y.GetValue(UnityEngine.Random.Range(0, y.Length));
-
-	}
-
 	public static AmmoType GetAmmoType<AmmoType>()
 	{
 		Array A = Enum.GetValues(typeof(AmmoType));

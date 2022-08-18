@@ -34,10 +34,6 @@ public class PickupItem : MonoBehaviour, Interact, SharedId
 
 	public void RemoveObject()
 	{
-		//ItemStats inventoryItem = Item.Instance.ItemStats;
-		//InventoryItem.Instance.RemoveWeapon(ItemPrefab, inventoryItem);
-		//UnityEngine.Object.Destroy(base.gameObject);
-		ResourceManager.Instance.RemoveInteractItem(this.id);
 		UnityEngine.Object.Destroy(base.gameObject);
 	}
 
