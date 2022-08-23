@@ -68,6 +68,7 @@ public class WeaponAnimation : MonoBehaviour
                 }
             }
         }
+
     }
     private bool ActiveMenu()
     {

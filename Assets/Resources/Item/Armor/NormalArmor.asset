@@ -16,6 +16,8 @@ MonoBehaviour:
   id: 1
   name: NormalArmor
   nameViet: "Gi\xE1p trung"
+  descriptionViet: 
+  English: Normal Armor
   description: 
   stackable: 0
   amount: 0
@@ -36,13 +38,11 @@ MonoBehaviour:
   singleFire: 0
   ReloadTime: 0
   bulletPrefab: {fileID: 0}
-  AllBulletPrefab: []
   fireAudio: {fileID: 0}
   reloadAudio: {fileID: 0}
   weaponType: 0
   Rare: 1
   buffs: []
-  Debuffs: []
   punchStrenght: 0.2
   punchVibrato: 5
   punchDuration: 0.3
@@ -59,6 +59,7 @@ MonoBehaviour:
   positionOffset: {x: 0, y: 0, z: 0}
   scale: 1
   prefab: {fileID: 1286123634810735470, guid: 4b52b54f193eb264898e101b06c47156, type: 3}
+  prefab2: {fileID: 0}
   RareIndex: 
   nameOriginal: 
   nameUpgrade: 

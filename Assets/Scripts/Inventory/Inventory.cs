@@ -25,17 +25,25 @@ public class Inventory : MonoBehaviour
 	//private int Moneys { get; set; }
 
 	PlayerStats playerStats;
+	WeaponInventory Weapon;
 
 	[Header("Equipments")]
 	public List<ItemStats> Item;
-	private float critcal = 0;
-	private float speed = 0;
-	public float damage = 0;
+
 	public Dictionary<int, ItemStats> equipments;
 	public Dictionary<string, int> GetNameEquipments;
 
-    [Header("Tutorial")]
-	public GameObject TipUseItem;
+	public UnityAction<float> critcal;
+	public UnityAction<float> speed;
+	public UnityAction<float> damage;
+	public UnityAction<float> weight;
+	public UnityAction<float> maxHealth;
+
+	public float NoiComDien;
+
+	[Header("SFX")]
+	public AudioSource Sfx;
+	public AudioClip PickUpSfx;
 
 	public UnityAction UpdateUi;
 
@@ -46,11 +54,17 @@ public class Inventory : MonoBehaviour
 
     private void Start()
     {
+		if (Sfx == null)
+        {
+			Sfx.GetComponent<AudioSource>();
+		}
+		Weapon = GetComponent<WeaponInventory>();
 		playerStats = GetComponent<PlayerStats>();
 		playerStats.OnDamaged += OnDamagedArmor;
 		FillCellList();
 		//this.inventoryCells = inventoryBar.GetComponentsInChildren<InventoryCells>();
-		TipUseItem.SetActive(false);
+
+
 	}
 
     private void Update()
@@ -65,6 +79,7 @@ public class Inventory : MonoBehaviour
 					this.UpdateHotbar();
 				}
 			}
+
 		}
 		else
 		{
@@ -83,16 +98,6 @@ public class Inventory : MonoBehaviour
 				this.inventoryCells[i].Select.color = this.inventoryCells[i].idle;
 			}
 		}
-
-		//Tutorial
-		if (currentItem != null)
-		{
-			TipUseItem.SetActive(true);
-		}
-		else
-		{
-			TipUseItem.SetActive(false);
-		}
 	}
 
 	#region Inventory
@@ -104,14 +109,7 @@ public class Inventory : MonoBehaviour
 			this.currentItem = this.inventoryCells[this.BarSelect].currentItem;
 		}
 	}
-	private void RemoveHotbar()
-	{
 
-		if (this.inventoryCells[this.BarSelect].currentItem != this.currentItem)
-		{
-			this.currentItem = null;
-		}
-	}
 	//Tim o inventory
 	private void FillCellList()
 	{
@@ -137,6 +135,10 @@ public class Inventory : MonoBehaviour
 		EquipWeightModified(item);
 		InventoryCells inventoryCell = null;
 
+		//Sfx.clip = PickUpSfx;
+		//this.Sfx.Play();
+		this.Sfx.PlayOneShot(PickUpSfx);
+
 		foreach (InventoryCells inventoryCell2 in this.inventoryCells)
 		{
 			if (inventoryCell2.currentItem == null)
@@ -147,7 +149,7 @@ public class Inventory : MonoBehaviour
 				}
 			}
 
-			else if (inventoryCell2.currentItem.Compare(inventoryItem) && inventoryCell2.currentItem.stackable)
+			else if (inventoryCell2.currentItem.CheckId(inventoryItem) && inventoryCell2.currentItem.stackable)
 			{
 				if (inventoryCell2.currentItem.amount + inventoryItem.amount <= inventoryCell2.currentItem.max)
 				{
@@ -172,6 +174,7 @@ public class Inventory : MonoBehaviour
 		}
 		UIEvents.Instance.AddPickup(inventoryItem);
 		return inventoryItem.amount;
+		
 	}
 
 
@@ -195,7 +198,7 @@ public class Inventory : MonoBehaviour
 		int num = 0;
 		foreach (InventoryCells inventoryCell in this.inventoryCells)
 		{
-			if (!(inventoryCell.currentItem == null) && inventoryCell.currentItem.Compare(requirement))
+			if (!(inventoryCell.currentItem == null) && inventoryCell.currentItem.CheckId(requirement))
 			{
 				num += inventoryCell.currentItem.amount;
 				if (num >= requirement.amount)
@@ -205,6 +208,81 @@ public class Inventory : MonoBehaviour
 			}
 		}
 		return num >= requirement.amount;
+	}
+
+	public bool HasEquipment(ItemStats requirement)
+	{
+		foreach (InventoryCells inventoryCell in this.inventoryCells)
+		{
+			if (!(inventoryCell.currentItem == null) && inventoryCell.equipAble && inventoryCell.currentItem.CheckEquipment(requirement))
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public void SellItem()
+    {
+		if (this.currentItem == null)
+		{
+			return;
+		}
+		if (this.inventoryCells[this.BarSelect].equipAble == false)
+		{
+
+			UnequipWeightModified(currentItem);
+			PayMoney(currentItem);
+			this.inventoryCells[this.BarSelect].RemoveItem();
+			this.UpdateHotbar();		
+		}
+	}
+	private void PayMoney(ItemStats item)
+    {
+		int Moneys = ItemPrice(item);
+		RewardMoney(Moneys);
+	}
+
+	public int ItemPrice(ItemStats item)
+	{
+		int n = 0;
+		if (item.itemType == ItemStats.ItemType.Food)
+		{
+			n = 100;
+		}
+		if (item.itemType == ItemStats.ItemType.Item)
+		{
+			n = 150;
+		}
+		if (item.itemType == ItemStats.ItemType.Equipment)
+		{
+			n = 300;
+		}
+		if (item.itemType == ItemStats.ItemType.Armor)
+		{
+			if(item.armorType == ItemStats.ArmorType.LightArmor)
+            {
+				n = 100;
+			}
+			if (item.armorType == ItemStats.ArmorType.NormalArmor)
+			{
+				n = 200;
+			}
+			if (item.armorType == ItemStats.ArmorType.HeavyArmor)
+			{
+				n = 300;
+			}
+		}
+		if (item.Rare == ItemStats.ItemRare.upgrade)
+		{
+			n *= 2;
+		}
+		if (item.Rare == ItemStats.ItemRare.advanced)
+		{
+			n *= 4;
+		}
+
+		return n / 2;
 	}
 	#endregion
 
@@ -217,7 +295,7 @@ public class Inventory : MonoBehaviour
 		}
 		if (this.currentItem.itemType == ItemStats.ItemType.Item)
 		{
-			useItem();
+			useItem(currentItem);
 		}
 		if (this.currentItem.itemType == ItemStats.ItemType.Food)
 		{
@@ -226,6 +304,10 @@ public class Inventory : MonoBehaviour
 		if (this.currentItem.itemType == ItemStats.ItemType.Equipment
 			&& this.inventoryCells[this.BarSelect].equipAble == false)
 		{
+            if (HasEquipment(currentItem))
+            {
+				return;
+            }
 			EquipItemUI(currentItem);
 			UpdateEquipmentsModified(currentItem);
 		}
@@ -240,25 +322,39 @@ public class Inventory : MonoBehaviour
 		}
 		this.UpdateHotbar();
 	}
-	private void useItem()
+
+	private void useItem(ItemStats item)
     {
-		if (currentItem.heal > 0)
+		if (item.name == "callsupply")
 		{
-			if(PlayerStats.Instance.Heal(currentItem))
+			OpenSupply pickup = Instantiate(item.prefab2, transform.position
+				+ new Vector3(Random.Range(-10f, 10f) * 2f, 100f, Random.Range(-10f, 10f) * 2f), transform.rotation).GetComponent<OpenSupply>();
+
 			this.inventoryCells[this.BarSelect].RemoveItem();
 		}
-		
+
+		if (currentItem.heal > 0)
+		{
+			if (playerStats.Heal(currentItem))
+				this.inventoryCells[this.BarSelect].RemoveItem();
+		}
+		if (currentItem.repair > 0)
+		{
+			if (Weapon.RepairWeapon(currentItem))
+				this.inventoryCells[this.BarSelect].RemoveItem();
+		}
 	}
+
 	private void UseFood()
 	{
 		if (currentItem.hunger > 0)
 		{
-			if (PlayerStats.Instance.Eat(currentItem))
+			if (playerStats.Eat(currentItem.hunger *= (1 + NoiComDien)))
 			this.inventoryCells[this.BarSelect].RemoveItem();
 		}
 		if (currentItem.sleep > 0)
 		{
-			if (PlayerStats.Instance.Coffee(currentItem))
+			if (playerStats.Coffee(currentItem))
 			this.inventoryCells[this.BarSelect].RemoveItem();
 		}
 
@@ -336,30 +432,77 @@ public class Inventory : MonoBehaviour
 		if (Items.name == "khungtroluc" && this.inventoryCells[this.BarSelect].equipAble == true)
 		//(Item.Find((x) => x.name == "khungtroluc"))
 		{
-			speed = 1;
+			if (speed != null)
+			{
+				speed.Invoke(1);
+			}
+			if (weight != null)
+			{
+				weight.Invoke(10f);
+			}
 		}
 		else if (Items.name == "khungtroluc" && this.inventoryCells[this.BarSelect].equipAble == false)
 		{
-			speed = 0;
+			if (speed != null)
+			{
+				speed.Invoke(0);
+			}
+			if (weight != null)
+			{
+				weight.Invoke(0);
+			}
 		}
 		if (Items.name == "matkinh" && this.inventoryCells[this.BarSelect].equipAble == true)
 		{
-			critcal = 0.2f;
+			if (critcal != null)
+			{
+				critcal.Invoke(0.2f);
+			}
 		}
 		else if (Items.name == "matkinh" && this.inventoryCells[this.BarSelect].equipAble == false)
 		{
-			critcal = 0;
+			if (critcal != null)
+			{
+				critcal.Invoke(0);
+			}
 		}
 		if (Items.name == "maygiatoc" && this.inventoryCells[this.BarSelect].equipAble == true)
 		{
-			damage = 0.2f;
+			if (damage != null)
+			{
+				damage.Invoke(0.2f);
+			}
 		}
 		else if (Items.name == "maygiatoc" && this.inventoryCells[this.BarSelect].equipAble == false)
 		{
-			damage = 0;
+			if (damage != null)
+			{
+				damage.Invoke(0);
+			}
+		}
+		if (Items.name == "noicomdien" && this.inventoryCells[this.BarSelect].equipAble == true)
+		{
+			NoiComDien = 0.5f;
+		}
+		else if (Items.name == "noicomdien" && this.inventoryCells[this.BarSelect].equipAble == false)
+		{
+			NoiComDien = 0;
 		}
 
-		base.Invoke("UpdateUI", 0.2f);
+		if (Items.name == "vimachh" && this.inventoryCells[this.BarSelect].equipAble == true)
+		{
+			if (maxHealth != null)
+			{
+				maxHealth.Invoke(0.5f);
+			}
+		}
+		else if (Items.name == "vimachh" && this.inventoryCells[this.BarSelect].equipAble == false)
+		{
+			if (maxHealth != null)
+			{
+				maxHealth.Invoke(0);
+			}
+		}
 
 		if (UpdateUi != null)
 		{
@@ -372,7 +515,10 @@ public class Inventory : MonoBehaviour
 	{
 		ItemWeight += Item.Weight;
 
-		base.Invoke("UpdateUI", 0.2f);
+		if (UpdateUi != null)
+		{
+			UpdateUi.Invoke();
+		}
 	}
 	private void UnequipWeightModified(ItemStats Item)
 	{
@@ -382,7 +528,11 @@ public class Inventory : MonoBehaviour
         {
 			ItemWeight = 0;
 		}
-		base.Invoke("UpdateUI", 0.2f);
+
+		if (UpdateUi != null)
+		{
+			UpdateUi.Invoke();
+		}
 	}
 
 	private void UpdateArmorSlot(ItemStats Item, int armorslot)
@@ -448,26 +598,29 @@ public class Inventory : MonoBehaviour
 	#endregion
 
 	#region GetData
-	public float GetDamage()
-	{
-		float n = damage;
-		return 1f + n;
+	public bool ItemCurrentIsNull()
+    {
+		if(currentItem == null)
+        {
+			return true;
+        }
+		return false;
+    }
+
+	public bool ThisItemIsUnequip()
+    {
+
+		return this.inventoryCells[this.BarSelect].equipAble == false;
+
 	}
-	public float GetCritical()
-	{
-		float n = critcal + WeaponInventory.Instance.GetBuffCritical();
-		return 0.1f + n;
-	}
-	public float GetSpeedUp()
-	{
-		float n = speed;
-		return 0 + n;
-	}
+
+
 	public float GetWeight()
 	{
 		return ItemWeight;
 
 	}
+
 	public ItemStats GetArmor()
 	{
 		return currentArmor;
@@ -497,11 +650,6 @@ public class Inventory : MonoBehaviour
 			this.inventoryCells[BarSelect].EquipItem();
 
 		}
-	}
-
-	private void UpdateUI()
-	{
-		UIPlayerStats.Instance.UpdateStatsPlayer();
 	}
 
 	public bool ActiveMenu()

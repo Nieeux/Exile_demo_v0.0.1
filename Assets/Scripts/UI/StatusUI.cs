@@ -9,16 +9,35 @@ public class StatusUI : MonoBehaviour
 
     [Header("Object Status")]
     public GameObject AllUI;
-    public GameObject GameOver;
     public GameObject StatusMenu;
     public GameObject PauseMenu;
+    public GameObject SettingsMenu;
+    public GameObject GameOver;
+    public TextMeshProUGUI GameOverShowSource;
 
     [Header("Bar Status")]
     public Image HealthBar;
     public Image HurtBar;
+
+    public CanvasGroup HurtCanvasGroup;
+    public float CriticaHealthVignetteMaxAlpha = .8f;
+    public float PulsatingVignetteFrequency = 4f;
+    public Color HurtColor;
+    public Color NormalColor;
+    public Color lightColor;
     public Image stamina;
     public Image hunger;
     public Image sleepy;
+
+    [Header("Vien/LowWarning")]
+    public Image VienHealth;
+    public Image VienSleep;
+    public Image VienHunger;
+    public Image IconSleep;
+    public Image IconHunger;
+    private bool IschangeHealthColor = false;
+    private bool IschangeHungerColor = false;
+    private bool IschangeSleepColor = false;
 
     [Header("Number Status")]
     public TextMeshProUGUI HealthNumber;
@@ -31,11 +50,15 @@ public class StatusUI : MonoBehaviour
     public float damageFillTimeRemap;
     public PlayerStats Player;
 
+    [Header("Multi-Language")]
+    public multiLanguage Source;
+    public multiLanguage multiLanguage;
     public Camera ZoomUI;
     public float ViewZoom = 60;
     public float SpeedZoom = 20f;
     public bool IsShowStatus;
     public bool IsPause;
+
 
     private void Awake()
     {
@@ -45,6 +68,7 @@ public class StatusUI : MonoBehaviour
 
     private void Start()
     {
+        SettingsMenu.SetActive(false);
         PauseMenu.SetActive(false);
         StatusMenu.SetActive(false);
         GameOver.SetActive(false);
@@ -55,8 +79,49 @@ public class StatusUI : MonoBehaviour
         ZoomUI.fieldOfView = Mathf.Lerp(ZoomUI.fieldOfView, ViewZoom, Time.deltaTime * SpeedZoom);
 
         this.stamina.fillAmount = Mathf.Lerp(this.stamina.fillAmount, (Player.stamina / Player.maxStamina), Time.deltaTime * 10f);
-        this.hunger.fillAmount = Mathf.Lerp(this.hunger.fillAmount, (Player.hunger / Player.maxHunger), Time.deltaTime * 10f);
-        this.sleepy.fillAmount = Mathf.Lerp(this.sleepy.fillAmount, (Player.sleepy / Player.maxSleepy), Time.deltaTime * 10f);
+        this.hunger.fillAmount = Mathf.Lerp(this.hunger.fillAmount, (Player.GetHungerRatio()), Time.deltaTime * 10f);
+        if (Player.GetHungerRatio() <= 0.3)
+        {
+            float vignetteAlpha = (1 - (Player.GetHungerRatio() / 0.3f)) * CriticaHealthVignetteMaxAlpha;
+            hunger.color = Color.Lerp(lightColor, HurtColor, ((Mathf.Sin(Time.time * PulsatingVignetteFrequency) / 2) + 0.5f) * vignetteAlpha);
+            VienHunger.color = Color.Lerp(lightColor, HurtColor, ((Mathf.Sin(Time.time * PulsatingVignetteFrequency) / 2) + 0.5f) * vignetteAlpha);
+            IconHunger.color = Color.Lerp(lightColor, HurtColor, ((Mathf.Sin(Time.time * PulsatingVignetteFrequency) / 2) + 0.5f) * vignetteAlpha);
+            IschangeHungerColor = true;
+        }
+        else
+        {
+            if(IschangeHungerColor == true)
+            {
+                hunger.color = lightColor;
+                VienHunger.color = lightColor;
+                IconHunger.color = lightColor;
+                Debug.Log("ChangeColorHunger");
+                IschangeHungerColor = false;
+            }
+
+        }
+
+        this.sleepy.fillAmount = Mathf.Lerp(this.sleepy.fillAmount, (Player.GetSleepyRatio()), Time.deltaTime * 10f);
+        if (Player.GetSleepyRatio() <= 0.3)
+        {
+            float vignetteAlpha = (1 - (Player.GetSleepyRatio() / 0.3f)) * CriticaHealthVignetteMaxAlpha;
+            sleepy.color = Color.Lerp(lightColor, HurtColor, ((Mathf.Sin(Time.time * PulsatingVignetteFrequency) / 2) + 0.5f) * vignetteAlpha);
+            VienSleep.color = Color.Lerp(lightColor, HurtColor, ((Mathf.Sin(Time.time * PulsatingVignetteFrequency) / 2) + 0.5f) * vignetteAlpha);
+            IconSleep.color = Color.Lerp(lightColor, HurtColor, ((Mathf.Sin(Time.time * PulsatingVignetteFrequency) / 2) + 0.5f) * vignetteAlpha);
+            IschangeSleepColor = true;
+        }
+        else
+        {
+            if (IschangeSleepColor == true)
+            {
+                sleepy.color = lightColor;
+                VienSleep.color = lightColor;
+                IconSleep.color = lightColor;
+                Debug.Log("ChangeColorSpleey");
+                IschangeSleepColor = false;
+            }
+
+        }
 
         if (Input.GetButtonDown("Status") && !PauseMenu.activeSelf)
         {
@@ -89,59 +154,34 @@ public class StatusUI : MonoBehaviour
 
     private void FillBarStatus()
     {
-        HealthBar.fillAmount = Mathf.Lerp(this.HealthBar.fillAmount, (Player.GetHealthBar()), Time.deltaTime * 10f);
-        if (HurtBar.fillAmount > HealthBar.fillAmount)
+        HealthBar.fillAmount = Mathf.Lerp(this.HealthBar.fillAmount, (Player.GetHealthRatio()), Time.deltaTime * 10f);
+        HurtBar.fillAmount = HealthBar.fillAmount;
+        if (Player.GetHealthRatio() <= 0.4)
         {
-            //yield return new WaitForSeconds(0.4f);
-            //yield return AniamteFill();
-            HurtBar.fillAmount -= HurtSpeed;
+            float vignetteAlpha = (1 - (Player.GetHealthRatio() / 0.4f)) * CriticaHealthVignetteMaxAlpha;
+            HealthBar.color = Color.Lerp(NormalColor, HurtColor, ((Mathf.Sin(Time.time * PulsatingVignetteFrequency) / 2) + 0.5f) * vignetteAlpha);
+            VienHealth.color = Color.Lerp(NormalColor, HurtColor, ((Mathf.Sin(Time.time * PulsatingVignetteFrequency) / 2) + 0.5f) * vignetteAlpha);
+            IschangeHealthColor = true;
         }
         else
         {
-            HurtBar.fillAmount = HealthBar.fillAmount;
-        }   
-    }
-    /*
-    private IEnumerator AniamteFill()
-    {
-        TakingDamage = false;
-        float timer = 0.0f;
-        float form = HurtBar.fillAmount;
-        float to = HealthBar.fillAmount;
-
-        float difference = form - to;
-        float duration = difference / HurtSpeed;
-
-        while (true)
-        {
-            if(HurtSpeed <= 0.0f)
+            if (IschangeHealthColor == true)
             {
-                timer = 1.0f;
+                HealthBar.color = NormalColor;
+                VienHealth.color = NormalColor;
+                Debug.Log("ChangeColorHealth");
+                IschangeHealthColor = false;
             }
-            else
-            {
-                timer += Time.deltaTime / duration;
-            }
-            float remappedTimer = 2;
-            HurtBar.fillAmount = Mathf.Lerp(form, to, remappedTimer);
-
-            if (timer >= 1.0f)
-            {
-                break;
-            }
-            yield return null;
         }
 
     }
-    */
-
 
     private void StatsNumber()
     {
         string text = "";
         float num = Player.CurrentHealth;
         float num2 = Player.GetMaxHealth();
-        text += string.Format("Máu {0:0.} | {1:0.}", num, num2);
+        text += string.Format("{0:0.} | {1:0.}", num, num2);
         this.HealthNumber.text = text;
 
         this.StaminaNumber.text = Player.stamina.ToString("00");
@@ -163,6 +203,7 @@ public class StatusUI : MonoBehaviour
     private void Gameover()
     {
         GameOver.SetActive(true);
+        GameOverShowSource.text = string.Format("{0} <color=#00FFFF>{1}</color>",Source.GetLanguage() ,1+(int)DayNightCycle.Instance.GetCurrentTime());
         SetStatusActivation(true);
     }
     private void SetStatusActivation(bool active)
@@ -191,6 +232,10 @@ public class StatusUI : MonoBehaviour
     {
         PauseMenu.SetActive(active);
         IsPause = active;
+        if (SettingsMenu.activeSelf)
+        {
+            SettingsMenu.SetActive(active);
+        }
 
         if (PauseMenu.activeSelf)
         {

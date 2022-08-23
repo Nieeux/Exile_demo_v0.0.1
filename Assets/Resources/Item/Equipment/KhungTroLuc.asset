@@ -16,7 +16,10 @@ MonoBehaviour:
   id: 0
   name: khungtroluc
   nameViet: "Khung tr\u1EE3 l\u1EF1c"
-  description: "T\u0103ng 1 t\u1ED1c \u0111\u1ED9 di chuy\u1EC3n"
+  descriptionViet: "T\u0103ng 1 t\u1ED1c \u0111\u1ED9 di chuy\u1EC3n v\xE0 10kg tr\u1ECDng
+    l\u01B0\u1EE3ng t\u1ED1i \u0111a"
+  English: Exoskeleton
+  description: Increases 1 movement speed and 10kg max weight
   stackable: 0
   amount: 1
   max: 1
@@ -36,13 +39,11 @@ MonoBehaviour:
   singleFire: 0
   ReloadTime: 0
   bulletPrefab: {fileID: 0}
-  AllBulletPrefab: []
   fireAudio: {fileID: 0}
   reloadAudio: {fileID: 0}
   weaponType: 0
   Rare: 0
   buffs: []
-  Debuffs: []
   punchStrenght: 0.2
   punchVibrato: 5
   punchDuration: 0.3
@@ -59,6 +60,7 @@ MonoBehaviour:
   positionOffset: {x: 0, y: 0, z: 0}
   scale: 1
   prefab: {fileID: 2841471369595137429, guid: ffe8a0f1b374a4049923782c73dc73df, type: 3}
+  prefab2: {fileID: 0}
   RareIndex: 
   nameOriginal: 
   nameUpgrade: 

@@ -1,15 +1,10 @@
 using System;
 using UnityEngine;
 
-public class PickupItem : MonoBehaviour, Interact, SharedId
+public class PickupItem : MonoBehaviour, Interact
 {
 
 	public ItemStats item;
-
-	public int amount;
-
-	public int id;
-
 
 	private void Awake()
 	{
@@ -36,10 +31,13 @@ public class PickupItem : MonoBehaviour, Interact, SharedId
 	{
 		UnityEngine.Object.Destroy(base.gameObject);
 	}
+	public void DropObject()
+	{
 
+	}
 	public string GetName()
 	{
-		return "E | " + this.item.nameViet;
+		return "E | " + this.item.GetName();
 	}
 
 	public ItemStats GetItem()
@@ -52,18 +50,4 @@ public class PickupItem : MonoBehaviour, Interact, SharedId
 		return false;
 	}
 
-	public void SetId(int id)
-	{
-		this.id = id;
-	}
-
-	private void Update()
-	{
-
-	}
-
-	public int GetId()
-	{
-		return this.id;
-	}
 }

@@ -202,6 +202,11 @@ public class PlayerMovement : MonoBehaviour
         return transform.position + (transform.up * (1f - characterController.radius));
     }
 
+    public void SetMouseSensitivity(float value)
+    {
+        this.Sensitivity = value;
+    }
+
     private bool ActiveMenu()
     {
         return Cursor.lockState == CursorLockMode.Locked;
@@ -231,7 +236,7 @@ public class PlayerMovement : MonoBehaviour
         playerCamera.GetComponent<Rigidbody>().isKinematic = true;
         playerCamera.GetComponent<Rigidbody>().drag = 0;
         playerCamera.GetComponent<Collider>().enabled = false;
-        weaponInventory.SwitchToWeaponIndex(1, true);
+        weaponInventory.SwitchWeapon();
         characterController.enabled = true;
         LoadingScenes.Instance.Show = false;
         this.enabled = true;

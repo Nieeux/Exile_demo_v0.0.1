@@ -3,15 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using Random = System.Random;
 
-public class PickupWeapon : MonoBehaviour, Interact, SharedId
+public class PickupWeapon : MonoBehaviour, Interact
 {
 	public WeaponController WeaponPrefab;
 
 	public ItemStats item;
 
 	public multiLanguage language;
-
-	public int id;
 
     public void Interact()
 	{
@@ -32,14 +30,17 @@ public class PickupWeapon : MonoBehaviour, Interact, SharedId
 
 	public void RemoveObject()
 	{
+		UnityEngine.Object.Destroy(base.gameObject);
+	}
+	public void DropObject()
+	{
 		WeaponInventory.Instance.DropWeapon(WeaponPrefab, item);
 	}
-
 	public string GetName()
 	{
 		if (item == null)
 		{
-			return " " + language.VietNamese;
+			return " " + language.GetLanguage();
 		}
 		return "E | " + this.WeaponPrefab.GunStats.nameViet;
 
@@ -54,31 +55,4 @@ public class PickupWeapon : MonoBehaviour, Interact, SharedId
 	{
 		return false;
 	}
-
-	public void SetId(int id)
-	{
-		this.id = id;
-	}
-
-	private void Update()
-	{
-
-	}
-
-	public int GetId()
-	{
-		return this.id;
-	}
-	/*
-    private void OnTriggerEnter(Collider other)
-    {
-		AIController AIPickup = other.GetComponent<AIController>();
-		if(AIPickup != null)
-        {
-			AIPickup.AiEquip(WeaponPrefab, item);
-			Destroy(gameObject);
-
-		}
-	}
-	*/
 }

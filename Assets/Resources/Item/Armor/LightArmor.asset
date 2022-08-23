@@ -16,6 +16,8 @@ MonoBehaviour:
   id: 0
   name: LightArmor
   nameViet: "Gi\xE1p nh\u1EB9"
+  descriptionViet: 
+  English: Light Armor
   description: 
   stackable: 0
   amount: 0
@@ -36,13 +38,11 @@ MonoBehaviour:
   singleFire: 0
   ReloadTime: 0
   bulletPrefab: {fileID: 0}
-  AllBulletPrefab: []
   fireAudio: {fileID: 0}
   reloadAudio: {fileID: 0}
   weaponType: 0
   Rare: 0
   buffs: []
-  Debuffs: []
   punchStrenght: 0.2
   punchVibrato: 5
   punchDuration: 0.3
@@ -59,6 +59,7 @@ MonoBehaviour:
   positionOffset: {x: 0, y: 0, z: 0}
   scale: 1
   prefab: {fileID: 1406168523137202506, guid: e05fac49956209945a85ec37d6e9c1fb, type: 3}
+  prefab2: {fileID: 0}
   RareIndex: 
   nameOriginal: 
   nameUpgrade: 

@@ -14,6 +14,8 @@ public class VendingFoods : MonoBehaviour, Interact, SharedId
 
     public multiLanguage language;
 
+    public multiLanguage languageBuy;
+
     public int GetId()
     {
         return this.id;
@@ -27,6 +29,7 @@ public class VendingFoods : MonoBehaviour, Interact, SharedId
     {
         if (Inventory.Instance.GetMoney() < this.price)
         {
+            MoneyUI.Instance.NotEnoughMoney();
             return;
         }
         if (!this.ready)
@@ -57,7 +60,7 @@ public class VendingFoods : MonoBehaviour, Interact, SharedId
 
     public string GetName()
     {
-        return string.Format("{0} {1}\n<size=75%>E | {2}", this.price, language.VietNamese, language.VietNamese2);
+        return string.Format("{0} {1}\n<size=75%>E | {2}", this.price, language.GetLanguage(), languageBuy.GetLanguage());
     }
 
 
@@ -70,5 +73,8 @@ public class VendingFoods : MonoBehaviour, Interact, SharedId
     {
         Destroy(gameObject);
     }
+    public void DropObject()
+    {
 
+    }
 }

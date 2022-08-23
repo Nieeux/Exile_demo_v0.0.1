@@ -16,6 +16,8 @@ MonoBehaviour:
   id: 2
   name: HeavyArmor
   nameViet: "Gi\xE1p n\u1EB7ng"
+  descriptionViet: 
+  English: Heavy Armor
   description: 
   stackable: 0
   amount: 0
@@ -36,13 +38,11 @@ MonoBehaviour:
   singleFire: 0
   ReloadTime: 0
   bulletPrefab: {fileID: 0}
-  AllBulletPrefab: []
   fireAudio: {fileID: 0}
   reloadAudio: {fileID: 0}
   weaponType: 0
   Rare: 2
   buffs: []
-  Debuffs: []
   punchStrenght: 0.2
   punchVibrato: 5
   punchDuration: 0.3
@@ -59,6 +59,7 @@ MonoBehaviour:
   positionOffset: {x: 0, y: 0, z: 0}
   scale: 1
   prefab: {fileID: 8332630196250713124, guid: 183bc68493c2c794ca630c12ee9ca8f9, type: 3}
+  prefab2: {fileID: 0}
   RareIndex: 
   nameOriginal: 
   nameUpgrade: 

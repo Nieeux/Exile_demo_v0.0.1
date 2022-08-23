@@ -16,13 +16,15 @@ MonoBehaviour:
   id: 3
   name: cahop
   nameViet: "Tr\xE0 s\u1EEFa"
+  descriptionViet: "C\xF4 \u1EA5y hay mua cho t\xF4i th\u1EE9 n\xE0y"
+  English: Bubble Tea
   description: 
   stackable: 0
   amount: 1
   max: 1
   Weight: 0.1
   heal: 0
-  hunger: 15
+  hunger: 20
   stamina: 0
   sleep: 0
   armorType: 0
@@ -36,13 +38,11 @@ MonoBehaviour:
   singleFire: 0
   ReloadTime: 0
   bulletPrefab: {fileID: 0}
-  AllBulletPrefab: []
   fireAudio: {fileID: 0}
   reloadAudio: {fileID: 0}
   weaponType: 0
   Rare: 0
   buffs: []
-  Debuffs: []
   punchStrenght: 0.2
   punchVibrato: 5
   punchDuration: 0.3
@@ -59,6 +59,7 @@ MonoBehaviour:
   positionOffset: {x: 0, y: 0, z: 0}
   scale: 0.5
   prefab: {fileID: 2841471369595137429, guid: 7713739adc68ec945a34ac3bd5ad2f5b, type: 3}
+  prefab2: {fileID: 0}
   RareIndex: 
   nameOriginal: 
   nameUpgrade: 

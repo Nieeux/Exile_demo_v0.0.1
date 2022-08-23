@@ -23,6 +23,7 @@ public class InventoryCells : MonoBehaviour, IEventSystemHandler,IPointerEnterHa
 	public bool equipAble;
 
 	public InventoryCells.CellType cellType;
+
 	public enum CellType
 	{
 		Inventory,
@@ -31,8 +32,13 @@ public class InventoryCells : MonoBehaviour, IEventSystemHandler,IPointerEnterHa
 
 	public ItemStats spawnItem;
 
+	MenuSetting setting;
+
 	private void Start()
 	{
+		setting = FindObjectOfType<MenuSetting>();
+		setting.ChangeLanguage += UpdateName; 
+
 		if (this.spawnItem)
 		{
 			this.currentItem = ScriptableObject.CreateInstance<ItemStats>();
@@ -59,7 +65,13 @@ public class InventoryCells : MonoBehaviour, IEventSystemHandler,IPointerEnterHa
 			this.itemImage.color = this.currentItem.colorIndex;
 
 		}
-		this.SetColor(this.idle);
+
+	}
+
+	private void UpdateName()
+    {
+		if(this.currentItem != null)
+		this.Name.text = this.currentItem.GetName();
 	}
 
 	public void UpdateDurability()
@@ -85,9 +97,7 @@ public class InventoryCells : MonoBehaviour, IEventSystemHandler,IPointerEnterHa
 		this.UpdateCell();
 	}
 
-	public void SetColor(Color c)
-	{
-	}
+
 
 	public void RemoveItem()
 	{
@@ -101,10 +111,9 @@ public class InventoryCells : MonoBehaviour, IEventSystemHandler,IPointerEnterHa
 
 	public void OnPointerEnter(PointerEventData eventData)
 	{
-		this.SetColor(this.hover);
 		if (this.currentItem)
 		{
-			string text = this.currentItem.nameViet + "\n<size=70%>" + this.currentItem.description;
+			string text = currentItem.GetDescription();
 			float Weight = this.currentItem.Weight;
 			ItemInfo.Instance.SetWeight(Weight);
 			ItemInfo.Instance.SetText(text);
@@ -114,7 +123,6 @@ public class InventoryCells : MonoBehaviour, IEventSystemHandler,IPointerEnterHa
 
 	public void OnPointerExit(PointerEventData eventData)
 	{
-		this.SetColor(this.idle);
 		ItemInfo.Instance.OnDisable();
 	}
 }

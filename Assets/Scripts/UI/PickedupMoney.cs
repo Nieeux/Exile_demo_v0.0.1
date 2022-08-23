@@ -29,10 +29,10 @@ public class PickedupMoney : MonoBehaviour
 	}
 	public void SetMoney(float money)
     {
-        this.number.text = money.ToString("+00");
+        this.number.text = money.ToString("+0");
     }
 	public void removeMoney(float money)
 	{
-		this.number.text = money.ToString("-00");
+		this.number.text = money.ToString("-0");
 	}
 }

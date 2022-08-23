@@ -17,7 +17,7 @@ public class ItemInfo : MonoBehaviour
 
 	public GameObject Info;
 
-
+	bool off;
 
 	private void Awake()
 	{
@@ -36,8 +36,22 @@ public class ItemInfo : MonoBehaviour
 			Vector2 Point;
 			RectTransformUtility.ScreenPointToLocalPointInRectangle(transform.parent.GetComponent<RectTransform>(), Input.mousePosition, UiCamera, out Point);
 			transform.localPosition = Point;
+			off = true;
 		}
+        else
+        {
+			if(off == true)
+            {
+				Setoff();
+			}
+			
+		}
+	}
 
+	private void Setoff()
+    {
+		Info.SetActive(false);
+		off = false;
 	}
 
 	public void OnDisable()
@@ -69,7 +83,15 @@ public class ItemInfo : MonoBehaviour
 	}
 	public void SetWeight(float weight)
     {
-		this.Weight.text = string.Format("{0:0.##} kg", weight);
+		if(weight > 0)
+        {
+			this.Weight.text = string.Format("{0:0.##} kg", weight);
+		}
+        else
+        {
+			this.Weight.text = "";
+		}
+		
 	}
 
 	public bool ActiveMenu()

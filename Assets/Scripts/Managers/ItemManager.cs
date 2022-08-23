@@ -5,6 +5,8 @@ using Random = System.Random;
 
 public class ItemManager : MonoBehaviour
 {
+	public static int Id;
+
 	[Header("Random Weight")]
 	public float Original;
 
@@ -171,7 +173,7 @@ public class ItemManager : MonoBehaviour
 		item = inventoryItem;
 
 		int randombuffamount = UnityEngine.Random.Range(1, 4);
-		for (int i = 0; i < randombuffamount; i++)
+		for (int i = 0; i <= randombuffamount; i++)
 		{
 			item.buffs.Add(GetBuff());
 		}
@@ -209,7 +211,7 @@ public class ItemManager : MonoBehaviour
 		item = inventoryItem;
 
 		int randombuffamount = UnityEngine.Random.Range(1, 4);
-		for (int i = 0; i < randombuffamount; i++)
+		for (int i = 0; i <= randombuffamount; i++)
 		{
 			item.buffs.Add(GetBuff());
 		}
@@ -231,7 +233,7 @@ public class ItemManager : MonoBehaviour
 		item = inventoryItem;
 		//Buff
 		int randombuffamount = UnityEngine.Random.Range(1, 4);
-		for (int i = 0; i < randombuffamount; i++)
+		for (int i = 0; i <= randombuffamount; i++)
 		{
 			item.buffs.Add(GetBuff());
 		}
@@ -250,7 +252,7 @@ public class ItemManager : MonoBehaviour
 		item = inventoryItem;
 		//Buff
 		int randombuffamount = UnityEngine.Random.Range(1, 4);
-		for (int i = 0; i < randombuffamount; i++)
+		for (int i = 0; i <= randombuffamount; i++)
 		{
 			item.buffs.Add(GetBuff());
 		}
@@ -269,7 +271,7 @@ public class ItemManager : MonoBehaviour
 		item = inventoryItem;
 		//Buff
 		int randombuffamount = UnityEngine.Random.Range(1, 4);
-		for (int i = 0; i < randombuffamount; i++)
+		for (int i = 0; i <= randombuffamount; i++)
 		{
 			item.buffs.Add(GetBuff());
 		}
@@ -299,6 +301,11 @@ public class ItemManager : MonoBehaviour
 		item = inventoryItem;
 	}
 
+	public int GetNewId()
+	{
+		return Id++;
+	}
+
 	public ItemStats GetHeal()
 	{
 		return this.heal;
@@ -312,6 +319,12 @@ public class ItemManager : MonoBehaviour
 	{
 		return this.equipments[UnityEngine.Random.Range(0, this.equipments.Length)];
 	}
+
+	public ItemStats GetRandomItems()
+	{
+		return this.items[UnityEngine.Random.Range(0, this.items.Length)];
+	}
+
 	public ItemStats GetRandomWeapons()
 	{
 		return this.weapons[UnityEngine.Random.Range(0, this.weapons.Length)];

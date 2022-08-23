@@ -1,5 +1,3 @@
-using System;
-using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -11,7 +9,6 @@ public class LoadingScenes : MonoBehaviour
 
     public bool Show;
 
-    public float totalFadeTime { get; set; } = 1f;
 
     public float pad = 0;
 
@@ -19,6 +16,7 @@ public class LoadingScenes : MonoBehaviour
     {
 
         LoadingScenes.Instance = this;
+
         this.canvasGroup.alpha = 0f;
         this.background.gameObject.SetActive(false);
 
@@ -40,6 +38,7 @@ public class LoadingScenes : MonoBehaviour
         }
         else if(pad > 0)
         {
+
             this.pad = Mathf.Lerp(this.pad, 0, Time.deltaTime * 5f);
             this.canvasGroup.alpha = pad;
             if (pad <= 0.1f)

@@ -6,7 +6,7 @@ using TMPro;
 using UnityEngine.EventSystems;
 using UnityEngine.Events;
 
-public class WeaponUI : MonoBehaviour, IPointerEnterHandler, IEventSystemHandler, IPointerExitHandler
+public class WeaponUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
     public static WeaponUI Instance;
     public CanvasGroup CanvasGroup;
@@ -48,8 +48,9 @@ public class WeaponUI : MonoBehaviour, IPointerEnterHandler, IEventSystemHandler
     public GameObject WeaponStatus;
 
     Inventory player;
+    MenuSetting Setting;
 
-    public int WeaponUIIndex { get; set; }
+    public int WeaponUiId;
 
     private void Awake()
     {
@@ -57,6 +58,9 @@ public class WeaponUI : MonoBehaviour, IPointerEnterHandler, IEventSystemHandler
     }
     void Start()
     {
+
+        Setting = FindObjectOfType<MenuSetting>();
+        Setting.ChangeLanguage += UpdateVersionName;
         player = FindObjectOfType<Inventory>();
         player.UpdateUi += UpdateStatsWeaponincrease;
         WeaponStatus.SetActive(false);
@@ -67,11 +71,12 @@ public class WeaponUI : MonoBehaviour, IPointerEnterHandler, IEventSystemHandler
         this.VienImage2.color = m_Weapon.GunStats.colorIndex;
         this.Ammotype.color = m_Weapon.WeaponAmmoType;
 
-        this.TextWeaponRare.text = m_Weapon.GunStats.RareIndex;
+        this.TextWeaponRare.text = m_Weapon.GunStats.GetNameVersion(m_Weapon.GunStats.Rare);
         this.TextWeaponRare.color = m_Weapon.GunStats.colorIndex;
 
         UpdateStatsWeaponincrease();
-
+        UpdateAmmo(m_Weapon);
+        DurabilityBar(m_Weapon);
     }
 
     // Update is called once per frame
@@ -89,15 +94,14 @@ public class WeaponUI : MonoBehaviour, IPointerEnterHandler, IEventSystemHandler
             transform.localScale = Vector3.Lerp(transform.localScale, ActiveWeapon ? Vector3.one : UnselectedScale, Time.deltaTime * 10);
 
         }
-        else
+        else 
         {
             WeaponStatus.SetActive(false);
             bool isActiveWeapon = m_Weapon == WeaponInventory.Instance.GetActiveWeapon();
             CanvasGroup.alpha = Mathf.Lerp(CanvasGroup.alpha, isActiveWeapon ? 1f : UnselectedOpacity, Time.deltaTime * 10);
             transform.localScale = Vector3.Lerp(transform.localScale, isActiveWeapon ? Vector3.one : UnselectedScale, Time.deltaTime * 10);
             ControlKeysRoot.SetActive(!isActiveWeapon);
-            UpdateAmmo(m_Weapon);
-            DurabilityBar(m_Weapon);
+            //Debug.Log("Update");
         }
     }
 
@@ -114,9 +118,9 @@ public class WeaponUI : MonoBehaviour, IPointerEnterHandler, IEventSystemHandler
     }
     public void UpdateStatsWeaponincrease()
     {
-        this.TextDamage.text = string.Format("{0:0.##}", m_Weapon.GunStats.GunDamage * Inventory.Instance.GetDamage());
+        this.TextDamage.text = string.Format("{0:0.##}", m_Weapon.GunStats.GunDamage * DamageCalculations.Instance.GetDamageUI());
         this.TextDamage.color = colorInceate;
-        if (Inventory.Instance.GetDamage() == 1)
+        if (DamageCalculations.Instance.GetDamageUI() == 1)
         {
             this.TextDamage.text = m_Weapon.GunStats.GunDamage.ToString("00");
             this.TextDamage.color = Color.white;
@@ -124,13 +128,25 @@ public class WeaponUI : MonoBehaviour, IPointerEnterHandler, IEventSystemHandler
 
     }
 
+    public void UpdateUI()
+    {
+        UpdateAmmo(m_Weapon);
+        DurabilityBar(m_Weapon);
+    }
+
     public void Initialize(WeaponController weapon, int weaponIndex)
     {
         this.m_Weapon = weapon;
-        this.WeaponUIIndex = weaponIndex;
+        this.WeaponUiId = weaponIndex;
         this.WeaponImage.sprite = weapon.GunStats.sprite;
         this.WeaponName.text = weapon.GunStats.nameViet;
     }
+
+    private void UpdateVersionName()
+    {
+        TextWeaponRare.text = m_Weapon.GunStats.GetNameVersion(m_Weapon.GunStats.Rare);
+    }
+
     private void UpdateAmmo(WeaponController weapon)
     {
         m_Weapon = weapon;
@@ -153,14 +169,15 @@ public class WeaponUI : MonoBehaviour, IPointerEnterHandler, IEventSystemHandler
         }
  
     }
-
+  
     public void OnPointerEnter(PointerEventData eventData)
     {
-        ItemInfo.Instance.SetText(m_Weapon.GunStats.nameViet + "\n<size=70%>" + m_Weapon.GunStats.description);
+        //ItemInfo.Instance.SetText(m_Weapon.GunStats.nameViet + "\n<size=70%>" + m_Weapon.GunStats.description);
     }
 
     public void OnPointerExit(PointerEventData eventData)
     {
-        ItemInfo.Instance.OnDisable();
+        //ItemInfo.Instance.OnDisable();
     }
+
 }

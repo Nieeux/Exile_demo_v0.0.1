@@ -1,16 +1,25 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using TMPro;
 
 public class MoneyUI : MonoBehaviour
 {
 	public static MoneyUI Instance;
-
 	public TextMeshProUGUI money;
+	public CanvasGroup canvasWarning;
+
+	public float DamageFlashMaxAlpha = 1f;
+
+	public float FlashDuration;
+
+	public bool ActiveWarning;
+
+	float LastTimeFlashStarted = Mathf.NegativeInfinity;
 
 	public int CountFPS = 30;
-	public float Duration = 1f;
+	public float MoneyAniDuration = 1f;
 	public string NumberFormat = "N0";
 	private int _value;
 	private Coroutine CountingCoroutine;
@@ -23,8 +32,29 @@ public class MoneyUI : MonoBehaviour
 	{
 		MoneyUI.Instance = this;
 	}
+    private void Start()
+    {
 
-	public void AddMoney(float money)
+	}
+    private void Update()
+    {
+		if (ActiveWarning)
+		{
+			float normalizedTime = (Time.time - LastTimeFlashStarted) / FlashDuration;
+
+			if (normalizedTime < 1f)
+			{
+				float flashAmount = DamageFlashMaxAlpha * (1f - normalizedTime);
+				canvasWarning.alpha = flashAmount;
+			}
+			else
+			{
+				canvasWarning.gameObject.SetActive(false);
+				ActiveWarning = false;
+			}
+		}
+	}
+    public void AddMoney(float money)
 	{
 		GameObject gameObject = UnityEngine.Object.Instantiate<GameObject>(this.pickupPrefab, this.pickupParent);
 		gameObject.GetComponent<PickedupMoney>().SetMoney(money);
@@ -36,7 +66,15 @@ public class MoneyUI : MonoBehaviour
 		gameObject.GetComponent<PickedupMoney>().removeMoney(money);
 		gameObject.transform.SetSiblingIndex(0);
 	}
+	public void NotEnoughMoney()
+    {
+		LastTimeFlashStarted = Time.time;
+		ActiveWarning = true;
+		canvasWarning.alpha = 0f;
+		canvasWarning.gameObject.SetActive(true);
+		Debug.Log("NotEnoughMoney");
 
+	}
 	public int Value
 	{
 		get
@@ -67,11 +105,11 @@ public class MoneyUI : MonoBehaviour
 
 		if (newValue - previousValue < 0)
 		{
-			stepAmount = Mathf.FloorToInt((newValue - previousValue) / (CountFPS * Duration)); // newValue = -20, previousValue = 0. CountFPS = 30, and Duration = 1; (-20- 0) / (30*1) // -0.66667 (ceiltoint)-> 0
+			stepAmount = Mathf.FloorToInt((newValue - previousValue) / (CountFPS * MoneyAniDuration)); // newValue = -20, previousValue = 0. CountFPS = 30, and Duration = 1; (-20- 0) / (30*1) // -0.66667 (ceiltoint)-> 0
 		}
 		else
 		{
-			stepAmount = Mathf.CeilToInt((newValue - previousValue) / (CountFPS * Duration)); // newValue = 20, previousValue = 0. CountFPS = 30, and Duration = 1; (20- 0) / (30*1) // 0.66667 (floortoint)-> 0
+			stepAmount = Mathf.CeilToInt((newValue - previousValue) / (CountFPS * MoneyAniDuration)); // newValue = 20, previousValue = 0. CountFPS = 30, and Duration = 1; (20- 0) / (30*1) // 0.66667 (floortoint)-> 0
 		}
 
 		if (previousValue < newValue)

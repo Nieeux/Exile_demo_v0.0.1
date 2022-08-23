@@ -30,10 +30,7 @@ public class AI_SearchTarget : MonoBehaviour, AIstate
             if (agent.onDamage == true)
             {
                 agent.LookAtTarget();
-                if (agent.canSee != true)
-                {
-                    agent.stateMachine.ChangesState(StateType.AttackCover);
-                }
+                agent.stateMachine.ChangesState(StateType.AttackCover);
                 //agent.healthLost = 0;
             }
             
@@ -54,7 +51,9 @@ public class AI_SearchTarget : MonoBehaviour, AIstate
 
 
         }
+
     }
+
     public void AiExit(AIController agent)
     {
 

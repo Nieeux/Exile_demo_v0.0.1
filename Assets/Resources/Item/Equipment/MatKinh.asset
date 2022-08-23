@@ -13,14 +13,19 @@ MonoBehaviour:
   m_Name: MatKinh
   m_EditorClassIdentifier: 
   itemType: 2
-  id: 2
+  id: 1
   name: matkinh
   nameViet: "K\xEDnh Tia X"
-  description: "T\u0103ng 10% t\u1EC9 l\u1EC7 ch\xED m\u1EA1ng"
+  descriptionViet: "T\u0103ng 10% t\u1EC9 l\u1EC7 ch\xED m\u1EA1ng | Ng\u01B0\u1EDDi
+    m\u1EA1nh nh\u1EA5t trong C\u1EA5u Tr\xFAc c\xF3 th\u1EC3 t\u1EA1o ra tia h\u1EE7y
+    di\u1EC7t t\u1EEB trang b\u1ECB n\xE0y"
+  English: lensX
+  description: Increase 10% Critical Rate | The strongest person in the "Structure"
+    can generate plasma from this equipment
   stackable: 0
   amount: 1
   max: 1
-  Weight: 1.41
+  Weight: 0.01
   heal: 0
   hunger: 0
   stamina: 0
@@ -36,13 +41,11 @@ MonoBehaviour:
   singleFire: 0
   ReloadTime: 0
   bulletPrefab: {fileID: 0}
-  AllBulletPrefab: []
   fireAudio: {fileID: 0}
   reloadAudio: {fileID: 0}
   weaponType: 0
   Rare: 0
   buffs: []
-  Debuffs: []
   punchStrenght: 0.2
   punchVibrato: 5
   punchDuration: 0.3
@@ -59,6 +62,7 @@ MonoBehaviour:
   positionOffset: {x: 0, y: 0, z: 0}
   scale: 1
   prefab: {fileID: 2841471369595137429, guid: 0984ad953a367e143a516a551c6534ce, type: 3}
+  prefab2: {fileID: 0}
   RareIndex: 
   nameOriginal: 
   nameUpgrade: 

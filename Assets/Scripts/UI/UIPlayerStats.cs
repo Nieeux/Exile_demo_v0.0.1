@@ -11,12 +11,16 @@ public class UIPlayerStats : MonoBehaviour
     public GameObject bar;
     public GameObject SleepButton;
     public float padBottom = 0;
+
+    Inventory inventory;
     [Header("Player Stats UI")]
     public TextMeshProUGUI DamageNumber;
     public TextMeshProUGUI SpeedNumber;
     public TextMeshProUGUI CritNumber;
     public TextMeshProUGUI weightNumber;
     public TextMeshProUGUI DarkNumber;
+
+    public Color MaxWeight;
 
     public void Awake()
     {
@@ -25,6 +29,9 @@ public class UIPlayerStats : MonoBehaviour
     }
     public void Start()
     {
+        inventory = FindObjectOfType<Inventory>();
+        inventory.UpdateUi += UpdateStatsPlayer;
+
         bar.SetActive(false);
         SleepButton.SetActive(false);
         base.Invoke("UpdateStatsPlayer", 0.1f);
@@ -39,7 +46,7 @@ public class UIPlayerStats : MonoBehaviour
         if (StatusUI.Instance.IsShowStatus == true)
         {
             bar.SetActive(true);
-            if (PlayerStats.Instance.CanSleep())
+            if (PlayerStats.Instance.GetCanSleep())
             {
                 SleepButton.SetActive(true);
             }
@@ -69,8 +76,17 @@ public class UIPlayerStats : MonoBehaviour
     {
         this.DamageNumber.text = PlayerStats.Instance.damage.ToString("00");
         this.SpeedNumber.text = PlayerStats.Instance.CurrentSpeed().ToString("0.0");
-        this.CritNumber.text = string.Format("{0:}", Inventory.Instance.GetCritical().ToString("#0.##" + '%'));
-        this.weightNumber.text = string.Format("{0:0.##}/ {1} kg", PlayerStats.Instance.Weight(), PlayerStats.Instance.maxWeight);
+        this.CritNumber.text = string.Format("{0:}", DamageCalculations.Instance.GetCriticalUI().ToString("#0.##" + '%'));
+        this.weightNumber.text = string.Format("{0:0.##}/ {1} kg", PlayerStats.Instance.Weight(), PlayerStats.Instance.GetMaxWeight());
+
+        if(PlayerStats.Instance.Weight() >= PlayerStats.Instance.GetMaxWeight())
+        {
+            this.weightNumber.color = MaxWeight;
+        }
+        else
+        {
+            this.weightNumber.color = Color.white;
+        }
     }
 
 }

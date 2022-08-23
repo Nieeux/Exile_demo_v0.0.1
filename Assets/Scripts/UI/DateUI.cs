@@ -6,50 +6,60 @@ using UnityEngine.UI;
 
 public class DateUI : MonoBehaviour
 {
+    [Header("Big Date UI")]
+    public GameObject Day;
     public static DateUI Instance;
-    public GameObject dateUI;
-    public Image DayBar;
-    public Image Vien;
+    public TextMeshProUGUI dayNumber;
+    public Image Vienbig;
+
+
+    [Header("Small Date UI")]
     public Gradient DayBarColor;
     public TextMeshProUGUI dayNumberInUI;
-    public TextMeshProUGUI dayNumber;
-    public CanvasGroup canvasGroup;
-    public float pad = 0;
-    public bool Show;
+    public Image DayBar;
+    public Image Vien;
+
     public multiLanguage language;
 
     private void Awake()
     {
         DateUI.Instance = this;
-        this.canvasGroup.alpha = 0f;
-        this.dateUI.gameObject.SetActive(false);
-
     }
 
     void Start()
     {
-        
+        Day.gameObject.SetActive(false);
     }
+
     public void ShowDay(int day)
     {
         if(this == null)
         {
             return;
         }
-        this.dayNumber.text = string.Format("{0} {1}", language.VietNamese, day);
-        Show = true;
+        this.dayNumber.text = string.Format("{0} {1}", language.GetLanguage(), day);
+        Day.gameObject.SetActive(true);
         UpdateDay(day);
-        base.Invoke("fade", 3f);
+        base.Invoke("fade", 2f);
 
     }
     private void UpdateDay(int day)
     {
         this.dayNumberInUI.text = day.ToString("00");
     }
+
     void fade()
     {
-        Show = false;
+        this.dayNumber.CrossFadeAlpha(0f, 2f, true);
+        this.Vienbig.CrossFadeAlpha(0f, 2f, true);
+        base.Invoke("TurnOff", 2f);
     }
+
+    void TurnOff()
+    {
+        Day.gameObject.SetActive(false);
+    }
+
     void Update()
     {
 
@@ -57,24 +67,5 @@ public class DateUI : MonoBehaviour
         this.DayBar.color = DayBarColor.Evaluate(DayBar.fillAmount);
         this.dayNumberInUI.color = DayBarColor.Evaluate(DayBar.fillAmount);
         this.Vien.color = DayBarColor.Evaluate(DayBar.fillAmount);
-
-        if (Show == true)
-        {
-            
-            this.pad = Mathf.Lerp(this.pad, 1, Time.deltaTime * 5f);
-            this.canvasGroup.alpha = pad;
-            this.dateUI.gameObject.SetActive(true);
-
-        }
-        else
-        {
-            this.pad = Mathf.Lerp(this.pad, 0, Time.deltaTime * 5f);
-            this.canvasGroup.alpha = pad;
-            if (pad == 0)
-            {
-                this.dateUI.gameObject.SetActive(false);
-            }
-
-        }
     }
 }

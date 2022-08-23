@@ -30,7 +30,7 @@ public class DropItemAtPos : MonoBehaviour
     {
         if (CurrentItem != null)
         {
-            //Destroy(gameObject);
+            Destroy(gameObject);
         }
     }
     void Dropitem()
@@ -46,6 +46,8 @@ public class DropItemAtPos : MonoBehaviour
             inventoryItem.Getitem(food);
             PickupItem pickup = Instantiate(inventoryItem.prefab, transform.position, transform.rotation).GetComponent<PickupItem>();
             pickup.item = inventoryItem;
+            //pickup.SetId(ItemManager.Instance.GetNewId());
+
             CurrentItem = inventoryItem;
         }
         if (ItemDrop == ItemToDrop.Equipment)
@@ -55,6 +57,8 @@ public class DropItemAtPos : MonoBehaviour
             inventoryItem.Getitem(equip);
             PickupItem pickup = Instantiate(inventoryItem.prefab, transform.position, transform.rotation).GetComponent<PickupItem>();
             pickup.item = inventoryItem;
+            //pickup.SetId(ItemManager.Instance.GetNewId());
+
             CurrentItem = inventoryItem;
         }
         if (ItemDrop == ItemToDrop.Weapon)
@@ -72,6 +76,8 @@ public class DropItemAtPos : MonoBehaviour
             inventoryItem.Getitem(armor);
             PickupItem pickup = Instantiate(inventoryItem.prefab, transform.position, transform.rotation).GetComponent<PickupItem>();
             pickup.item = inventoryItem;
+            //pickup.SetId(ItemManager.Instance.GetNewId());
+
             CurrentItem = inventoryItem;
 
         }

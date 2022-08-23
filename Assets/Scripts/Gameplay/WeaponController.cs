@@ -34,11 +34,10 @@ public class WeaponController : MonoBehaviour
 
     public GameObject WeaponRoot;
     public AudioClip ChangeWeaponSfx;
-    AudioSource m_ShootAudioSource;
 
     public Bullet Pullet;
 
-    public UnityAction onDamaged;
+    public int WeaponID;
     public Interact WeaponIndex { get; private set; }
 
     public bool IsWeaponActive { get; private set; }
@@ -94,7 +93,7 @@ public class WeaponController : MonoBehaviour
                 Fire();
                 delay = 0.25f;
             }
-            if (Input.GetKeyDown(KeyCode.R) && GunStats.CurrentMagazine < GunStats.Magazine)
+            if (Input.GetKeyDown(KeyCode.R) && !reloading && GunStats.CurrentMagazine < GunStats.Magazine)
             {
                 StartCoroutine(Reload(true));
             }
@@ -162,11 +161,9 @@ public class WeaponController : MonoBehaviour
                        
                     }
                     CameraShake.Instance.Shake();
+                   
                     // giam Durability khi ban
                     RecoilAni();
-
-                    //WeaponInventory.Instance.RecoilFire();
-                    //UIBob.Instance.RecoilHUD();
 
                     GunStats.CurrentMagazine--;
                     audioSource.clip = fireAudio;
@@ -179,7 +176,7 @@ public class WeaponController : MonoBehaviour
                         base.Invoke("BrokenWeapon", 1f);
 
                     }
-
+                    WeaponUIManager.Instance.updateUI(WeaponID);
                 }
                 else
                 {
@@ -261,7 +258,7 @@ public class WeaponController : MonoBehaviour
                 }
                 else
                 {
-                    StartCoroutine(Reload(true));
+                    StartCoroutine(AiReload(true));
                 }
             }
         }
@@ -296,20 +293,36 @@ public class WeaponController : MonoBehaviour
 
         return direction;
     }
-
-    IEnumerator Reload(bool Reloading)
+    
+    private IEnumerator AiReload(bool Reloading)
     {
         reloading = Reloading;
 
-        audioSource.clip = reloadAudio;
+        audioSource.PlayOneShot(reloadAudio);
         audioSource.minDistance = 1;
-        audioSource.Play();
+
 
         yield return new WaitForSeconds(GunStats.ReloadTime);
 
         GunStats.CurrentMagazine = GunStats.Magazine;
         audioSource.minDistance = 10;
         reloading = !Reloading;
+    }
+
+    private IEnumerator Reload(bool Reloading)
+    {
+        reloading = Reloading;
+
+        audioSource.PlayOneShot(reloadAudio);
+        audioSource.minDistance = 1;
+        WeaponUIManager.Instance.updateUI(WeaponID);
+
+        yield return new WaitForSeconds(GunStats.ReloadTime);
+
+        GunStats.CurrentMagazine = GunStats.Magazine;
+        audioSource.minDistance = 10;
+        reloading = !Reloading;
+        WeaponUIManager.Instance.updateUI(WeaponID);
     }
 
     public void ShowWeapon(bool show)
@@ -319,7 +332,7 @@ public class WeaponController : MonoBehaviour
         //enabled = (show);
         if (show && ChangeWeaponSfx)
         {
-            m_ShootAudioSource.PlayOneShot(ChangeWeaponSfx);
+            audioSource.PlayOneShot(ChangeWeaponSfx);
         }
 
         IsWeaponActive = show;

@@ -19,7 +19,8 @@ public class BuffUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 
     public void OnPointerEnter(PointerEventData eventData)
     {
-        ItemInfo.Instance.SetText(buff.nameViet + "\n<size=70%>" + buff.description);
+        ItemInfo.Instance.SetText(buff.GetDescription());
+        ItemInfo.Instance.SetWeight(0);
     }
 
     public void OnPointerExit(PointerEventData eventData)

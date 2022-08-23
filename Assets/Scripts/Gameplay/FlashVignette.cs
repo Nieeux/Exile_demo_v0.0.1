@@ -9,10 +9,14 @@ public class FlashVignette : MonoBehaviour
     public Image FlashImage;
 
     public CanvasGroup FlashCanvasGroup;
+    public CanvasGroup VignetteCanvasGroup;
+    public CanvasGroup SleepCanvasGroup;
 
     public Color DamageFlashColor;
     public Color HealFlashColor;
 
+    public float CriticaHealthVignetteMaxAlpha = .8f;
+    public float PulsatingVignetteFrequency = 4f;
     public float DamageFlashDuration;
 
     public float DamageFlashMaxAlpha = 1f;
@@ -34,7 +38,37 @@ public class FlashVignette : MonoBehaviour
 
     void Update()
     {
+        if (player.GetHealthRatio()<= 0.3f)
+        {
+            VignetteCanvasGroup.gameObject.SetActive(true);
+            float vignetteAlpha =
+                (1 - (player.GetHealthRatio() / 0.3f)) * CriticaHealthVignetteMaxAlpha;
 
+            if (player.PlayerDead())
+                VignetteCanvasGroup.alpha = vignetteAlpha;
+            else
+                VignetteCanvasGroup.alpha =((Mathf.Sin(Time.time * PulsatingVignetteFrequency) / 2) + 0.5f) * vignetteAlpha;
+        }
+        else
+        {
+            VignetteCanvasGroup.gameObject.SetActive(false);
+        }
+
+        if (player.GetSleepyRatio() <= 0.25f)
+        {
+            SleepCanvasGroup.gameObject.SetActive(true);
+            float vignetteAlpha =
+                (1 - (player.GetSleepyRatio() / 0.25f)) * CriticaHealthVignetteMaxAlpha;
+
+            if (player.PlayerDead())
+                SleepCanvasGroup.alpha = vignetteAlpha;
+            else
+                SleepCanvasGroup.alpha = ((Mathf.Sin(Time.time * PulsatingVignetteFrequency) / 2) + 0.5f) * vignetteAlpha;
+        }
+        else
+        {
+            SleepCanvasGroup.gameObject.SetActive(false);
+        }
 
         if (m_FlashActive)
         {

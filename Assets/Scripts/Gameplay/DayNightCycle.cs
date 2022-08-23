@@ -6,12 +6,14 @@ public class DayNightCycle : MonoBehaviour
 	public static DayNightCycle Instance;
 	public Light sun;
 	public float CurrentTime;
-	public float Tomorrow;
+
 	public float dayDuration = 1f;
 	public float NightDuration = 0.25f;
-	public float timeSpeed = 0.001f;
-	public bool Day;
-	public bool Night;
+
+	[SerializeField]
+	private float timeSpeed = 0.01f;
+	[SerializeField]
+	private bool Day;
 
     [Range(0,1)]
 	public float currentTimeOfDay = 0.3f;
@@ -74,13 +76,13 @@ public class DayNightCycle : MonoBehaviour
 	{
         if (Day)
         {
-			int n = Mathf.FloorToInt(CurrentTime + 0.5f);
+			int n = (int)(CurrentTime + 0.5f);
 			currentTimeOfDay = 0.7f;
 			CurrentTime = n;
 		}
         else
         {
-			int n = Mathf.FloorToInt(CurrentTime + 0.5f);
+			int n = (int)(CurrentTime + 0.5f);
 			currentTimeOfDay = 0.3f;
 			CurrentTime = n;
 		}

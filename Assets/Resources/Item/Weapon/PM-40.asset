@@ -13,9 +13,11 @@ MonoBehaviour:
   m_Name: PM-40
   m_EditorClassIdentifier: 
   itemType: 3
-  id: 1
+  id: 0
   name: PM-40
   nameViet: PM-40
+  descriptionViet: 
+  English: PM-40
   description: 
   stackable: 0
   amount: 1
@@ -36,16 +38,11 @@ MonoBehaviour:
   singleFire: 0
   ReloadTime: 1
   bulletPrefab: {fileID: 4696296699401721060, guid: f249a1bd70a86df4496bbfc3e3e9c120, type: 3}
-  AllBulletPrefab:
-  - {fileID: 4696296699401721060, guid: 9ca158238cfddc2449df8582ad40e56e, type: 3}
-  - {fileID: 4696296699401721060, guid: 4ac93e5b76843f743916331815ea1a24, type: 3}
-  - {fileID: 4696296699401721060, guid: f249a1bd70a86df4496bbfc3e3e9c120, type: 3}
   fireAudio: {fileID: 0}
   reloadAudio: {fileID: 0}
   weaponType: 1
   Rare: 1
   buffs: []
-  Debuffs: []
   punchStrenght: 0.1
   punchVibrato: 5
   punchDuration: 0.15
@@ -62,6 +59,7 @@ MonoBehaviour:
   positionOffset: {x: 0, y: 0, z: 0}
   scale: 1
   prefab: {fileID: 367534550845903707, guid: 5a2ec5af6b9e0ff49be315c204ca4d1e, type: 3}
+  prefab2: {fileID: 0}
   RareIndex: 
   nameOriginal: "Nguy\xEAn b\u1EA3n"
   nameUpgrade: "N\xE2ng c\u1EA5p"

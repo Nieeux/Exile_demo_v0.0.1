@@ -15,5 +15,7 @@ MonoBehaviour:
   id: 1
   name: HealTech
   nameViet: "C\xF4ng ngh\u1EC7 sinh h\u1ECDc"
-  description: "kh\u1EA3 n\u0103ng h\u1ED3i ph\u1EE5c nhanh h\u01A1n 50%"
+  descriptionViet: "kh\u1EA3 n\u0103ng h\u1ED3i ph\u1EE5c nhanh h\u01A1n 50%"
+  English: HealTech
+  description: Heal 50% faster
   sprite: {fileID: 21300000, guid: 97fa58cb94114f84381152faff73ad8b, type: 3}

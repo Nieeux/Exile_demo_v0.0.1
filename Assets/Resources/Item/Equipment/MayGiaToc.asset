@@ -13,10 +13,12 @@ MonoBehaviour:
   m_Name: MayGiaToc
   m_EditorClassIdentifier: 
   itemType: 2
-  id: 1
+  id: 2
   name: maygiatoc
-  nameViet: "M\xE1y gia t\u1ED1c"
-  description: "T\u0103ng 20% s\xE1t th\u01B0\u01A1ng cho v\u0169 kh\xED"
+  nameViet: "B\u1ED9 gia t\u1ED1c"
+  descriptionViet: "T\u0103ng 20% s\xE1t th\u01B0\u01A1ng cho v\u0169 kh\xED"
+  English: Accelerator
+  description: Increase 20% weapon damage
   stackable: 0
   amount: 1
   max: 1
@@ -36,13 +38,11 @@ MonoBehaviour:
   singleFire: 0
   ReloadTime: 0
   bulletPrefab: {fileID: 0}
-  AllBulletPrefab: []
   fireAudio: {fileID: 0}
   reloadAudio: {fileID: 0}
   weaponType: 0
   Rare: 0
   buffs: []
-  Debuffs: []
   punchStrenght: 0.2
   punchVibrato: 5
   punchDuration: 0.3
@@ -59,6 +59,7 @@ MonoBehaviour:
   positionOffset: {x: 0, y: 0, z: 0}
   scale: 1
   prefab: {fileID: 2841471369595137429, guid: 0984ad953a367e143a516a551c6534ce, type: 3}
+  prefab2: {fileID: 0}
   RareIndex: 
   nameOriginal: 
   nameUpgrade: 

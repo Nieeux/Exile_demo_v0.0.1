@@ -8,7 +8,6 @@ public class DaySystem : MonoBehaviour
 	public int Tomorrow = 0;
 	public bool isnight;
 	public UnityAction NextDay;
-	public UnityAction IsNight;
 
 	private void Awake()
 	{
@@ -54,14 +53,6 @@ public class DaySystem : MonoBehaviour
 			NextDay.Invoke();
 		}
 		Tomorrow = day;
-	}
-
-	private void Night()
-    {
-		if (IsNight != null)
-		{
-			IsNight.Invoke();
-		}
 	}
 
 }

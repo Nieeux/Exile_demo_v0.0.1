@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a8b134886be8c64478a2ca3b21c6db47, type: 3}
   m_Name: VuKhiHong
   m_EditorClassIdentifier: 
-  English: 
+  English: Broken weapon
   VietNamese: "V\u0169 kh\xED h\u1ECFng"

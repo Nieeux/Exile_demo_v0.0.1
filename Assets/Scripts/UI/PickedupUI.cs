@@ -35,6 +35,6 @@ public class PickedupUI : MonoBehaviour
 	{
 		this.icon.sprite = i.sprite;
 		this.icon.color = i.colorIndex;
-		this.item.text = string.Format("{0}",i.nameViet);
+		this.item.text = string.Format("{0}",i.GetName());
 	}
 }

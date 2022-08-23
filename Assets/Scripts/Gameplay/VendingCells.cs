@@ -14,12 +14,16 @@ public class VendingCells : MonoBehaviour, Interact, SharedId
 
     public multiLanguage language;
 
+    [Header("SFX")]
+    public AudioSource Sfx;
+    public AudioClip InteractSfx;
+
     private void Start()
     {
         this.ready = true;
         AllExecute();
         weapon = GetComponentInChildren<WeaponController>();
-        Getprice();
+        base.Invoke("Getprice", 0.2f);
         weapon.GetComponent<Collider>().isTrigger = true;
     }
 
@@ -27,6 +31,7 @@ public class VendingCells : MonoBehaviour, Interact, SharedId
     {
         if (Inventory.Instance.GetMoney() < this.price)
         {
+            MoneyUI.Instance.NotEnoughMoney();
             return;
         }
         if (!this.ready)
@@ -34,6 +39,10 @@ public class VendingCells : MonoBehaviour, Interact, SharedId
             return;
         }
         this.ready = false;
+
+        Sfx.clip = InteractSfx;
+        this.Sfx.Play();
+
         Inventory.Instance.UseMoney(this.price);
         weapon.GetComponent<Rigidbody>().isKinematic = false;
         weapon.GetComponent<Collider>().isTrigger = false;
@@ -50,7 +59,7 @@ public class VendingCells : MonoBehaviour, Interact, SharedId
 
     public string GetName()
     {
-        return string.Format("{0} {1}\n<size=75%>E | {2}", this.price, language.VietNamese, this.weapon.GunStats.nameViet);
+        return string.Format("{0} {1}\n<size=75%>E | {2}", this.price, language.GetLanguage(), this.weapon.GunStats.nameViet);
     }
 
     public ItemStats GetItem()
@@ -59,26 +68,37 @@ public class VendingCells : MonoBehaviour, Interact, SharedId
     }
     private void Getprice()
     {
-        int n = (int)this.weapon.GunStats.CurrentDurability;
-        if(this.weapon.GunStats.Rare == ItemStats.ItemRare.original) 
+        int n = (int)weapon.GunStats.CurrentDurability;
+
+        if (this.weapon.GunStats.Rare == ItemStats.ItemRare.upgrade)
         {
             n *= 2;
         }
-        if (this.weapon.GunStats.Rare == ItemStats.ItemRare.upgrade)
+        if (this.weapon.GunStats.Rare == ItemStats.ItemRare.advanced)
         {
             n *= 4;
         }
-        if (this.weapon.GunStats.Rare == ItemStats.ItemRare.advanced)
-        {
-            n *= 8;
-        }
         if (this.weapon.GunStats.weaponType == ItemStats.WeaponType.AssaultRifles)
         {
-            n *= 8;
+            n *= 2;
         }
 
+        if (this.weapon.Pullet.ammoType == Bullet.AmmoType.PiercingAmmo)
+        {
+            n *= 2;
+        }
+        if (this.weapon.Pullet.ammoType == Bullet.AmmoType.HighAmmo)
+        {
+            n *= 2;
+        }
+        if (this.weapon.Pullet.IsShotGunShell == true)
+        {
+            n *= 2;
+        }
+        n *= this.weapon.GunStats.buffs.Count;
 
         price = n;
+       
     }
     public bool IsStarted()
     {
@@ -94,7 +114,10 @@ public class VendingCells : MonoBehaviour, Interact, SharedId
     {
         Destroy(gameObject);
     }
+    public void DropObject()
+    {
 
+    }
     public void SetId(int id)
     {
         this.id = id;

@@ -63,23 +63,7 @@ public class MainMenuUI : MonoBehaviour
 		PlayerPrefs.SetFloat("Sensitivity", this.currentSens);
 	}
 
-	public void SetFullscreen(bool isFullscreen)
-	{
-		if (isFullscreen)
-		{
-			Resolution[] array = Screen.resolutions;
-			Resolution resolution = array[array.Length - 1];
-			Screen.SetResolution(resolution.width, resolution.height, true);
-		}
-		else
-		{
-			Resolution[] array2 = Screen.resolutions;
-			Resolution resolution2 = array2[array2.Length - 1];
-			Screen.SetResolution(resolution2.width, resolution2.height, false);
-		}
-		PlayerPrefs.SetInt("fullscreen", isFullscreen ? 1 : 0);
-		PlayerPrefs.Save();
-	}
+
 
 	public void SetResolution(int resolutionIndex)
 	{

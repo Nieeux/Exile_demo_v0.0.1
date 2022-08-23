@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.Events;
 using DG.Tweening;
 
+[RequireComponent(typeof(Inventory))]
 public class WeaponInventory : MonoBehaviour
 {
     public static WeaponInventory Instance;
@@ -30,11 +31,14 @@ public class WeaponInventory : MonoBehaviour
     public UnityAction<WeaponController, int> OnAddedWeapon;
     public UnityAction<WeaponController, int> OnRemovedWeapon;
 
+ 
+
     int m_WeaponSwitchNewWeaponIndex;
     float m_TimeStartedWeaponSwitch;
     public WeaponState WeaponSwitchState;
 
     public float WeaponSwitchDelay = 1f;
+    Inventory inventory;
     PlayerInput InputHandler;
     PlayerMovement playerMovement;
     PlayerStats playerStats;
@@ -49,31 +53,14 @@ public class WeaponInventory : MonoBehaviour
 
     public float weaponWeight;
     [Header("Buff")]
-    public float critcal;
-    public float heal;
-    public float bioTech;
-    public float speed;
+    public UnityAction<float, bool> critcal;
+    public UnityAction<float, bool> heal;
+    public UnityAction<float, bool> bioTech;
+    public UnityAction<float, bool> speed;
 
-   [Header("Gun Recoil")]
-    public Transform CameraRecoil;
-    private Vector3 currentRotation;
-    private Vector3 targetRotation;
-
-
-    [SerializeField] private float recoilX;
-    [SerializeField] private float recoilY;
-    [SerializeField] private float recoilZ;
-
-    [SerializeField] private float snappiness;
-    [SerializeField] private float returnSpeed;
-
-    [SerializeField] private float CrouchrecoilY;
-    [SerializeField] private float CrouchreturnSpeed;
-
-    [SerializeField] private float currentReturnSpeed;
-    [SerializeField] private float currentrecoilY;
-
-    public float dropForwardForce, dropUpwardForce;
+    [Header("SFX")]
+    public AudioSource Sfx;
+    public AudioClip InteractSfx;
 
     private void Awake()
     {
@@ -82,9 +69,14 @@ public class WeaponInventory : MonoBehaviour
 
     void Start()
     {
+        if (Sfx == null)
+        {
+            Sfx.GetComponent<AudioSource>();
+        }
         //ActiveWeaponIndex = -1;
         //WeaponSwitchState = WeaponState.PutDown;
         OnSwitchedToWeapon += OnWeaponSwitched;
+        inventory = GetComponent<Inventory>();
         InputHandler = GetComponent<PlayerInput>();
         playerMovement = GetComponent<PlayerMovement>();
         playerStats = GetComponent<PlayerStats>();
@@ -95,14 +87,6 @@ public class WeaponInventory : MonoBehaviour
     void Update()
     {
         WeaponController activeWeapon = GetActiveWeapon();
-
-        //currentReturnSpeed = playerMovement.isCrouching() ? CrouchreturnSpeed : returnSpeed;
-        //currentrecoilY = playerMovement.isCrouching() ? CrouchrecoilY : recoilY;
-        //Recoil sung
-
-        targetRotation = Vector3.Lerp(targetRotation, Vector3.zero, currentReturnSpeed * Time.deltaTime);
-        currentRotation = Vector3.Slerp(currentRotation, targetRotation, snappiness * Time.fixedDeltaTime);
-        CameraRecoil.transform.localRotation = Quaternion.Euler(currentRotation);
 
         // weapon switch handling
         if (ActiveWeaponIndex != -1 && (activeWeapon == null || !activeWeapon.IsCharging) && (WeaponSwitchState == WeaponState.PutUp || WeaponSwitchState == WeaponState.PutDown))
@@ -121,7 +105,7 @@ public class WeaponInventory : MonoBehaviour
             {
                 Debug.Log("DropWeapon");
                 Interact weaponIndex = activeWeapon.WeaponIndex;
-                weaponIndex.RemoveObject();
+                weaponIndex.DropObject();
             }
         }
         //Neu khong co vu khi dang active thi ha het vu khi
@@ -131,10 +115,7 @@ public class WeaponInventory : MonoBehaviour
         }
 
     }
-    //public void RecoilFire()
-    //{
-       // targetRotation += new Vector3(recoilX, Random.Range(-currentrecoilY, currentrecoilY), Random.Range(-recoilZ, recoilZ));
-    //}
+
 
     private void LateUpdate()
     {
@@ -236,19 +217,30 @@ public class WeaponInventory : MonoBehaviour
 
             if (buffsInActive[i].name == "Critical")
             {
-                critcal += 0.1f;
-
+                if (critcal != null)
+                {
+                    critcal.Invoke(0.1f,false);
+                }
             }
 
             if (buffsInActive[i].name == "HealTech")
             {
-                heal += 5f;
+                if (heal != null)
+                {
+                    heal.Invoke(5f, false);
+                }
             }
 
             if (buffsInActive[i].name == "BioTech")
             {
-                bioTech += 1.2f;
-                speed += 0.5f;
+                if (bioTech != null)
+                {
+                    bioTech.Invoke(0.2f, false);
+                }
+                if (speed != null)
+                {
+                    speed.Invoke(0.5f, false);
+                }
             }
 
         }
@@ -257,26 +249,27 @@ public class WeaponInventory : MonoBehaviour
     }
     private void RefreshBuffsModified()
     {
-        critcal = 0;
-        heal = 0;
-        bioTech = 0;
-        speed = 0;
+        if (critcal != null)
+        {
+            critcal.Invoke(0, true);
+        }
+        if (heal != null)
+        {
+            heal.Invoke(0, true);
+        }
+        if (bioTech != null)
+        {
+            bioTech.Invoke(0, true);
+        }
+        if (speed != null)
+        {
+            speed.Invoke(0, true);
+        }
+    }
 
-    }
-    public float GetBuffCritical()
+    public float GetWeight()
     {
-        float n = critcal;
-        return n;
-    }
-    public float GetBuffHealTech()
-    {
-        float n = heal;
-        return n;
-    }
-    public float GetBuffSpeed()
-    {
-        float n = speed;
-        return n;
+        return weaponWeight;
     }
 
     private void EquipWeightModified(ItemStats Item)
@@ -292,31 +285,12 @@ public class WeaponInventory : MonoBehaviour
         base.Invoke("UpdateUI", 0.2f);
     }
 
-    public float GetWeight()
-    {
-        float n = bioTech;
-        if (n == 0)
-        {
-            return weaponWeight;
-        }
-        return weaponWeight / bioTech;
-    }
 
     private void UpdateUI()
     {
         UIPlayerStats.Instance.UpdateStatsPlayer();
     }
-    private bool inventoryFull()
-    {
-        for (int i = 0; i < WeaponSlots.Length; i++)
-        {
-            if (WeaponSlots[i] == null)
-            {
-                return false;
-            }
-        }
-        return true;
-    }
+
     public bool AddWeapon(WeaponController weaponPrefab, ItemStats item)
     {
 
@@ -331,6 +305,9 @@ public class WeaponInventory : MonoBehaviour
                 weaponPrefab.coll.enabled = false;
                 weaponPrefab.rb.isKinematic = true;
 
+                Sfx.clip = InteractSfx;
+                this.Sfx.Play();
+
                 if (WeaponInActive == null)
                 {
                     this.WeaponInActive = weaponPrefab;
@@ -342,6 +319,7 @@ public class WeaponInventory : MonoBehaviour
 
                 weaponPrefab.ShowWeapon(false);
                 WeaponSlots[i] = weaponPrefab;
+                weaponPrefab.WeaponID = i;
 
                 if (OnAddedWeapon != null)
                 {
@@ -427,6 +405,93 @@ public class WeaponInventory : MonoBehaviour
             newWeapon.ShowWeapon(true);
         }
     }
+
+    public bool RepairWeapon(ItemStats item)
+    {
+        if(WeaponInActive == null)
+        {
+            return false;
+        }
+        if (WeaponInActive.GunStats.CurrentDurability >= WeaponInActive.GunStats.Durability)
+        {
+            return false;
+        }
+
+        this.WeaponInActive.GunStats.CurrentDurability += item.repair;
+        this.WeaponInActive.GunStats.CurrentDurability = Mathf.Clamp(WeaponInActive.GunStats.CurrentDurability, 0f, WeaponInActive.GunStats.Durability);
+        return true;
+    }
+
+    public int WeaponPrice(WeaponController weaponInstance, ItemStats item)
+    {
+        int n = (int)weaponInstance.GunStats.CurrentDurability;
+
+        if (item.Rare == ItemStats.ItemRare.upgrade)
+        {
+            n *= 2;
+        }
+        if (item.Rare == ItemStats.ItemRare.advanced)
+        {
+            n *= 4;
+        }
+        if (item.weaponType == ItemStats.WeaponType.AssaultRifles)
+        {
+            n *= 2;
+        }
+        
+        if (weaponInstance.Pullet.ammoType == Bullet.AmmoType.PiercingAmmo)
+        {
+            n *= 2;
+        }
+        if (weaponInstance.Pullet.ammoType == Bullet.AmmoType.HighAmmo)
+        {
+            n *= 2;
+        }
+        if (weaponInstance.Pullet.IsShotGunShell == true)
+        {
+            n *= 2;
+        }
+        n *= item.buffs.Count;
+
+        return n / 2;
+    }
+    private void PayMoney(WeaponController weaponInstance, ItemStats item)
+    {
+        int Moneys = WeaponPrice(weaponInstance, item);
+
+        inventory.RewardMoney(Moneys);
+    }
+    public bool SellWeapon(WeaponController weaponInstance, ItemStats item)
+    {
+
+        for (int i = 0; i < WeaponSlots.Length; i++)
+        {
+            if (WeaponSlots[i] == weaponInstance)
+            {
+                WeaponSlots[i] = null;
+
+                if (OnRemovedWeapon != null)
+                {
+                    OnRemovedWeapon.Invoke(weaponInstance, i);
+                }
+                this.WeaponInActive = null;
+                RefreshBuffsModified();
+                UnequipWeightModified(item);
+                Destroy(weaponInstance.WeaponRoot);
+                PayMoney(weaponInstance, item);
+
+                if (i == ActiveWeaponIndex)
+                {
+                    SwitchWeapon();
+                }
+
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     public bool DropWeapon(WeaponController weaponInstance, ItemStats item)
     {
 

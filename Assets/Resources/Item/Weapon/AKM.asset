@@ -13,9 +13,11 @@ MonoBehaviour:
   m_Name: AKM
   m_EditorClassIdentifier: 
   itemType: 3
-  id: 0
+  id: 1
   name: AKM
   nameViet: AKM
+  descriptionViet: 
+  English: AKM
   description: "M\u1ED9t lo\u1EA1i v\u0169 kh\xED v\xF4 c\xF9ng ph\u1ED5 bi\u1EBFn
     \u0111\u01B0\u1EE3c ch\u1EBF t\u1EA1o b\u1EDFi lo\xE0i ng\u01B0\u1EDDi."
   stackable: 0
@@ -37,16 +39,11 @@ MonoBehaviour:
   singleFire: 0
   ReloadTime: 2
   bulletPrefab: {fileID: 4696296699401721060, guid: 4ac93e5b76843f743916331815ea1a24, type: 3}
-  AllBulletPrefab:
-  - {fileID: 4696296699401721060, guid: 9ca158238cfddc2449df8582ad40e56e, type: 3}
-  - {fileID: 4696296699401721060, guid: 4ac93e5b76843f743916331815ea1a24, type: 3}
-  - {fileID: 4696296699401721060, guid: f249a1bd70a86df4496bbfc3e3e9c120, type: 3}
   fireAudio: {fileID: 0}
   reloadAudio: {fileID: 0}
   weaponType: 3
-  Rare: 1
+  Rare: 0
   buffs: []
-  Debuffs: []
   punchStrenght: 0.03
   punchVibrato: 5
   punchDuration: 0.1
@@ -63,6 +60,7 @@ MonoBehaviour:
   positionOffset: {x: 0, y: 0, z: 0}
   scale: 1
   prefab: {fileID: 7474613660059752366, guid: dd3dee70bed210d43b4e221b77e84836, type: 3}
+  prefab2: {fileID: 0}
   RareIndex: 
   nameOriginal: "Nguy\xEAn b\u1EA3n"
   nameUpgrade: "N\xE2ng c\u1EA5p"

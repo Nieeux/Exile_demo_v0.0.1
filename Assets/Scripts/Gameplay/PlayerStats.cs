@@ -40,6 +40,8 @@ public class PlayerStats : MonoBehaviour
     [Header("Healing")]
     private bool healing;
     private float healingRate = 5f;
+    //Buff
+    private float healingRateBuff = 0;
 
     [Header("Damage")]
     public float damageFinal;
@@ -48,9 +50,19 @@ public class PlayerStats : MonoBehaviour
     public bool Invincible { get; private set; }
     public float DamageMultiplier = 1f;
 
-    //Weight
+    [Header("Damage")]
     public float currentWeight;
-    public float maxWeight { get; set; }
+    private float maxWeight;
+    //Equip
+    private float IncreaseMaxWeight;
+    //Buff
+    private float BioTechBuff;
+
+    [Header("Speed")]
+    //Equip
+    private float IncreaseSpeedEquip;
+    //Buff
+    private float IncreaseSpeedBuff;
 
     private PlayerMovement player;
     Inventory inventory;
@@ -69,8 +81,17 @@ public class PlayerStats : MonoBehaviour
     {
         PlayerStats.Instance = this;
         this.player = base.GetComponent<PlayerMovement>();
+
         weaponInventory = GetComponent<WeaponInventory>();
+        weaponInventory.bioTech += GetWeightBuff;
+        weaponInventory.speed += GetSpeedUpBuff;
+        weaponInventory.heal += GethealingBuff;
+
         inventory = GetComponent<Inventory>();
+        inventory.weight += MaxWeight;
+        inventory.speed += GetSpeedUp;
+        inventory.maxHealth += GetMaxHealthUp;
+
         this.damage = 50f;
         this.stamina = 100f;
         this.hunger = 100f;
@@ -100,6 +121,8 @@ public class PlayerStats : MonoBehaviour
         Hungry();
         Sleepy();
     }
+
+    #region Stats
     private void Stamina()
     {
         if (!player.isRunning)
@@ -165,7 +188,7 @@ public class PlayerStats : MonoBehaviour
         {
             return;
         }
-        float num = (this.healingRate + weaponInventory.GetBuffHealTech()) * Time.deltaTime * 0.1f;
+        float num = (this.healingRate + healingRateBuff) * Time.deltaTime * 0.1f;
         this.CurrentHealth += num;
     }
     private void Hungry()
@@ -177,22 +200,13 @@ public class PlayerStats : MonoBehaviour
 
             if (this.CurrentHealth <= 0)
                 this.CurrentHealth = 0;
-                HandleDeath();
+            HandleDeath();
         }
 
     }
-    public float GetHealthBar()
-    {
-        return CurrentHealth / MaxHealth;
-    }
-    public float GetMaxHealth()
-    {
-        return MaxHealth;
-    }
-
     private void Sleepy()
     {
-        
+
         if (this.sleepy >= 0f || this.CurrentHealth >= 0f)
         {
 
@@ -212,7 +226,7 @@ public class PlayerStats : MonoBehaviour
             {
                 canSleep = false;
             }
-           
+
         }
         if (this.sleepy < 0f)
         {
@@ -221,38 +235,54 @@ public class PlayerStats : MonoBehaviour
 
         }
     }
-    public bool CanSleep()
+    #endregion
+
+    #region Eat
+    public bool Coffee(ItemStats item)
     {
-        if (canSleep == true)
+        if (sleepy >= maxSleepy)
         {
-            return true;
+            return false;
         }
-        return false;
+
+        sleepy += item.sleep;
+        sleepy = Mathf.Clamp(sleepy, 0f, maxSleepy);
+        return true;
     }
 
-    public void Sleep()
+    public bool Eat(float Hunger)
     {
-        Sleeping = true;
-        OnSleep?.Invoke();
-        CheckPlatformSleep();
-    }
-
-    private void WakeUp()
-    {
-        OnWakeUp?.Invoke();
-        hunger /= 2f;
-        sleepy = maxSleepy;
-        Sleeping = false;
-        DayNightCycle.Instance.NewDay();
-    }
-
-    void exhausted()
-    {
-        if (sleepy <= 0f)
+        if (hunger >= maxHunger)
         {
-            Sleep();
+            return false;
         }
+
+        this.hunger += Hunger;
+        this.hunger = Mathf.Clamp(hunger, 0f, maxHunger);
+        return true;
     }
+
+    public bool Heal(ItemStats item)
+    {
+        if (CurrentHealth >= MaxHealth || IsDead)
+        {
+            return false;
+        }
+        float healthBefore = CurrentHealth;
+        CurrentHealth += item.heal;
+        CurrentHealth = Mathf.Clamp(CurrentHealth, 0f, MaxHealth);
+
+        // call OnHeal action
+        float trueHealAmount = CurrentHealth - healthBefore;
+        if (trueHealAmount > 0f)
+        {
+            OnHealed?.Invoke(trueHealAmount);
+        }
+        return true;
+    }
+    #endregion
+
+    #region SleepSystem
     private void CheckPlatformSleep()
     {
         RaycastHit hit;
@@ -303,64 +333,126 @@ public class PlayerStats : MonoBehaviour
         }
     }
 
-    public bool Coffee(ItemStats item)
+    public void Sleep()
     {
-        if (sleepy >= maxSleepy)
-        {
-            return false;
-        }
-
-        sleepy += item.sleep;
-        sleepy = Mathf.Clamp(sleepy, 0f, maxSleepy);
-        return true;
+        Sleeping = true;
+        OnSleep?.Invoke();
+        CheckPlatformSleep();
     }
 
-    public bool Eat(ItemStats item)
+    private void WakeUp()
     {
-        if(hunger >= maxHunger)
-        {
-            return false;
-        }
+        OnWakeUp?.Invoke();
+        hunger /= 2f;
+        sleepy = maxSleepy;
+        Sleeping = false;
+        DayNightCycle.Instance.NewDay();
+    }
+    #endregion
 
-        hunger += item.hunger;
-        hunger = Mathf.Clamp(hunger, 0f, maxHunger);
-        return true;
+    #region GetEquip
+    private void GetMaxHealthUp(float maxHealth)
+    {
+        this.MaxHealth *= (1 + maxHealth);
+        if(maxHealth == 0)
+        {
+            MaxHealth = 100;
+        }
+        if(CurrentHealth > MaxHealth)
+        CurrentHealth = MaxHealth;
+
+    }
+    private void MaxWeight(float maxWeight)
+    {
+        float n = maxWeight;
+        IncreaseMaxWeight = n;
     }
 
-    public bool Heal(ItemStats item)
+    private void GetSpeedUp(float Speed)
     {
-        if (CurrentHealth >= MaxHealth || IsDead)
-        {
-            return false;
-        }
-        float healthBefore = CurrentHealth;
-        CurrentHealth += item.heal;
-        CurrentHealth = Mathf.Clamp(CurrentHealth, 0f, MaxHealth);
+        float n = Speed;
+        IncreaseSpeedEquip = n;
+    }
 
-        // call OnHeal action
-        float trueHealAmount = CurrentHealth - healthBefore;
-        if (trueHealAmount > 0f)
-        {
-            OnHealed?.Invoke(trueHealAmount);
-        }
-        return true;
+    public float GetMaxWeight()
+    {
+        return maxWeight + IncreaseMaxWeight;
     }
 
     public float Weight()
     {
-        float n = inventory.GetWeight() + weaponInventory.GetWeight();
+        float n = inventory.GetWeight() + (weaponInventory.GetWeight() / (1 + BioTechBuff));
         return n;
     }
 
     public float CurrentSpeed()
     {
-        float n = 3 + inventory.GetSpeedUp() + weaponInventory.GetBuffSpeed();
-        if (Weight() >= maxWeight)
+        float n = 3 + IncreaseSpeedEquip + IncreaseSpeedBuff;
+        if (Weight() >= maxWeight + IncreaseMaxWeight)
         {
             return n /= 2;
         }
         return n;
     }
+    #endregion
+
+    #region GetBuff
+    private void GethealingBuff(float critcal, bool recRefresh)
+    {
+        if (recRefresh == true)
+        {
+            this.healingRateBuff = critcal;
+        }
+        float n = critcal;
+
+        this.healingRateBuff += n;
+    }
+    private void GetSpeedUpBuff(float SeepBuff, bool recRefresh)
+    {
+        if (recRefresh == true)
+        {
+            this.IncreaseSpeedBuff = SeepBuff;
+        }
+        float n = SeepBuff;
+        this.IncreaseSpeedBuff += n;
+    }
+    private void GetWeightBuff(float WeightBuff, bool recRefresh)
+    {
+        if (recRefresh == true)
+        {
+            this.BioTechBuff = WeightBuff;
+        }
+        float n = WeightBuff;
+        this.BioTechBuff += n;
+    }
+    #endregion
+
+    #region GetData
+    public float GetSleepyRatio()
+    {
+        return sleepy / maxSleepy;
+    }
+    public float GetHungerRatio()
+    {
+        return hunger / maxHunger;
+    }
+    public float GetHealthRatio()
+    {
+        return CurrentHealth / MaxHealth;
+    }
+    public float GetMaxHealth()
+    {
+        return MaxHealth;
+    }
+    public bool GetCanSleep()
+    {
+        if (canSleep == true)
+        {
+            return true;
+        }
+        return false;
+    }
+    #endregion
 
     public void Damage(float damage, Bullet bulletType)
     {

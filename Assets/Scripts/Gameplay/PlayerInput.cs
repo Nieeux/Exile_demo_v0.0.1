@@ -5,16 +5,14 @@ using UnityEngine;
 public class PlayerInput : MonoBehaviour
 {
     public static PlayerInput Instance;
-    public PlayerStats PlayerHealth;
-    public PlayerMovement playerMovement;
-    public WeaponInventory WeaponManager;
+
+    private Inventory inventory;
 
     private void Start()
     {
         PlayerInput.Instance = this;
-        this.WeaponManager = base.GetComponent<WeaponInventory>();
-        this.PlayerHealth = base.GetComponent<PlayerStats>();
-        this.playerMovement = base.GetComponent<PlayerMovement>();
+
+        inventory = base.GetComponent<Inventory>();
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
     }
@@ -37,11 +35,22 @@ public class PlayerInput : MonoBehaviour
         {
             if (Input.GetMouseButtonDown(1))
             {
-                Inventory.Instance.DropItem();
+                Interact currentInteractable = DetectItem.Instance.currentInteractable;
+
+                if (currentInteractable != null && currentInteractable.IsStarted() == true && inventory.ThisItemIsUnequip())
+                {
+                    currentInteractable.Interact();
+                    Debug.Log("BanItem");
+                }
+                else
+                {
+                    inventory.DropItem();
+                }
+               
             }
             if (Input.GetMouseButtonDown(0))
             {
-                Inventory.Instance.Use();
+                inventory.Use();
 
             }
         }

@@ -37,7 +37,6 @@ public class SpawnEnemy : MonoBehaviour
 	{
 		daySystem = FindObjectOfType<DaySystem>();
 		daySystem.NextDay += nextDay;
-		daySystem.IsNight += IsNight;
 		World = GetComponent<WorldGenerator>();
 		EnemyManager = new GameObject("EnemyManager");
 		//EnemyManager.transform.parent = transform;
@@ -50,14 +49,25 @@ public class SpawnEnemy : MonoBehaviour
 		maxEnemy++;
 		WeightedSpawn[] state = NightState(AddState, false);
 		StateChoice = state;
-	}
-	private void IsNight()
-    {
-		WeightedSpawn[] state = NightState(AddState, true);
-		StateChoice = state;
+		base.Invoke("change", 0.1f);
 	}
 
-	private IEnumerator SpawnRoutine()
+	private void change()
+    {
+		IsChange = true;
+	}
+    private void Update()
+    {
+		if (!DayNightCycle.Instance.IsDay() && IsChange == true)
+		{
+			WeightedSpawn[] state = NightState(AddState, true);
+			StateChoice = state;
+			maxEnemy++;
+			Debug.Log("UpdateChangeState");
+			IsChange = false;
+		}
+	}
+    private IEnumerator SpawnRoutine()
 	{
 		WaitForSeconds wait = new WaitForSeconds(1f);
 
@@ -68,6 +78,7 @@ public class SpawnEnemy : MonoBehaviour
 			{
 				Spawn();
 			}
+			
 		}
 	}
 
@@ -79,9 +90,15 @@ public class SpawnEnemy : MonoBehaviour
 		this.CalculateWeight();
 		for (int i = 0; i < this.maxEnemy; i++)
 		{
+			float innerRadius = 80f;
+			float outerRadius = 180f;
 
-			Vector3 position = World.player.transform.position + new Vector3(UnityEngine.Random.Range(-10f, 10f) * 50f, 200f, UnityEngine.Random.Range(-10f, 10f) * 50f);
-			Vector3 startPoint = RandomPointAboveTerrain();
+			float wallRadius = (outerRadius - innerRadius) * 0.5f;
+			float ringRadius = wallRadius + innerRadius;
+
+			//Vector3 position = World.player.transform.position + new Vector3(UnityEngine.Random.Range(-10f, 10f) * 50f, 200f, UnityEngine.Random.Range(-10f, 10f) * 50f);
+			Vector3 position = GetRandomPositionInTorus(ringRadius, wallRadius);
+
 			RaycastHit hit;
 			Debug.DrawLine(position, position + Vector3.down * 500f, Color.red, 50f);
 
@@ -106,14 +123,22 @@ public class SpawnEnemy : MonoBehaviour
 		}
 	}
 
-	private Vector3 RandomPointAboveTerrain()
+	Vector3 GetRandomPositionInTorus(float ringRadius, float wallRadius)
 	{
-		return new Vector3(
-			// random diem tao objects
+		
+		float rndAngle = UnityEngine.Random.value * 6.28f;
 
-			UnityEngine.Random.Range(World.player.transform.position.x - World.viewedChunk().x / 2, transform.position.x + 200 / 2), transform.position.y + World.viewedChunk().y * 2,
-			UnityEngine.Random.Range(transform.position.z - 200 / 2, transform.position.z + 200 / 2));
+		// determine position
+		float cX = Mathf.Sin(rndAngle);
+		float cZ = Mathf.Cos(rndAngle);
 
+		Vector3 ringPos = new Vector3(cX, 2, cZ);
+		ringPos *= ringRadius;
+
+
+		Vector3 sPos = UnityEngine.Random.insideUnitSphere * wallRadius;
+
+		return World.player.transform.position + (ringPos + sPos);
 	}
 
 	public AIController FindEnemyToSpawn(WeightedSpawn[] structurePrefabs, float totalWeight, Random rand)

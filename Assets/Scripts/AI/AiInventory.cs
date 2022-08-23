@@ -51,7 +51,8 @@ public class AiInventory : MonoBehaviour
     {
         GetRandomDrop(Original, Upgrade, Advanced);
     }
-    public void GetRandomDrop(float Original, float Upgrade, float Advanced)
+
+    private void GetRandomDrop(float Original, float Upgrade, float Advanced)
     {
         float num = Original + Upgrade + Advanced;
         float num2 = (float)random.NextDouble();
@@ -67,20 +68,34 @@ public class AiInventory : MonoBehaviour
             return;
         }
         DropWeapon();
+        DropEquipMents();
+        DropItems();
     }
-    public void DropHeal()
+    private void DropHeal()
     {
         ItemStats heal = ItemManager.Instance.GetHeal();
         ItemStats inventoryItem = ScriptableObject.CreateInstance<ItemStats>();
         inventoryItem.Getitem(heal);
         PickupItem pickup = Instantiate(inventoryItem.prefab, transform.position, transform.rotation).GetComponent<PickupItem>();
+        //pickup.SetId(ItemManager.Instance.GetNewId());
         pickup.item = inventoryItem;
+
+        RaycastHit hit;
+        if (Physics.Raycast(pickup.transform.position, Vector3.down, out hit, 10, LayerMask.GetMask("Ground")))
+        {
+            pickup.transform.SetParent(hit.collider.gameObject.transform.parent);
+        }
+        else
+        {
+            pickup.transform.SetParent(null);
+        }
     }
-    public void DropArmor()
+    private void DropArmor()
     {
         if (currentArmor != null)
         {
             PickupItem pickup = Instantiate(currentArmor.prefab, transform.position, Quaternion.identity).GetComponent<PickupItem>();
+            //pickup.SetId(ItemManager.Instance.GetNewId());
             pickup.item = currentArmor;
 
             RaycastHit hit;
@@ -94,7 +109,7 @@ public class AiInventory : MonoBehaviour
             }
         }
     }
-    public void DropWeapon()
+    private void DropWeapon()
     {
 
         if (WeaponStats != null)
@@ -115,6 +130,46 @@ public class AiInventory : MonoBehaviour
         }
 
     }
+    private void DropEquipMents()
+    {
+        ItemStats equip = ItemManager.Instance.GetRandomEquipments();
+        ItemStats inventoryItem = ScriptableObject.CreateInstance<ItemStats>();
+        inventoryItem.Getitem(equip);
+        PickupItem pickup = Instantiate(inventoryItem.prefab, transform.position, transform.rotation).GetComponent<PickupItem>();
+        //pickup.SetId(ItemManager.Instance.GetNewId());
+        pickup.item = inventoryItem;
+
+        RaycastHit hit;
+        if (Physics.Raycast(pickup.transform.position, Vector3.down, out hit, 10, LayerMask.GetMask("Ground")))
+        {
+            pickup.transform.SetParent(hit.collider.gameObject.transform.parent);
+        }
+        else
+        {
+            pickup.transform.SetParent(null);
+        }
+    }
+
+    private void DropItems()
+    {
+        ItemStats equip = ItemManager.Instance.GetRandomItems();
+        ItemStats inventoryItem = ScriptableObject.CreateInstance<ItemStats>();
+        inventoryItem.Getitem(equip);
+        PickupItem pickup = Instantiate(inventoryItem.prefab, transform.position, transform.rotation).GetComponent<PickupItem>();
+        //pickup.SetId(ItemManager.Instance.GetNewId());
+        pickup.item = inventoryItem;
+
+        RaycastHit hit;
+        if (Physics.Raycast(pickup.transform.position, Vector3.down, out hit, 10, LayerMask.GetMask("Ground")))
+        {
+            pickup.transform.SetParent(hit.collider.gameObject.transform.parent);
+        }
+        else
+        {
+            pickup.transform.SetParent(null);
+        }
+    }
+
     public void BrokeWeapon(ItemStats item)
     {
         if (WeaponStats.CurrentDurability <= 0 && WeaponStats != null)

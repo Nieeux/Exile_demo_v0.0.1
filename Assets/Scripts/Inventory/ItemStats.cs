@@ -9,10 +9,15 @@ public class ItemStats : ScriptableObject
 {
 	[Header("Main")]
 	public ItemStats.ItemType itemType;
+
 	public int id;
 	public new string name;
 	public string nameViet;
+	public string descriptionViet;
+
+	public string English;
 	public string description;
+
 
 
 	[Header("Details")]
@@ -26,6 +31,7 @@ public class ItemStats : ScriptableObject
 	public float hunger;
 	public float stamina;
 	public float sleep;
+	public float repair;
 
 	[Header("Armor")]
 	public ItemStats.ArmorType armorType;
@@ -72,6 +78,7 @@ public class ItemStats : ScriptableObject
 	public Vector3 positionOffset;
 	public float scale = 1f;
 	public GameObject prefab;
+	public GameObject prefab2;
 
 	public string RareIndex;
 	public string nameOriginal;
@@ -89,6 +96,8 @@ public class ItemStats : ScriptableObject
 		this.id = item.id;
 		this.name = item.name;
 		this.nameViet = item.nameViet;
+		this.descriptionViet = item.descriptionViet;
+		this.English = item.English;
 		this.description = item.description;
 
 		//Details
@@ -101,6 +110,7 @@ public class ItemStats : ScriptableObject
 		this.heal = item.heal;
 		this.hunger = item.hunger;
 		this.sleep = item.sleep;
+		this.repair = item.repair;
 
 		this.Rare = item.Rare;
 		this.CurrentDurability = item.CurrentDurability;
@@ -112,6 +122,7 @@ public class ItemStats : ScriptableObject
 		this.material = item.material;
 		this.mesh = item.mesh;
 		this.prefab = item.prefab;
+		this.prefab2 = item.prefab2;
 		this.rotationOffset = item.rotationOffset;
 		this.positionOffset = item.positionOffset;
 		this.scale = item.scale;
@@ -122,6 +133,8 @@ public class ItemStats : ScriptableObject
 		this.id = item.id;
 		this.name = item.name;
 		this.nameViet = item.nameViet;
+		this.descriptionViet = item.descriptionViet;
+		this.English = item.English;
 		this.description = item.description;
 
 		this.stackable = item.stackable;
@@ -148,6 +161,8 @@ public class ItemStats : ScriptableObject
 		this.id = item.id;
 		this.name = item.name;
 		this.nameViet = item.nameViet;
+		this.descriptionViet = item.descriptionViet;
+		this.English = item.English;
 		this.description = item.description;
 
 		//Weapon Stats
@@ -194,6 +209,8 @@ public class ItemStats : ScriptableObject
 		this.id = item.id;
 		this.name = item.name;
 		this.nameViet = item.nameViet;
+		this.descriptionViet = item.descriptionViet;
+		this.English = item.English;
 		this.description = item.description;
 
 		//Weapon Stats
@@ -255,6 +272,8 @@ public class ItemStats : ScriptableObject
 		this.id = item.id;
 		this.name = item.name;
 		this.nameViet = item.nameViet;
+		this.descriptionViet = item.descriptionViet;
+		this.English = item.English;
 		this.description = item.description;
 
 		//Weapon Stats
@@ -318,6 +337,8 @@ public class ItemStats : ScriptableObject
 		this.id = item.id;
 		this.name = item.name;
 		this.nameViet = item.nameViet;
+		this.descriptionViet = item.descriptionViet;
+		this.English = item.English;
 		this.description = item.description;
 
 		//Weapon Stats
@@ -382,10 +403,16 @@ public class ItemStats : ScriptableObject
 	}
 	*/
 
-	public bool Compare(ItemStats other)
+	public bool CheckId(ItemStats other)
 	{
 		return !(other == null) && this.id == other.id;
 	}
+
+	public bool CheckEquipment(ItemStats other)
+	{
+		return !(other == null) && this.itemType == other.itemType && this.id == other.id;
+	}
+
 	public string GetAmount()
 	{
 		if (!this.stackable || this.amount == 1)
@@ -397,7 +424,53 @@ public class ItemStats : ScriptableObject
 
 	public string GetName()
 	{
-		return this.nameViet.ToString();
+		if (PlayerPrefs.GetInt("Language") == 1)
+		{
+			return this.nameViet.ToString();
+		}
+		return this.English.ToString();
+	}
+
+	public string GetNameVersion(ItemRare version)
+	{
+		if (PlayerPrefs.GetInt("Language") == 1)
+		{
+			if (version == ItemRare.original)
+            {
+				return nameOriginal;
+			}
+			if (version == ItemRare.upgrade)
+			{
+				return nameUpgrade;
+			}
+			if (version == ItemRare.advanced)
+			{
+				return nameAdvanced;
+			}
+
+		}
+		if (version == ItemRare.original)
+		{
+			return "Original";
+		}
+		if (version == ItemRare.upgrade)
+		{
+			return "Upgrade";
+		}
+		if (version == ItemRare.advanced)
+		{
+			return "Advanced";
+		}
+		return " ";
+	}
+
+	public string GetDescription()
+	{
+		if (PlayerPrefs.GetInt("Language") == 1)
+		{
+			return this.nameViet + "\n<size=70%>" + this.descriptionViet;
+		}
+		return this.English + "\n<size=70%>" + this.description;
 	}
 
 	[Serializable]

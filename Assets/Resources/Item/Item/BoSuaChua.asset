@@ -12,11 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d1d2c7165a9671f45b50c387379153c7, type: 3}
   m_Name: BoSuaChua
   m_EditorClassIdentifier: 
-  itemType: 2
-  id: 2
+  itemType: 0
+  id: 0
   name: bosuachua
   nameViet: "B\u1ED9 s\u1EEDa ch\u1EEFa"
-  description: 
+  descriptionViet: "S\u1EEDa v\u0169 kh\xED \u0111ang c\u1EA7m tr\xEAn tay"
+  English: Repair kit
+  description: Repair the weapon you're holding
   stackable: 0
   amount: 1
   max: 1
@@ -24,6 +26,8 @@ MonoBehaviour:
   heal: 0
   hunger: 0
   stamina: 0
+  sleep: 0
+  repair: 50
   armorType: 0
   GunDamage: 0
   fireRate: 0
@@ -35,13 +39,11 @@ MonoBehaviour:
   singleFire: 0
   ReloadTime: 0
   bulletPrefab: {fileID: 0}
-  AllBulletPrefab: []
   fireAudio: {fileID: 0}
   reloadAudio: {fileID: 0}
   weaponType: 0
   Rare: 0
   buffs: []
-  Debuffs: []
   punchStrenght: 0.2
   punchVibrato: 5
   punchDuration: 0.3
@@ -57,7 +59,8 @@ MonoBehaviour:
   rotationOffset: {x: 0, y: 0, z: 0}
   positionOffset: {x: 0, y: 0, z: 0}
   scale: 1
-  prefab: {fileID: 2841471369595137429, guid: 7132b8590195d204992635716a65ccce, type: 3}
+  prefab: {fileID: 2841471369595137429, guid: 85393435e3a741a408ff3bd09247e4b9, type: 3}
+  prefab2: {fileID: 0}
   RareIndex: 
   nameOriginal: 
   nameUpgrade: 

@@ -53,6 +53,10 @@ public class DetectItem : MonoBehaviour
                         this.interactText.color = colorAdvanced;
                     }
                 }
+                else
+                {
+                    this.interactText.color = colorOriginal;
+                }
 
                 this.interactText.CrossFadeAlpha(1f, 0.1f, false);
             }
@@ -67,5 +71,4 @@ public class DetectItem : MonoBehaviour
 
         }
     }
-
 }

@@ -4,29 +4,50 @@ using UnityEngine;
 
 public class WeaponUIManager : MonoBehaviour
 {
+    public static WeaponUIManager Instance;
     public RectTransform WeaponPanel;
     public GameObject WeaponPanelPrefab;
     public List<WeaponUI> weaponUI = new List<WeaponUI>();
-    void Start()
+    WeaponInventory inventory;
+
+    private void Awake()
+    {
+        WeaponUIManager.Instance = this;
+    }
+
+    private void Start()
+    {
+
+        inventory = FindObjectOfType<WeaponInventory>();
+        inventory.OnAddedWeapon += AddWeapon;
+        inventory.OnRemovedWeapon += RemoveWeapon;
+        inventory.OnSwitchedToWeapon += ChangeWeapon;
+
+        WeaponController activeWeapon = inventory.GetActiveWeapon();
+        if (activeWeapon)
+        {
+            AddWeapon(activeWeapon, inventory.ActiveWeaponIndex);
+            ChangeWeapon(activeWeapon);
+        }
+    }
+
+    public void updateUI(float weaponid)
     {
         WeaponController activeWeapon = WeaponInventory.Instance.GetActiveWeapon();
         if (activeWeapon)
         {
-            AddWeapon(activeWeapon, WeaponInventory.Instance.ActiveWeaponIndex);
-            ChangeWeapon(activeWeapon);
+            for (int i = 0; i < weaponUI.Count; i++)
+            {
+                if (weaponUI[i].WeaponUiId == weaponid)
+                {
+                    weaponUI[i].UpdateUI();
+                }
+            }
+
         }
-
-        WeaponInventory.Instance.OnAddedWeapon += AddWeapon;
-        WeaponInventory.Instance.OnRemovedWeapon += RemoveWeapon;
-        WeaponInventory.Instance.OnSwitchedToWeapon += ChangeWeapon;
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-    void AddWeapon(WeaponController newWeapon, int weaponIndex)
+    private void AddWeapon(WeaponController newWeapon, int weaponIndex)
     {
         GameObject ammoCounterInstance = Instantiate(WeaponPanelPrefab, WeaponPanel);
         WeaponUI newAmmoCounter = ammoCounterInstance.GetComponent<WeaponUI>();
@@ -36,12 +57,12 @@ public class WeaponUIManager : MonoBehaviour
         weaponUI.Add(newAmmoCounter);
     }
 
-    void RemoveWeapon(WeaponController newWeapon, int weaponIndex)
+    private void RemoveWeapon(WeaponController newWeapon, int weaponIndex)
     {
         int foundCounterIndex = -1;
         for (int i = 0; i < weaponUI.Count; i++)
         {
-            if (weaponUI[i].WeaponUIIndex == weaponIndex)
+            if (weaponUI[i].WeaponUiId == weaponIndex)
             {
                 foundCounterIndex = i;
                 Destroy(weaponUI[i].gameObject);
@@ -54,8 +75,8 @@ public class WeaponUIManager : MonoBehaviour
         }
     }
 
-    void ChangeWeapon(WeaponController weapon)
+    private void ChangeWeapon(WeaponController weapon)
     {
-        UnityEngine.UI.LayoutRebuilder.ForceRebuildLayoutImmediate(WeaponPanel);
+        //UnityEngine.UI.LayoutRebuilder.ForceRebuildLayoutImmediate(WeaponPanel);
     }
 }

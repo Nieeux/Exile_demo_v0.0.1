@@ -53,7 +53,6 @@ MonoBehaviour:
   WeaponPrefab: {fileID: 367534550845903708}
   item: {fileID: 11400000, guid: 252471997f80ee94c91a69bb3f41744c, type: 2}
   language: {fileID: 11400000, guid: 6ec016af42bf75a4984647059e44ac1f, type: 2}
-  id: 1
 --- !u!114 &367534550845903708
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -68,16 +67,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   firePoint: {fileID: 367534552560829918}
   singleFire: 0
-  fireAudio: {fileID: 8300000, guid: 57370f17c98a2154cba34219e83859fb, type: 3}
+  fireAudio: {fileID: 8300000, guid: 97eefbdd9999b864d88f816136e06a75, type: 3}
   reloadAudio: {fileID: 8300000, guid: f02e7563c10830748a7719d342d27800, type: 3}
   GunStats: {fileID: 11400000, guid: 252471997f80ee94c91a69bb3f41744c, type: 2}
   WeaponAmmoType: {r: 0, g: 0, b: 0, a: 0}
   reloading: 0
+  delay: 0
+  canDrop: 0
   canFire: 0
   rb: {fileID: 367534550845903711}
   coll: {fileID: 367534550845903710}
   WeaponRoot: {fileID: 367534550845903707}
-  ChangeWeaponSfx: {fileID: 0}
+  ChangeWeaponSfx: {fileID: 8300000, guid: 938442814963a7747949ce682b466747, type: 3}
+  Pullet: {fileID: 0}
 --- !u!82 &367534550845903709
 AudioSource:
   m_ObjectHideFlags: 0
@@ -87,7 +89,7 @@ AudioSource:
   m_GameObject: {fileID: 367534550845903707}
   m_Enabled: 1
   serializedVersion: 4
-  OutputAudioMixerGroup: {fileID: 0}
+  OutputAudioMixerGroup: {fileID: 24300002, guid: 1902fe096357c3f48b3c74c353ebd028, type: 2}
   m_audioClip: {fileID: 0}
   m_PlayOnAwake: 0
   m_Volume: 0.7

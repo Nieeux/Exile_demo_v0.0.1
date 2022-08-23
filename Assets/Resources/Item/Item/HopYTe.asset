@@ -13,17 +13,20 @@ MonoBehaviour:
   m_Name: HopYTe
   m_EditorClassIdentifier: 
   itemType: 0
-  id: 1
+  id: 0
   name: 
   nameViet: "H\u1ED9p y t\u1EBF"
-  description: "H\u1ED3i 50 m\xE1u"
+  descriptionViet: "H\u1ED3i 50 m\xE1u"
+  English: Bandage
+  description: ' Heal 50 health'
   stackable: 0
   amount: 1
   max: 1
   Weight: 0.1
-  heal: 50
+  heal: 40
   hunger: 0
   stamina: 0
+  sleep: 0
   armorType: 0
   GunDamage: 0
   fireRate: 0
@@ -35,13 +38,11 @@ MonoBehaviour:
   singleFire: 0
   ReloadTime: 0
   bulletPrefab: {fileID: 0}
-  AllBulletPrefab: []
   fireAudio: {fileID: 0}
   reloadAudio: {fileID: 0}
   weaponType: 0
   Rare: 0
   buffs: []
-  Debuffs: []
   punchStrenght: 0.2
   punchVibrato: 5
   punchDuration: 0.3
@@ -58,6 +59,7 @@ MonoBehaviour:
   positionOffset: {x: 0, y: 0, z: 0}
   scale: 1
   prefab: {fileID: 2841471369595137429, guid: cfe515a02498e1a42abf34327603ea75, type: 3}
+  prefab2: {fileID: 0}
   RareIndex: 
   nameOriginal: 
   nameUpgrade: 

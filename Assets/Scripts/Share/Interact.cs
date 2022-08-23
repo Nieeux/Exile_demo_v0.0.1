@@ -4,6 +4,8 @@ public interface Interact
 
 	void RemoveObject();
 
+	void DropObject();
+
 	string GetName();
 
 	ItemStats GetItem();

@@ -8,12 +8,24 @@ public class DamageCalculations : MonoBehaviour
     public static DamageCalculations Instance;
 
     private static Vector2 randomDamageRange = new Vector2(0.8f, 1f);
+    private Inventory inventory;
+    private WeaponInventory weaponInventory;
+    private float Crit;
+    private float BuffCrit;
+    private float Damage;
 
     private void Awake()
     {
         DamageCalculations.Instance = this;
     }
-
+    private void Start()
+    {
+        inventory = FindObjectOfType<Inventory>();
+        weaponInventory = FindObjectOfType<WeaponInventory>();
+        weaponInventory.critcal += GetCriticalBuff;
+        inventory.critcal += GetCritical;
+        inventory.damage += GetDamage;
+    }
     public class DamageResult
     {
         public float damageResult;
@@ -45,25 +57,17 @@ public class DamageCalculations : MonoBehaviour
         float dmg = Random.Range(DamageCalculations.randomDamageRange.x, DamageCalculations.randomDamageRange.y);
         bool ItCrit = Random.value < 0.1f;
 
-        if (ammoType.ammoType == Bullet.AmmoType.NormalAmmo)
-        {
-            dmg *= 1.2f;
-            Debug.Log("HitNormalAmmo");
-
-        }
         if (ammoType.ammoType == Bullet.AmmoType.PiercingAmmo)
         {
-            dmg *= 1.5f;
-            Debug.Log("HitPiercingAmmo");
+            dmg *= 1.2f;
         }
         if (ammoType.ammoType == Bullet.AmmoType.HighAmmo)
         {
-            dmg *= 2;
-            Debug.Log("HitHighAmmo");
+            dmg *= 1.5f;
         }
         if (ItCrit)
         {
-            dmg *= 2f;
+            dmg *= 1.5f;
         }
 
         return new DamageCalculations.DamageResult(dmg, ItCrit);
@@ -73,8 +77,8 @@ public class DamageCalculations : MonoBehaviour
     {
 
         float dmg = Random.Range(DamageCalculations.randomDamageRange.x, DamageCalculations.randomDamageRange.y); 
-        dmg *= Inventory.Instance.GetDamage();
-        bool ItCrit = Random.value < Inventory.Instance.GetCritical();
+        dmg *= 1 + Damage;
+        bool ItCrit = Random.value < (Crit + BuffCrit);
 
         if (ammoType.ammoType == Bullet.AmmoType.NormalAmmo)
         {
@@ -238,5 +242,35 @@ public class DamageCalculations : MonoBehaviour
         }
 
         return new DamageCalculations.ArmorResult(dmg, Effect);
+    }
+
+    private void GetCriticalBuff(float critcal, bool recRefresh)
+    {
+        if(recRefresh == true)
+        {
+            this.BuffCrit = critcal;
+        }
+        float n = critcal ;
+        this.BuffCrit += n;
+    }
+    private void GetCritical(float critcal)
+    {
+        float n = critcal;
+        this.Crit = 0.1f + n;
+    }
+    private void GetDamage(float damage)
+    {
+        float n = damage;
+        this.Damage = n;
+    }
+    public float GetDamageUI()
+    {
+        float n = this.Damage + 1;
+        return n;
+    }
+    public float GetCriticalUI()
+    {
+        float n = Crit + BuffCrit;
+        return n;
     }
 }
