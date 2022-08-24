@@ -1,8 +1,6 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
-using DG.Tweening;
 
 [RequireComponent(typeof(Inventory))]
 public class WeaponInventory : MonoBehaviour
@@ -40,8 +38,6 @@ public class WeaponInventory : MonoBehaviour
     public float WeaponSwitchDelay = 1f;
     Inventory inventory;
     PlayerInput InputHandler;
-    PlayerMovement playerMovement;
-    PlayerStats playerStats;
 
     public Vector3 DownPosition = new Vector3(0.124f, -0.12f, 0);
     public Vector3 DownRotation = new Vector3(20, -40, 40);
@@ -78,8 +74,6 @@ public class WeaponInventory : MonoBehaviour
         OnSwitchedToWeapon += OnWeaponSwitched;
         inventory = GetComponent<Inventory>();
         InputHandler = GetComponent<PlayerInput>();
-        playerMovement = GetComponent<PlayerMovement>();
-        playerStats = GetComponent<PlayerStats>();
 
     }
 
@@ -419,6 +413,7 @@ public class WeaponInventory : MonoBehaviour
 
         this.WeaponInActive.GunStats.CurrentDurability += item.repair;
         this.WeaponInActive.GunStats.CurrentDurability = Mathf.Clamp(WeaponInActive.GunStats.CurrentDurability, 0f, WeaponInActive.GunStats.Durability);
+        WeaponUIManager.Instance.updateUI(ActiveWeaponIndex);
         return true;
     }
 

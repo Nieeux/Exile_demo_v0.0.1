@@ -6,79 +6,67 @@ using System.Collections;
 
 public class MainMenuUI : MonoBehaviour
 {
-	private float currentSens;
 	public GameObject MenuMain;
-	public GameObject MenuSetting;
-	public GameObject MenuAboutMe;
-	GameManager gameManager;
-	private Resolution[] resolutions;
+	public CanvasGroup canvasGroup;
+	public GameManager gameManager;
+	public bool Show;
+	public float pad = 0;
 
-    private void Awake()
+	private void Awake()
     {
 		
 
 	}
     private void Start()
     {
-		gameManager = FindObjectOfType<GameManager>();
-		MenuSetting.SetActive(false);
-
-		if(MenuAboutMe != null)
-        {
-			MenuAboutMe.SetActive(false);
-		}
-
-	}
-
-
-
-	public void Play()
-	{
-
-		base.Invoke("Startplay", 3f);
-		LoadingScenes.Instance.Show = true;
-
-	}
-
-	public void OpenFacebook()
-    {
-		Application.OpenURL("https://www.facebook.com/Lieeux");
-    }
-	public void OpenYoutube()
-	{
-		Application.OpenURL("https://www.youtube.com/c/salix_lieeux");
-	}
-	public void OpenTwitter()
-	{
-		Application.OpenURL("https://twitter.com/Salix_Lieeux");
-	}
-
-	public void SetSens(float sens)
-	{
-		if (!this.MenuSetting)
+		if (PlayerPrefs.GetInt("tutorialLanguage") == 0)
 		{
-			PlayerMovement.Instance.Sensitivity = sens;
+			pad = 0;
+			this.canvasGroup.alpha = 0f;
 		}
-		this.currentSens = sens;
-		PlayerPrefs.SetFloat("Sensitivity", this.currentSens);
+        else
+        {
+			base.Invoke("fade", 1);
+		}
+
+		if (gameManager == null)
+        {
+			gameManager = FindObjectOfType<GameManager>();
+		}
 	}
 
+    private void Update()
+    {
+		if (Show == true)
+		{
+			this.pad = Mathf.Lerp(this.pad, 1, Time.deltaTime * 5f);
+			this.canvasGroup.alpha = pad;
+			this.MenuMain.gameObject.SetActive(true);
+			base.Invoke("fadeoff", 1);
 
+		}
+		else if (pad > 0)
+		{
 
-	public void SetResolution(int resolutionIndex)
+			this.pad = Mathf.Lerp(this.pad, 0, Time.deltaTime * 5f);
+			this.canvasGroup.alpha = pad;
+			if (pad <= 0.1f)
+			{
+				this.MenuMain.gameObject.SetActive(false);
+				pad = 0;
+			}
+
+		}
+	}
+	void fade()
 	{
-		Resolution resolution = this.resolutions[resolutionIndex];
-		Screen.SetResolution(resolution.width, resolution.height, Screen.fullScreen);
+		Show = true;
 	}
-	private void Startplay()
+
+	void fadeoff()
 	{
-
-		gameManager.StartPlay();
-
+		Destroy(this);
 	}
 
-	public void ExitGame()
-	{
-		Application.Quit(0);
-	}
+
 }

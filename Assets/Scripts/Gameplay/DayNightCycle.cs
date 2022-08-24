@@ -18,7 +18,7 @@ public class DayNightCycle : MonoBehaviour
     [Range(0,1)]
 	public float currentTimeOfDay = 0.3f;
 	public float timeMultiplier = 1f;
-	[Space(10)]
+
 	public Gradient nightDayColor;
 	public float maxIntensity = 2f;
 	public float minIntensity = 0f;
@@ -33,6 +33,12 @@ public class DayNightCycle : MonoBehaviour
 	public float dayAtmosphereThickness = 0.4f;
 	public float nightAtmosphereThickness = 0.87f;
 	Material skyMat;
+
+	public float ingameTime { get; private set; }
+
+	[SerializeField]
+	private float lengthOfDayrealtime = 4;
+	float passedTime; 
 
     private void Awake()
     {
@@ -78,13 +84,15 @@ public class DayNightCycle : MonoBehaviour
         {
 			int n = (int)(CurrentTime + 0.5f);
 			currentTimeOfDay = 0.7f;
-			CurrentTime = n;
+			CurrentTime = 0.4f + n;
+			return;
 		}
         else
         {
-			int n = (int)(CurrentTime + 0.5f);
+			int n = (int)(CurrentTime + 0.7f);
 			currentTimeOfDay = 0.3f;
 			CurrentTime = n;
+			return;
 		}
 	}
 
@@ -105,7 +113,13 @@ public class DayNightCycle : MonoBehaviour
 		return false;
 	}
 
+	void realtime()
+    {
+		passedTime = (passedTime + Time.deltaTime) % lengthOfDayrealtime;
+		float t = Mathf.InverseLerp(0f, lengthOfDayrealtime, passedTime);
+		ingameTime = Mathf.Lerp(0f, 24, t);
 
+	}
 
 	private void UpdatePosition()
 	{

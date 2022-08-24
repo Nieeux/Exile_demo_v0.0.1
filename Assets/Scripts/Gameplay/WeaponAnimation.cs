@@ -49,6 +49,7 @@ public class WeaponAnimation : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        
         if (PlayerMovement.Instance.isRunning)
         {
             RunningWeapons();

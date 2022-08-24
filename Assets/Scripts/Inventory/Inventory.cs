@@ -20,7 +20,6 @@ public class Inventory : MonoBehaviour
 	[Header("Armor")]
 	public int armorSlot;
 	public ItemStats currentArmor;
-	public float armorDurability;
 
 	//private int Moneys { get; set; }
 
@@ -39,6 +38,7 @@ public class Inventory : MonoBehaviour
 	public UnityAction<float> weight;
 	public UnityAction<float> maxHealth;
 
+	public GameObject flashlight;
 	public float NoiComDien;
 
 	[Header("SFX")]
@@ -54,6 +54,8 @@ public class Inventory : MonoBehaviour
 
     private void Start()
     {
+		flashlight.SetActive(false);
+
 		if (Sfx == null)
         {
 			Sfx.GetComponent<AudioSource>();
@@ -62,8 +64,6 @@ public class Inventory : MonoBehaviour
 		playerStats = GetComponent<PlayerStats>();
 		playerStats.OnDamaged += OnDamagedArmor;
 		FillCellList();
-		//this.inventoryCells = inventoryBar.GetComponentsInChildren<InventoryCells>();
-
 
 	}
 
@@ -148,7 +148,7 @@ public class Inventory : MonoBehaviour
 					inventoryCell = inventoryCell2;
 				}
 			}
-
+			/*
 			else if (inventoryCell2.currentItem.CheckId(inventoryItem) && inventoryCell2.currentItem.stackable)
 			{
 				if (inventoryCell2.currentItem.amount + inventoryItem.amount <= inventoryCell2.currentItem.max)
@@ -162,7 +162,7 @@ public class Inventory : MonoBehaviour
 				inventoryItem.amount -= num;
 				inventoryCell2.UpdateCell();
 			}
-
+			*/
 		}
 
 		if (inventoryCell)
@@ -503,6 +503,18 @@ public class Inventory : MonoBehaviour
 				maxHealth.Invoke(0);
 			}
 		}
+		if (Items.name == "denpin" && this.inventoryCells[this.BarSelect].equipAble == true)
+		{
+			flashlight.SetActive(true);
+			//StartCoroutine(Flashlight(currentItem, this.BarSelect));
+
+		}
+		else if (Items.name == "denpin" && this.inventoryCells[this.BarSelect].equipAble == false)
+		{
+			
+			flashlight.SetActive(false);
+			//StopCoroutine(Flashlight(currentItem, this.BarSelect));
+		}
 
 		if (UpdateUi != null)
 		{
@@ -582,7 +594,6 @@ public class Inventory : MonoBehaviour
 		currentArmor.CurrentDurability--;
 		this.inventoryCells[armorSlot].UpdateDurability();
 
-		armorDurability = currentArmor.CurrentDurability;
 		if (currentArmor.CurrentDurability <= 0)
 		{
 			this.inventoryCells[armorSlot].equipAble = false;
@@ -593,8 +604,36 @@ public class Inventory : MonoBehaviour
 		}
 
 	}
+	/*
+	private IEnumerator Flashlight(ItemStats item, int BarSelect)
+	{
+		WaitForSeconds wait = new WaitForSeconds(5f);
 
+		while (true)
+		{
+			yield return wait;
+			item.CurrentDurability--;
+			this.inventoryCells[BarSelect].UpdateDurability();
+			Debug.Log("Flashlight");
 
+            if (this.inventoryCells[BarSelect].equipAble == false)
+            {
+				break;
+            }
+			if (item.CurrentDurability <= 0)
+			{
+				this.inventoryCells[BarSelect].equipAble = false;
+				this.inventoryCells[BarSelect].Equip.color = this.inventoryCells[armorSlot].idle;
+				this.inventoryCells[BarSelect].RemoveItem();
+				flashlight.SetActive(false);
+				Debug.Log("DestroyFlashlight");
+				this.UpdateHotbar();
+				StopCoroutine(Flashlight(item, BarSelect));
+				break;
+			}
+		}
+	}
+	*/
 	#endregion
 
 	#region GetData

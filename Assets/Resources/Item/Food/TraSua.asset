@@ -27,6 +27,7 @@ MonoBehaviour:
   hunger: 20
   stamina: 0
   sleep: 0
+  repair: 0
   armorType: 0
   GunDamage: 0
   fireRate: 0
@@ -52,7 +53,7 @@ MonoBehaviour:
   randomness: 70
   ShakeDuration: 1
   ShakeStrenght: 1
-  sprite: {fileID: 0}
+  sprite: {fileID: 21300000, guid: dbe9304e6612c2c4696bd4a570617033, type: 3}
   material: {fileID: 0}
   mesh: {fileID: 0}
   rotationOffset: {x: 0, y: 0, z: 0}

@@ -166,4 +166,32 @@ public class MenuSetting : MonoBehaviour
 		}
 		PlayerPrefs.SetFloat("MouseSensitivity", this.mouseSensitivity);
 	}
+
+	public void Play()
+	{
+		base.Invoke("Startplay", 3f);
+		LoadingScenes.Instance.Show = true;
+	}
+
+	public void OpenFacebook()
+	{
+		Application.OpenURL("https://www.facebook.com/Lieeux");
+	}
+	public void OpenYoutube()
+	{
+		Application.OpenURL("https://www.youtube.com/c/salix_lieeux");
+	}
+	public void OpenTwitter()
+	{
+		Application.OpenURL("https://twitter.com/Salix_Lieeux");
+	}
+
+	private void Startplay()
+	{
+		GameManager.Instance.StartPlay();
+	}
+	public void ExitGame()
+	{
+		Application.Quit(0);
+	}
 }

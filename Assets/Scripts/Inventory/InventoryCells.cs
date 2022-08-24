@@ -65,7 +65,7 @@ public class InventoryCells : MonoBehaviour, IEventSystemHandler,IPointerEnterHa
 			this.itemImage.color = this.currentItem.colorIndex;
 
 		}
-
+		UpdateDurability();
 	}
 
 	private void UpdateName()
@@ -76,15 +76,20 @@ public class InventoryCells : MonoBehaviour, IEventSystemHandler,IPointerEnterHa
 
 	public void UpdateDurability()
     {
+		if(currentItem == null)
+        {
+			return;
+        }
 		Durability.fillAmount = currentItem.CurrentDurability / currentItem.Durability;
-		if (currentItem.Durability > 0)
+		if (currentItem.CurrentDurability > 0)
 		{
 			this.Durability.color = GradientDurability.Evaluate(Durability.fillAmount);
 		}
-		else
+		if (currentItem.CurrentDurability == 0 || currentItem.CurrentDurability == currentItem.Durability)
 		{
 			this.Durability.color = Color.clear;
 		}
+		
 	}
 
 	public void Eat(int amount)

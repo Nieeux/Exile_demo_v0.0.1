@@ -53,7 +53,7 @@ MonoBehaviour:
   randomness: 70
   ShakeDuration: 1
   ShakeStrenght: 1
-  sprite: {fileID: 21300000, guid: d0044f3921330ee4dba7066ff7aeaf9e, type: 3}
+  sprite: {fileID: 21300000, guid: 910bcfcbf74a1274abfb3a4be3494b39, type: 3}
   material: {fileID: 0}
   mesh: {fileID: 0}
   rotationOffset: {x: 0, y: 0, z: 0}

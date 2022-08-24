@@ -1,8 +1,6 @@
 ﻿using System.Collections;
 using UnityEngine;
-using UnityEngine.Events;
 using DG.Tweening;
-using System.Collections.Generic;
 
 [RequireComponent(typeof(AudioSource))]
 public class WeaponController : MonoBehaviour

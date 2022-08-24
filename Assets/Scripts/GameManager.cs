@@ -20,7 +20,7 @@ public class GameManager : MonoBehaviour
     public void Relife()
     {
         LoadingScenes.Instance.Show = true;
-        UnityEngine.AI.NavMesh.RemoveAllNavMeshData();
+        
         //Scene scene = SceneManager.GetActiveScene();
         //SceneManager.LoadScene(scene.name);
         StartCoroutine(Restarts());
@@ -29,13 +29,14 @@ public class GameManager : MonoBehaviour
     {
         Time.timeScale = 1;
         LoadingScenes.Instance.Show = true;
-        UnityEngine.AI.NavMesh.RemoveAllNavMeshData();
+       
         StartCoroutine(returnmenu());
 
     }
     private IEnumerator Restarts()
     {
         yield return new WaitForSeconds(1);
+        UnityEngine.AI.NavMesh.RemoveAllNavMeshData();
         Scene scene = SceneManager.GetActiveScene();
         SceneManager.LoadScene(scene.name);
 
@@ -43,6 +44,7 @@ public class GameManager : MonoBehaviour
     private IEnumerator returnmenu()
     {
         yield return new WaitForSeconds(1);
+        UnityEngine.AI.NavMesh.RemoveAllNavMeshData();
         SceneManager.LoadScene(0);
 
     }

@@ -6,22 +6,18 @@ using UnityEngine.Events;
 public class TutorialLanguage : MonoBehaviour
 {
     public CanvasGroup canvasGroup;
-    public RawImage background;
+    public GameObject background;
+
+    public GameObject mainmenu;
 
     public bool Show;
     public bool Showtutorial;
 
     public bool CanSelect;
     public float pad = 0;
-    public GameObject Select;
-    public GameObject tutorialLanguage;
-
 
     void Start()
     {
-        canvasGroup = GetComponent<CanvasGroup>();
-
-        Select.SetActive(false);
 
         if (PlayerPrefs.GetInt("tutorialLanguage") == 0)
         {
@@ -31,7 +27,8 @@ public class TutorialLanguage : MonoBehaviour
             this.canvasGroup.alpha = 1f;
             Show = true;
             base.Invoke("canSelect", 1f);
-            
+            this.mainmenu.SetActive(false);
+
         }
         else
         {
@@ -39,7 +36,9 @@ public class TutorialLanguage : MonoBehaviour
             this.canvasGroup.alpha = 0f;
             this.background.gameObject.SetActive(false);
             Cursor.lockState = CursorLockMode.None;
+            this.mainmenu.SetActive(true);
         }
+
     }
 
     void Update()
@@ -85,10 +84,15 @@ public class TutorialLanguage : MonoBehaviour
     void canSelect()
     {
         CanSelect = true;
-        Select.SetActive(true);
+
     }
     void fade()
     {
         Show = false;
+        base.Invoke("fadeopen", 0.5f);
+    }
+    void fadeopen()
+    {
+        this.mainmenu.SetActive(true);
     }
 }
