@@ -45,9 +45,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   allSupply:
-  - prefab: {fileID: 3360080289645901315, guid: 7bfed4312466a684a9e75a660239e91e, type: 3}
-    rare: 0.3
   - prefab: {fileID: 3396008940149852070, guid: cdffd320e2520a84ba910b8abd47ea90, type: 3}
-    rare: 0.1
-  - prefab: {fileID: 3360080289645901315, guid: 0c278d76b4145d64386f05c6ddefbce7, type: 3}
-    rare: 0.6
+    rare: 1

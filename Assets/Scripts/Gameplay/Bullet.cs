@@ -12,8 +12,9 @@ public class Bullet : MonoBehaviour
     public bool IsShotGunShell;
     public float bulletsPerShot;
 
-    public Bullet.AmmoType ammoType;
+    public AmmoType ammoType;
     public Color ammoTypeColor;
+    public GameObject bulletPrefab;
     public GameObject bulletLight;
     float currentTime = 0;
     public float BulletDamage;
@@ -119,11 +120,5 @@ public class Bullet : MonoBehaviour
         yield return new WaitForSeconds(0.5f);
         Destroy(gameObject);
     }
-    [Serializable]
-    public enum AmmoType
-    {
-        NormalAmmo,
-        HighAmmo,
-        PiercingAmmo,
-    }
+
 }

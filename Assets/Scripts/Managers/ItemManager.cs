@@ -36,7 +36,7 @@ public class ItemManager : MonoBehaviour
 	public ItemStats[] weapons;
 	public ItemStats[] armors;
 	public Buff[] buffs;
-	public GameObject[] bullets;
+	public Bullet[] bullets;
 
 	public static int currentId;
 
@@ -171,17 +171,17 @@ public class ItemManager : MonoBehaviour
 
 		item = inventoryItem;
 
-		int randombuffamount = UnityEngine.Random.Range(1, 4);
+		int randombuffamount = UnityEngine.Random.Range(0, 4);
 		for (int i = 0; i <= randombuffamount; i++)
 		{
 			item.buffs.Add(GetBuff());
 		}
 
-		item.bulletPrefab = GetBullets();
+		item.bulletType = GetBullets();
 
 		PickupWeapon pickup = Instantiate(inventoryItem.prefab, pos, Quaternion.identity).GetComponent<PickupWeapon>();
 		pickup.item = this.item;
-		pickup.GetComponent<WeaponController>().GunStats = this.item;
+		//pickup.GetComponent<WeaponController>().GunStats = this.item;
 		pickup.transform.position = pos;
 
 		RaycastHit hit;
@@ -209,17 +209,16 @@ public class ItemManager : MonoBehaviour
 		}
 		item = inventoryItem;
 
-		int randombuffamount = UnityEngine.Random.Range(1, 4);
+		int randombuffamount = UnityEngine.Random.Range(0, 4);
 		for (int i = 0; i <= randombuffamount; i++)
 		{
 			item.buffs.Add(GetBuff());
 		}
 
-		item.bulletPrefab = GetBullets();
+		item.bulletType = GetBullets();
 
 		PickupWeapon pickup = Instantiate(inventoryItem.prefab, pos, orientation, transform).GetComponent<PickupWeapon>();
 		pickup.item = this.item;
-		pickup.GetComponent<WeaponController>().GunStats = this.item;
 		pickup.transform.position = pos;
 		pickup.GetComponent<Rigidbody>().isKinematic = true;
 	}
@@ -231,16 +230,15 @@ public class ItemManager : MonoBehaviour
 		inventoryItem.GetweaponOriginal(this.AllWeapons[itemId]);
 		item = inventoryItem;
 		//Buff
-		int randombuffamount = UnityEngine.Random.Range(1, 4);
+		int randombuffamount = UnityEngine.Random.Range(0, 4);
 		for (int i = 0; i <= randombuffamount; i++)
 		{
 			item.buffs.Add(GetBuff());
 		}
-		item.bulletPrefab = GetBullets();
+		item.bulletType = GetBullets();
 
 		PickupWeapon pickup = Instantiate(inventoryItem.prefab, pos, orientation, transform).GetComponent<PickupWeapon>();
 		pickup.item = this.item;
-		pickup.GetComponent<WeaponController>().GunStats = this.item;
 		pickup.transform.position = pos;
 	}
 	public void getWeaponUpgrade(int itemId, Vector3 pos, Quaternion orientation, Transform transform)
@@ -250,16 +248,15 @@ public class ItemManager : MonoBehaviour
 		inventoryItem.GetweaponUpgrade(this.AllWeapons[itemId]);
 		item = inventoryItem;
 		//Buff
-		int randombuffamount = UnityEngine.Random.Range(1, 4);
+		int randombuffamount = UnityEngine.Random.Range(0, 4);
 		for (int i = 0; i <= randombuffamount; i++)
 		{
 			item.buffs.Add(GetBuff());
 		}
-		item.bulletPrefab = GetBullets();
+		item.bulletType = GetBullets();
 
 		PickupWeapon pickup = Instantiate(inventoryItem.prefab, pos, orientation, transform).GetComponent<PickupWeapon>();
 		pickup.item = this.item;
-		pickup.GetComponent<WeaponController>().GunStats = this.item;
 		pickup.transform.position = pos;
 	}
 	public void getweaponAdvanced(int itemId, Vector3 pos, Quaternion orientation, Transform transform)
@@ -269,16 +266,15 @@ public class ItemManager : MonoBehaviour
 		inventoryItem.GetweaponAdvanced(this.AllWeapons[itemId]);
 		item = inventoryItem;
 		//Buff
-		int randombuffamount = UnityEngine.Random.Range(1, 4);
+		int randombuffamount = UnityEngine.Random.Range(0, 4);
 		for (int i = 0; i <= randombuffamount; i++)
 		{
 			item.buffs.Add(GetBuff());
 		}
-		item.bulletPrefab = GetBullets();
+		item.bulletType = GetBullets();
 
 		PickupWeapon pickup = Instantiate(inventoryItem.prefab, pos, orientation, transform).GetComponent<PickupWeapon>();
 		pickup.item = this.item;
-		pickup.GetComponent<WeaponController>().GunStats = this.item;
 		pickup.transform.position = pos;
 	}
 
@@ -338,7 +334,7 @@ public class ItemManager : MonoBehaviour
 	{
 		return this.buffs[UnityEngine.Random.Range(0, this.buffs.Length)];
 	}
-	public GameObject GetBullets()
+	public Bullet GetBullets()
 	{
 		return this.bullets[UnityEngine.Random.Range(0, this.bullets.Length)];
 	}

@@ -10,7 +10,7 @@ public class VendingCells : MonoBehaviour, Interact, SharedId
 
     private bool ready = true;
 
-    private WeaponController weapon;
+    public PickupWeapon weapon;
 
     public multiLanguage language;
 
@@ -22,9 +22,9 @@ public class VendingCells : MonoBehaviour, Interact, SharedId
     {
         this.ready = true;
         AllExecute();
-        weapon = GetComponentInChildren<WeaponController>();
+        weapon = GetComponentInChildren<PickupWeapon>();
         base.Invoke("Getprice", 0.2f);
-        weapon.GetComponent<Collider>().isTrigger = true;
+        weapon.coll.isTrigger = true;
     }
 
     public void Interact()
@@ -44,8 +44,8 @@ public class VendingCells : MonoBehaviour, Interact, SharedId
         this.Sfx.Play();
 
         Inventory.Instance.UseMoney(this.price);
-        weapon.GetComponent<Rigidbody>().isKinematic = false;
-        weapon.GetComponent<Collider>().isTrigger = false;
+        weapon.rb.isKinematic = false;
+        weapon.coll.isTrigger = false;
         weapon.transform.SetParent(null);
         RemoveObject();
     }
@@ -59,43 +59,43 @@ public class VendingCells : MonoBehaviour, Interact, SharedId
 
     public string GetName()
     {
-        return string.Format("{0} {1}\n<size=75%>E | {2}", this.price, language.GetLanguage(), this.weapon.GunStats.nameViet);
+        return string.Format("{0} {1}\n<size=75%>E | {2}", this.price, language.GetLanguage(), this.weapon.item.nameViet);
     }
 
     public ItemStats GetItem()
     {
-        return this.weapon.GunStats;
+        return this.weapon.item;
     }
     private void Getprice()
     {
-        int n = (int)weapon.GunStats.CurrentDurability;
+        int n = (int)weapon.item.CurrentDurability;
 
-        if (this.weapon.GunStats.Rare == ItemStats.ItemRare.upgrade)
+        if (this.weapon.item.Rare == ItemStats.ItemRare.upgrade)
         {
             n *= 2;
         }
-        if (this.weapon.GunStats.Rare == ItemStats.ItemRare.advanced)
+        if (this.weapon.item.Rare == ItemStats.ItemRare.advanced)
         {
             n *= 4;
         }
-        if (this.weapon.GunStats.weaponType == ItemStats.WeaponType.AssaultRifles)
+        if (this.weapon.item.weaponType == ItemStats.WeaponType.AssaultRifles)
         {
             n *= 2;
         }
 
-        if (this.weapon.Pullet.ammoType == Bullet.AmmoType.PiercingAmmo)
+        if (this.weapon.item.bulletType.ammoType == AmmoType.PiercingAmmo)
         {
             n *= 2;
         }
-        if (this.weapon.Pullet.ammoType == Bullet.AmmoType.HighAmmo)
+        if (this.weapon.item.bulletType.ammoType == AmmoType.HighAmmo)
         {
             n *= 2;
         }
-        if (this.weapon.Pullet.IsShotGunShell == true)
+        if (this.weapon.item.bulletType.IsShotGunShell == true)
         {
             n *= 2;
         }
-        n *= this.weapon.GunStats.buffs.Count;
+        n *= this.weapon.item.buffs.Count;
 
         price = n;
        

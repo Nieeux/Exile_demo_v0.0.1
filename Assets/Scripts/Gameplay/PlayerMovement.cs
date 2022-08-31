@@ -100,7 +100,6 @@ public class PlayerMovement : MonoBehaviour
             {
                 HeadBob.Instance.Headbob();
                 WeaponAnimation.Instance.WeaponBob();
-                UIBob.Instance.UIbob();
                 GetSpeed();
 
             }

@@ -57,11 +57,11 @@ public class DamageCalculations : MonoBehaviour
         float dmg = Random.Range(DamageCalculations.randomDamageRange.x, DamageCalculations.randomDamageRange.y);
         bool ItCrit = Random.value < 0.1f;
 
-        if (ammoType.ammoType == Bullet.AmmoType.PiercingAmmo)
+        if (ammoType.ammoType == AmmoType.PiercingAmmo)
         {
             dmg *= 1.2f;
         }
-        if (ammoType.ammoType == Bullet.AmmoType.HighAmmo)
+        if (ammoType.ammoType == AmmoType.HighAmmo)
         {
             dmg *= 1.5f;
         }
@@ -80,18 +80,18 @@ public class DamageCalculations : MonoBehaviour
         dmg *= 1 + Damage;
         bool ItCrit = Random.value < (Crit + BuffCrit);
 
-        if (ammoType.ammoType == Bullet.AmmoType.NormalAmmo)
+        if (ammoType.ammoType == AmmoType.NormalAmmo)
         {
             dmg *= 1.2f;
             Debug.Log("HitNormalAmmo");
 
         }
-        if (ammoType.ammoType == Bullet.AmmoType.PiercingAmmo)
+        if (ammoType.ammoType == AmmoType.PiercingAmmo)
         {
             dmg *= 1.5f;
             Debug.Log("HitPiercingAmmo");
         }
-        if (ammoType.ammoType == Bullet.AmmoType.HighAmmo)
+        if (ammoType.ammoType == AmmoType.HighAmmo)
         {
             dmg *= 2;
             Debug.Log("HitHighAmmo");
@@ -112,7 +112,7 @@ public class DamageCalculations : MonoBehaviour
 
         if (Armor.armorType == ItemStats.ArmorType.LightArmor)
         {
-            if (bulletType.ammoType == Bullet.AmmoType.NormalAmmo)
+            if (bulletType.ammoType == AmmoType.NormalAmmo)
             {
                 dmg = damage;
 
@@ -126,7 +126,7 @@ public class DamageCalculations : MonoBehaviour
                 }
                 
             }
-            if (bulletType.ammoType == Bullet.AmmoType.PiercingAmmo)
+            if (bulletType.ammoType == AmmoType.PiercingAmmo)
             {
                 dmg /= 1.3f;
 
@@ -140,7 +140,7 @@ public class DamageCalculations : MonoBehaviour
                 }
                 
             }
-            if (bulletType.ammoType == Bullet.AmmoType.HighAmmo)
+            if (bulletType.ammoType == AmmoType.HighAmmo)
             {
                 dmg *= 1.3f;
 
@@ -157,7 +157,7 @@ public class DamageCalculations : MonoBehaviour
         }
         if (Armor.armorType == ItemStats.ArmorType.NormalArmor)
         {
-            if (bulletType.ammoType == Bullet.AmmoType.NormalAmmo)
+            if (bulletType.ammoType == AmmoType.NormalAmmo)
             {
                 dmg /= 1.3f;
 
@@ -170,7 +170,7 @@ public class DamageCalculations : MonoBehaviour
                     Effect = HitEffect.HitType.Low;
                 }
             }
-            if (bulletType.ammoType == Bullet.AmmoType.PiercingAmmo)
+            if (bulletType.ammoType == AmmoType.PiercingAmmo)
             {
                 dmg = damage;
 
@@ -183,7 +183,7 @@ public class DamageCalculations : MonoBehaviour
                     Effect = HitEffect.HitType.High;
                 }
             }
-            if (bulletType.ammoType == Bullet.AmmoType.HighAmmo)
+            if (bulletType.ammoType == AmmoType.HighAmmo)
             {
                 dmg /= 1.2f;
 
@@ -200,7 +200,7 @@ public class DamageCalculations : MonoBehaviour
         }
         if (Armor.armorType == ItemStats.ArmorType.HeavyArmor)
         {
-            if (bulletType.ammoType == Bullet.AmmoType.NormalAmmo)
+            if (bulletType.ammoType == AmmoType.NormalAmmo)
             {
                 dmg /= 1.5f;
 
@@ -213,7 +213,7 @@ public class DamageCalculations : MonoBehaviour
                     Effect = HitEffect.HitType.Low;
                 }
             }
-            if (bulletType.ammoType == Bullet.AmmoType.PiercingAmmo)
+            if (bulletType.ammoType == AmmoType.PiercingAmmo)
             {
                 dmg = damage;
                 if (crit)
@@ -225,7 +225,7 @@ public class DamageCalculations : MonoBehaviour
                     Effect = HitEffect.HitType.High;
                 }
             }
-            if (bulletType.ammoType == Bullet.AmmoType.HighAmmo)
+            if (bulletType.ammoType == AmmoType.HighAmmo)
             {
                 dmg /= 1.5f;
 

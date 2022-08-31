@@ -3,7 +3,7 @@ using Random = System.Random;
 
 public class AiInventory : MonoBehaviour
 {
-    public WeaponController CurrentWeapon;
+    public WeaponAIController CurrentWeapon;
     public ItemStats WeaponStats;
     public ItemStats currentArmor;
     WeaponIK weaponIK;
@@ -25,7 +25,7 @@ public class AiInventory : MonoBehaviour
         weaponIK = GetComponent<WeaponIK>();
         StarterArmor();
     }
-
+    /*
     public void AiEquip(WeaponController weapon, ItemStats item)
     {
         WeaponController Weapon = Instantiate(weapon, WeaponContainer);
@@ -45,6 +45,7 @@ public class AiInventory : MonoBehaviour
 
         weaponIK.SetAimTransform(WeaponContainer);
     }
+    */
     public void DropItem()
     {
         GetRandomDrop(Original, Upgrade, Advanced);
@@ -203,38 +204,52 @@ public class AiInventory : MonoBehaviour
         ItemStats RandomWeapon = ItemManager.Instance.GetRandomWeapons();
 
         ItemManager.Instance.getWeaponOriginal(RandomWeapon.id, WeaponContainer.transform.position, WeaponContainer.transform.rotation, WeaponContainer);
-        CurrentWeapon = GetComponentInChildren<WeaponController>();
+        PickupWeapon pickup = GetComponentInChildren<PickupWeapon>();
+        GameObject weapon = pickup.WeaponRoot;
+        weapon.AddComponent<WeaponAIController>();
+        WeaponAIController weaponPrefab = weapon.GetComponent<WeaponAIController>();
+        CurrentWeapon = GetComponentInChildren<WeaponAIController>();
 
-        WeaponStats = CurrentWeapon.GunStats;
-        CurrentWeapon.coll.enabled = false;
-        CurrentWeapon.rb.isKinematic = true;
-        CurrentWeapon.canFire = false;
-        //weaponIK.SetAimTransform(WeaponContainer);
+        weaponPrefab.firePoint = pickup.firePoint;
+        weaponPrefab.WeaponRoot = pickup.WeaponRoot;
+        weaponPrefab.GunStats = pickup.item;
+ 
+        //WeaponStats = CurrentWeapon.GunStats;
+
     }
     public void StarterWeaponUpgrade()
     {
         ItemStats RandomWeapon = ItemManager.Instance.GetRandomWeapons();
 
         ItemManager.Instance.getWeaponUpgrade(RandomWeapon.id, WeaponContainer.transform.position, WeaponContainer.transform.rotation, WeaponContainer);
-        CurrentWeapon = GetComponentInChildren<WeaponController>();
+        PickupWeapon pickup = GetComponentInChildren<PickupWeapon>();
+        GameObject weapon = pickup.WeaponRoot;
+        weapon.AddComponent<WeaponAIController>();
+        WeaponAIController weaponPrefab = weapon.GetComponent<WeaponAIController>();
+        CurrentWeapon = GetComponentInChildren<WeaponAIController>();
 
-        WeaponStats = CurrentWeapon.GunStats;
-        CurrentWeapon.coll.enabled = false;
-        CurrentWeapon.rb.isKinematic = true;
-        CurrentWeapon.canFire = false;
-        //weaponIK.SetAimTransform(WeaponContainer);
+        weaponPrefab.firePoint = pickup.firePoint;
+        weaponPrefab.WeaponRoot = pickup.WeaponRoot;
+        weaponPrefab.GunStats = pickup.item;
+
+        //WeaponStats = CurrentWeapon.GunStats;
+
     }
     public void StarterWeaponAdvanced()
     {
         ItemStats RandomWeapon = ItemManager.Instance.GetRandomWeapons();
 
         ItemManager.Instance.getweaponAdvanced(RandomWeapon.id, WeaponContainer.transform.position, WeaponContainer.transform.rotation, WeaponContainer);
-        CurrentWeapon = GetComponentInChildren<WeaponController>();
+        PickupWeapon pickup = GetComponentInChildren<PickupWeapon>();
+        GameObject weapon = pickup.WeaponRoot;
+        weapon.AddComponent<WeaponAIController>();
+        WeaponAIController weaponPrefab = weapon.GetComponent<WeaponAIController>();
+        CurrentWeapon = GetComponentInChildren<WeaponAIController>();
 
-        WeaponStats = CurrentWeapon.GunStats;
-        CurrentWeapon.coll.enabled = false;
-        CurrentWeapon.rb.isKinematic = true;
-        CurrentWeapon.canFire = false;
-        //weaponIK.SetAimTransform(WeaponContainer);
+        weaponPrefab.firePoint = pickup.firePoint;
+        weaponPrefab.WeaponRoot = pickup.WeaponRoot;
+        weaponPrefab.GunStats = pickup.item;
+
+        //WeaponStats = CurrentWeapon.GunStats;
     }
 }

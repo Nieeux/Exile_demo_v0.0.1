@@ -14,7 +14,7 @@ public class WorldGenerator : MonoBehaviour {
 	public float totalWeight { get; set; }
 
 	public static Vector2 viewerPosition;
-	private Vector2 viewedChunkCoord;
+
 	int chunksVisibleInViewDst;
 	int chunkSize = 40;
 	public GameObject Ground;
@@ -24,24 +24,6 @@ public class WorldGenerator : MonoBehaviour {
 	public WeightTerrain terrain;
 	public WeightTerrain[] Allstructure;
 	public StructureGenerator.WeightedSpawn[] terrChoice;
-
-
-	//[SerializeField]
-	//private Vector3 terrainSize = new Vector3(1, 1, 1);
-	//public Vector3 TerrainSize { get { return terrainSize; } }
-
-	//[SerializeField]
-	//private GameObject[] placeableObjects;
-	//public GameObject[] PlaceableObjects { get { return placeableObjects; } }
-
-	//[SerializeField]
-	//private int minObjectsPerTile = 1, maxObjectsPerTile = 2;
-	//public int MinObjectsPerTile { get { return minObjectsPerTile; } }
-	//public int MaxObjectsPerTile { get { return maxObjectsPerTile; } }
-
-	//[SerializeField]
-	//private Vector3[] placeableObjectSizes;
-	//public Vector3[] PlaceableObjectSizes { get { return placeableObjectSizes; } }
 
 	Dictionary<Vector2, Terrain> terrainChunkDictionary = new Dictionary<Vector2, Terrain>();
 	List<Terrain> terrainChunksVisibleLastUpdate = new List<Terrain>();
@@ -83,7 +65,7 @@ public class WorldGenerator : MonoBehaviour {
 
 		for (int yOffset = -chunksVisibleInViewDst; yOffset <= chunksVisibleInViewDst; yOffset++) {
 			for (int xOffset = -chunksVisibleInViewDst; xOffset <= chunksVisibleInViewDst; xOffset++) {
-				viewedChunkCoord = new Vector2 (currentChunkCoordX + xOffset, currentChunkCoordY + yOffset);
+				Vector2 viewedChunkCoord = new Vector2 (currentChunkCoordX + xOffset, currentChunkCoordY + yOffset);
 
 				if (terrainChunkDictionary.ContainsKey (viewedChunkCoord)) {
 					terrainChunkDictionary [viewedChunkCoord].UpdateTerrainChunk ();
@@ -92,7 +74,7 @@ public class WorldGenerator : MonoBehaviour {
 					}
 				} else {
 
-					Terrain newTerrain = new Terrain(viewedChunkCoord, chunkSize, maxViewDst, transform, player, material);
+					Terrain newTerrain = new Terrain(viewedChunkCoord, chunkSize, maxViewDst, transform, player, Ground, material);
 					terrainChunkDictionary.Add (viewedChunkCoord, newTerrain);
 					newTerrain.onVisibilityChanged += OnTerrainChunkVisibilityChanged;
 
@@ -133,12 +115,6 @@ public class WorldGenerator : MonoBehaviour {
 			}
 		}
 		return structurePrefabs[0].structure;
-	}
-
-	public Vector2 viewedChunk()
-    {
-		return viewedChunkCoord;
-
 	}
 }
 [System.Serializable]

@@ -255,6 +255,7 @@ MonoBehaviour:
   bulletsPerShot: 0
   ammoType: 0
   ammoTypeColor: {r: 1, g: 1, b: 1, a: 1}
+  bulletPrefab: {fileID: 4696296699401721060}
   bulletLight: {fileID: 3515437197170951018}
   BulletDamage: 0
   BulletCrit: 0

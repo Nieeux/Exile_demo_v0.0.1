@@ -57,7 +57,7 @@ public class WeaponAnimation : MonoBehaviour
         else
         {
             RaycastHit Hit;
-            if (Physics.Raycast(rotationPoint.transform.position, rotationPoint.transform.forward, out Hit, 1f, wall) || ActiveMenu())
+            if (Physics.Raycast(rotationPoint.transform.position, rotationPoint.transform.forward, out Hit, 1f, wall))
             {
                 PutDownWeapons();
             }

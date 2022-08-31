@@ -57,6 +57,7 @@ public class WeaponInventory : MonoBehaviour
     [Header("SFX")]
     public AudioSource Sfx;
     public AudioClip InteractSfx;
+    public AudioClip ChangeWeaponAudio;
 
     private void Awake()
     {
@@ -285,7 +286,7 @@ public class WeaponInventory : MonoBehaviour
         UIPlayerStats.Instance.UpdateStatsPlayer();
     }
 
-    public bool AddWeapon(WeaponController weaponPrefab, ItemStats item)
+    public bool AddWeapon(PickupWeapon pickup)
     {
 
         for (int i = 0; i < WeaponSlots.Length; i++)
@@ -293,14 +294,32 @@ public class WeaponInventory : MonoBehaviour
 
             if (WeaponSlots[i] == null)
             {
+                GameObject weapon = pickup.WeaponRoot;
+                weapon.AddComponent<WeaponController>();
+                WeaponController weaponPrefab = weapon.GetComponent<WeaponController>();
+                weaponPrefab.firePoint = pickup.firePoint;
+                weaponPrefab.WeaponRoot = pickup.WeaponRoot;
+                weaponPrefab.GunStats = pickup.item;
+                pickup.WeaponPrefab = weaponPrefab;
+                //crosshair
+                GameObject crosshair = Instantiate(pickup.item.Crosshair, weapon.transform);
+                //crosshair.transform.SetParent(weaponPrefab.transform);
+                crosshair.transform.localPosition = new Vector3(0, 0, 20);
+                crosshair.transform.localRotation = Quaternion.identity;
+                weaponPrefab.Crosshair = crosshair;
+
                 weaponPrefab.transform.SetParent(WeaponContainer);
                 weaponPrefab.transform.localPosition = Vector3.zero;
                 weaponPrefab.transform.localRotation = Quaternion.identity;
-                weaponPrefab.coll.enabled = false;
-                weaponPrefab.rb.isKinematic = true;
 
                 Sfx.clip = InteractSfx;
                 this.Sfx.Play();
+
+                //Fixbug drop khi reload se bi loi
+                if (weaponPrefab.reloading == true)
+                {
+                    weaponPrefab.reloading = false;
+                }
 
                 if (WeaponInActive == null)
                 {
@@ -309,7 +328,7 @@ public class WeaponInventory : MonoBehaviour
                     UpdateBuffsModified(weaponPrefab);
                 }
 
-                EquipWeightModified(item);
+                EquipWeightModified(pickup.item);
 
                 weaponPrefab.ShowWeapon(false);
                 WeaponSlots[i] = weaponPrefab;
@@ -319,7 +338,7 @@ public class WeaponInventory : MonoBehaviour
                 {
                     OnAddedWeapon.Invoke(weaponPrefab, i);
                 }
-                UIEvents.Instance.AddPickup(item);
+                UIEvents.Instance.AddPickup(pickup.item);
                 return true;
             }
         }
@@ -397,6 +416,7 @@ public class WeaponInventory : MonoBehaviour
         if (newWeapon != null)
         {
             newWeapon.ShowWeapon(true);
+            Sfx.PlayOneShot(ChangeWeaponAudio);
         }
     }
 
@@ -434,11 +454,11 @@ public class WeaponInventory : MonoBehaviour
             n *= 2;
         }
         
-        if (weaponInstance.Pullet.ammoType == Bullet.AmmoType.PiercingAmmo)
+        if (weaponInstance.Pullet.ammoType == AmmoType.PiercingAmmo)
         {
             n *= 2;
         }
-        if (weaponInstance.Pullet.ammoType == Bullet.AmmoType.HighAmmo)
+        if (weaponInstance.Pullet.ammoType == AmmoType.HighAmmo)
         {
             n *= 2;
         }
@@ -510,6 +530,10 @@ public class WeaponInventory : MonoBehaviour
 
                 UnequipWeightModified(item);
 
+                //xoa corsshair
+                Destroy(weaponInstance.Crosshair);
+                weaponInstance.Crosshair = null;
+
                 RaycastHit hit;
                 if (Physics.Raycast(weaponInstance.transform.position,Vector3.down,out hit, 10, LayerMask.GetMask("Ground")))
                 {
@@ -519,6 +543,9 @@ public class WeaponInventory : MonoBehaviour
                 {
                     weaponInstance.transform.SetParent(null);
                 }
+
+                //xoa Scriprt WeaponController
+                Destroy(weaponInstance);
 
                 if (i == ActiveWeaponIndex)
                 {
@@ -548,6 +575,9 @@ public class WeaponInventory : MonoBehaviour
                 this.WeaponInActive = null;
                 RefreshBuffsModified();
                 UnequipWeightModified(item);
+
+                Destroy(weaponInstance.Crosshair);
+                weaponInstance.Crosshair = null;
 
                 weaponInstance.GunStats = null;
                 weaponInstance.GetComponent<PickupWeapon>().item = null;

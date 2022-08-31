@@ -11,13 +11,21 @@ public class PickupWeapon : MonoBehaviour, Interact
 
 	public multiLanguage language;
 
-    public void Interact()
+	public GameObject WeaponRoot;
+
+	public Transform firePoint;
+
+	public Rigidbody rb;
+	public BoxCollider coll;
+
+
+
+	public void Interact()
 	{
         if(item != null)
 		{
-			if (WeaponInventory.Instance.AddWeapon(WeaponPrefab, item))
+			if (WeaponInventory.Instance.AddWeapon(this))
 			{
-
 				if (WeaponInventory.Instance.GetActiveWeapon() == null)
 				{
 					WeaponInventory.Instance.SwitchWeapon();
@@ -42,7 +50,7 @@ public class PickupWeapon : MonoBehaviour, Interact
 		{
 			return " " + language.GetLanguage();
 		}
-		return "E | " + this.WeaponPrefab.GunStats.nameViet;
+		return "E | " + this.item.nameViet;
 
 	}
 

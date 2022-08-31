@@ -8,6 +8,8 @@ using TMPro;
 public class MenuSetting : MonoBehaviour
 {
 	public static MenuSetting Instance;
+	public bool targetFrame;
+
 	[SerializeField]
 	private AudioMixer audioMixer;
 	private float currentVolume;
@@ -15,8 +17,12 @@ public class MenuSetting : MonoBehaviour
 	private Slider volumeSlider;
 
 	private int GraphicIndex;
+
 	[SerializeField]
 	private Toggle fullscreenToggle;
+
+	[SerializeField]
+	private Toggle vsynctoggle;
 	public TMP_Dropdown GraphicQuality;
 
 	public TMP_Dropdown resolutionDropdown;
@@ -34,10 +40,14 @@ public class MenuSetting : MonoBehaviour
 	private void Awake()
     {
 		MenuSetting.Instance = this;
+		if(targetFrame == true)
+        {
+			Application.targetFrameRate = 60;
+		}
+
 	}
     private void Start()
     {
-
 		//Volume
 		this.audioMixer.SetFloat("volume", PlayerPrefs.GetFloat("VolumePreference"));
 
@@ -52,6 +62,9 @@ public class MenuSetting : MonoBehaviour
 		//language
 		bool isOn = PlayerPrefs.GetInt("fullscreen", 1) == 1;
 		this.fullscreenToggle.isOn = isOn;
+		//vsyn
+		//bool isVsync = PlayerPrefs.GetInt("Vsync") == 1;
+		//this.vsynctoggle.isOn = isVsync;
 		//FullScreen
 		bool isViet = PlayerPrefs.GetInt("Language", 1) == 1;
 		this.LanguageToggle.isOn = isViet;
@@ -98,17 +111,20 @@ public class MenuSetting : MonoBehaviour
 		this.resolutionDropdown.value = value;
 		this.resolutionDropdown.RefreshShownValue();
 	}
-
-    public void SetQuality (int QualityIndex)
-    {
-        if (QualitySettings.GetQualityLevel() == QualityIndex)
-        {
-			return;
-        }
-        QualitySettings.SetQualityLevel(QualityIndex);
-		GraphicIndex = QualityIndex;
-		PlayerPrefs.SetInt("Graphics", QualityIndex);
+	/*
+	public void Vsync(bool vsync)
+	{
+		if (vsync)
+		{
+			QualitySettings.vSyncCount = 1;
+		}
+		else
+		{
+			QualitySettings.vSyncCount = 0;
+		}
+		PlayerPrefs.SetInt("Vsync", vsync ? 1 : 0);
 	}
+	*/
 	public void SetFullscreen(bool isFullscreen)
 	{
 		if (isFullscreen)
@@ -126,6 +142,18 @@ public class MenuSetting : MonoBehaviour
 		PlayerPrefs.SetInt("fullscreen", isFullscreen ? 1 : 0);
 		PlayerPrefs.Save();
 	}
+
+	public void SetQuality (int QualityIndex)
+    {
+        if (QualitySettings.GetQualityLevel() == QualityIndex)
+        {
+			return;
+        }
+        QualitySettings.SetQualityLevel(QualityIndex);
+		GraphicIndex = QualityIndex;
+		PlayerPrefs.SetInt("Graphics", QualityIndex);
+	}
+
 	public void SetLanguage(bool Viet)
 	{
 		if (Viet)

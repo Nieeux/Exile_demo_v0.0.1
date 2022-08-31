@@ -277,9 +277,9 @@ MonoBehaviour:
   WeaponStats: {fileID: 0}
   currentArmor: {fileID: 0}
   WeaponContainer: {fileID: 602710194895555247}
-  Original: 0.2
+  Original: 0.3
   Upgrade: 0.5
-  Advanced: 0.3
+  Advanced: 0.2
 --- !u!114 &6131745036830815417
 MonoBehaviour:
   m_ObjectHideFlags: 0

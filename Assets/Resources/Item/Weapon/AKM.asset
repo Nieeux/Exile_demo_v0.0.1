@@ -28,6 +28,7 @@ MonoBehaviour:
   hunger: 0
   stamina: 0
   sleep: 0
+  repair: 0
   armorType: 0
   GunDamage: 15
   fireRate: 0.1
@@ -39,10 +40,10 @@ MonoBehaviour:
   singleFire: 0
   ReloadTime: 2
   bulletPrefab: {fileID: 4696296699401721060, guid: 4ac93e5b76843f743916331815ea1a24, type: 3}
-  fireAudio: {fileID: 0}
-  reloadAudio: {fileID: 0}
+  Crosshair: {fileID: 8691360310430026175, guid: 5c69cd96a24a45243bd08d190732e2d8, type: 3}
+  bulletType: {fileID: 0}
   weaponType: 3
-  Rare: 0
+  Rare: 2
   buffs: []
   punchStrenght: 0.03
   punchVibrato: 5
@@ -69,3 +70,6 @@ MonoBehaviour:
   colorOriginal: {r: 1, g: 1, b: 1, a: 1}
   colorUpgrade: {r: 0, g: 1, b: 1, a: 1}
   colorAdvanced: {r: 1, g: 0, b: 0.3333335, a: 1}
+  fireAudio: {fileID: 8300000, guid: ec4be9c40ba3a56418e846b184c874a0, type: 3}
+  reloadAudio: {fileID: 8300000, guid: f02e7563c10830748a7719d342d27800, type: 3}
+  ChangeWeaponAudio: {fileID: 8300000, guid: 938442814963a7747949ce682b466747, type: 3}

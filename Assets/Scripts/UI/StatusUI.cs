@@ -74,7 +74,7 @@ public class StatusUI : MonoBehaviour
         GameOver.SetActive(false);
 
     }
-    private void Update()
+    private void LateUpdate()
     {
         ZoomUI.fieldOfView = Mathf.Lerp(ZoomUI.fieldOfView, ViewZoom, Time.deltaTime * SpeedZoom);
 

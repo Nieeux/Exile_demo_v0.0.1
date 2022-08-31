@@ -10,9 +10,6 @@ public class WeaponController : MonoBehaviour
     public Transform firePoint;
     public bool singleFire = false;
 
-    public AudioClip fireAudio;
-    public AudioClip reloadAudio;
-
     public ItemStats GunStats;
     public Color WeaponAmmoType;
 
@@ -31,12 +28,13 @@ public class WeaponController : MonoBehaviour
     AudioSource audioSource;
 
     public GameObject WeaponRoot;
-    public AudioClip ChangeWeaponSfx;
 
     public Bullet Pullet;
+    public GameObject Crosshair;
 
     public int WeaponID;
     public Interact WeaponIndex { get; private set; }
+    PickupWeapon pickup;
 
     public bool IsWeaponActive { get; private set; }
     public bool IsCharging { get; private set; }
@@ -52,10 +50,16 @@ public class WeaponController : MonoBehaviour
         this.WeaponIndex = GetComponent<PickupWeapon>();
         rb = base.GetComponent<Rigidbody>();
         coll = base.GetComponent<BoxCollider>();
+        pickup = base.GetComponent<PickupWeapon>();
 
-        Bullet bullet = GunStats.bulletPrefab.GetComponent<Bullet>();
-        WeaponAmmoType = bullet.ammoTypeColor;
-        this.Pullet = bullet;
+
+
+        coll.enabled = false;
+        rb.isKinematic = true;
+
+
+        WeaponAmmoType = GunStats.bulletType.ammoTypeColor;
+        this.Pullet = GunStats.bulletType;
 
         audioSource = GetComponent<AudioSource>();
 
@@ -137,7 +141,7 @@ public class WeaponController : MonoBehaviour
                             }
                             firePoint.LookAt(firePointPointerPosition);
 
-                            Bullet bulletobject = Instantiate(GunStats.bulletPrefab, firePoint.position, firePoint.rotation).GetComponent<Bullet>();
+                            Bullet bulletobject = Instantiate(GunStats.bulletType.bulletPrefab, firePoint.position, firePoint.rotation).GetComponent<Bullet>();
                             bulletobject.BulletDamage = GunStats.GunDamage;
                             this.WeaponAmmoType = bulletobject.ammoTypeColor;
                         }
@@ -153,7 +157,7 @@ public class WeaponController : MonoBehaviour
                         }
                         firePoint.LookAt(firePointPointerPosition);
                         //Fire
-                        Bullet bulletObject = Instantiate(GunStats.bulletPrefab, firePoint.position, firePoint.rotation).GetComponent<Bullet>();
+                        Bullet bulletObject = Instantiate(GunStats.bulletType.bulletPrefab, firePoint.position, firePoint.rotation).GetComponent<Bullet>();
                         bulletObject.BulletDamage = GunStats.GunDamage;
                         this.WeaponAmmoType = bulletObject.ammoTypeColor;
                        
@@ -164,8 +168,9 @@ public class WeaponController : MonoBehaviour
                     RecoilAni();
 
                     GunStats.CurrentMagazine--;
-                    audioSource.clip = fireAudio;
-                    audioSource.Play();
+                    //audioSource.clip = GunStats.fireAudio;
+                    //audioSource.Play();
+                    audioSource.PlayOneShot(GunStats.fireAudio);
 
                     GunStats.CurrentDurability -= 0.5f;
                     if (GunStats.CurrentDurability <= 0)
@@ -225,7 +230,7 @@ public class WeaponController : MonoBehaviour
                             }
                             firePoint.LookAt(firePointPointerPosition);
 
-                            Bullet bulletobject = Instantiate(GunStats.bulletPrefab, firePoint.position, firePoint.rotation).GetComponent<Bullet>();
+                            Bullet bulletobject = Instantiate(GunStats.bulletType.bulletPrefab, firePoint.position, firePoint.rotation).GetComponent<Bullet>();
                             bulletobject.BulletDamage = GunStats.GunDamage;
                             this.WeaponAmmoType = bulletobject.ammoTypeColor;
                         }
@@ -242,7 +247,7 @@ public class WeaponController : MonoBehaviour
                         }
                         firePoint.LookAt(firePointPointerPosition);
                         //Fire
-                        Bullet bulletObject = Instantiate(GunStats.bulletPrefab, firePoint.position, firePoint.rotation).GetComponent<Bullet>();
+                        Bullet bulletObject = Instantiate(GunStats.bulletType.bulletPrefab, firePoint.position, firePoint.rotation).GetComponent<Bullet>();
                         bulletObject.BulletDamage = GunStats.GunDamage;
                     }
 
@@ -251,7 +256,7 @@ public class WeaponController : MonoBehaviour
                     //UIBob.Instance.RecoilHUD();
 
                     GunStats.CurrentMagazine--;
-                    audioSource.clip = fireAudio;
+                    audioSource.clip = GunStats.fireAudio;
                     audioSource.Play();
                 }
                 else
@@ -296,7 +301,7 @@ public class WeaponController : MonoBehaviour
     {
         reloading = Reloading;
 
-        audioSource.PlayOneShot(reloadAudio);
+        audioSource.PlayOneShot(GunStats.reloadAudio);
         audioSource.minDistance = 1;
 
 
@@ -311,7 +316,7 @@ public class WeaponController : MonoBehaviour
     {
         reloading = Reloading;
 
-        audioSource.PlayOneShot(reloadAudio);
+        audioSource.PlayOneShot(GunStats.reloadAudio);
         audioSource.minDistance = 1;
         WeaponUIManager.Instance.updateUI(WeaponID);
 
@@ -320,6 +325,7 @@ public class WeaponController : MonoBehaviour
         GunStats.CurrentMagazine = GunStats.Magazine;
         audioSource.minDistance = 10;
         reloading = !Reloading;
+
         WeaponUIManager.Instance.updateUI(WeaponID);
     }
 
@@ -328,10 +334,6 @@ public class WeaponController : MonoBehaviour
         WeaponRoot.SetActive(show);
         canFire = show;
         //enabled = (show);
-        if (show && ChangeWeaponSfx)
-        {
-            audioSource.PlayOneShot(ChangeWeaponSfx);
-        }
 
         IsWeaponActive = show;
     }

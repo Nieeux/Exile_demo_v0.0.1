@@ -19,6 +19,10 @@ public class DayNightCycle : MonoBehaviour
 	public float currentTimeOfDay = 0.3f;
 	public float timeMultiplier = 1f;
 
+	[Header("fog")]
+	public Gradient nightDayFogColor;
+	public AnimationCurve fogDensityCurve;
+
 	public Gradient nightDayColor;
 	public float maxIntensity = 2f;
 	public float minIntensity = 0f;
@@ -143,6 +147,9 @@ public class DayNightCycle : MonoBehaviour
 
 		sun.color = nightDayColor.Evaluate(dot);
 		RenderSettings.ambientLight = sun.color;
+
+		RenderSettings.fogColor = nightDayFogColor.Evaluate(dot);
+		RenderSettings.fogDensity = fogDensityCurve.Evaluate(dot) * fogScale;
 
 		i = ((dayAtmosphereThickness - nightAtmosphereThickness) * dot) + nightAtmosphereThickness;
 		skyMat.SetFloat("_AtmosphereThickness", i);

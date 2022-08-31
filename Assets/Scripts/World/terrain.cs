@@ -1,23 +1,18 @@
 using UnityEngine;
 
-public class Terrain
+public class Terrain : MonoBehaviour
 {
 	public event System.Action<Terrain, bool> onVisibilityChanged;
 	public Vector2 coord;
 
-	GameObject meshObject;
 	GameObject terrian;
-	StructureGenerator zoneGenerator;
-	GroundGenerator structure;
-	PlaceObjects placeObjects;
 	Vector2 position;
 	Bounds bounds;
-
 
 	float maxViewDst;
 	Transform player;
 
-	public Terrain(Vector2 coord, int size, float maxviewDst, Transform parent, Transform player, Material material)
+	public Terrain(Vector2 coord, int size, float maxviewDst, Transform parent, Transform player, GameObject ground, Material material)
 	{
 		position = coord * size;
 		this.player = player;
@@ -28,16 +23,9 @@ public class Terrain
 		terrian = new GameObject("Terrain");
 		terrian.transform.position = positionV3;
 		terrian.transform.parent = parent;
-		// gán code PlaceObjects
-		this.structure = this.terrian.AddComponent<GroundGenerator>();
-		//this.placeObjects = this.terrian.AddComponent<PlaceObjects>();
-		this.zoneGenerator = this.terrian.AddComponent<StructureGenerator>();
+		Instantiate(ground, terrian.transform);
 
-		// kích ho?t PlaceObjects
-		this.structure.Spawn = true;
-		//this.placeObjects.Spawn = true;
-		this.zoneGenerator.Spawn = true;
-
+		terrian.AddComponent<StructureGenerator>();
 
 		SetVisible(false);
 	}
@@ -67,8 +55,6 @@ public class Terrain
 			}
 		}
 	}
-
-
 
 	public void SetVisible(bool visible)
 	{

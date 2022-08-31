@@ -46,9 +46,8 @@ public class ItemStats : ScriptableObject
 	public int Magazine;
 	public bool singleFire;
 	public float ReloadTime;
-	public GameObject bulletPrefab;
-	public AudioClip fireAudio;
-	public AudioClip reloadAudio;
+	public GameObject Crosshair;
+	public Bullet bulletType;
 	public ItemStats.WeaponType weaponType;
 	public ItemStats.ItemRare Rare;
 	public List<Buff> buffs = new List<Buff>();
@@ -90,6 +89,11 @@ public class ItemStats : ScriptableObject
 	public Color colorUpgrade;
 	public Color colorAdvanced;
 
+	[Header("Audio")]
+	public AudioClip fireAudio;
+	public AudioClip reloadAudio;
+	public AudioClip ChangeWeaponAudio;
+
 	public void Getitem(ItemStats item)
 	{
 		this.itemType = item.itemType;
@@ -126,7 +130,12 @@ public class ItemStats : ScriptableObject
 		this.rotationOffset = item.rotationOffset;
 		this.positionOffset = item.positionOffset;
 		this.scale = item.scale;
-	}
+
+		//Audio
+		this.fireAudio = item.fireAudio;
+		this.reloadAudio = item.reloadAudio;
+		this.ChangeWeaponAudio = item.ChangeWeaponAudio;
+}
 	public void GetitemStack(ItemStats item, int amount)
 	{
 		this.itemType = item.itemType;
@@ -175,9 +184,10 @@ public class ItemStats : ScriptableObject
 		this.Durability = item.Durability;
 		this.Magazine = item.Magazine;
 		this.CurrentMagazine = item.CurrentMagazine;
-		this.bulletPrefab = item.bulletPrefab;
+
 		this.ReloadTime = item.ReloadTime;
-		this.bulletPrefab = item.bulletPrefab;
+
+		this.Crosshair = item.Crosshair;
 
 		item.buffs = new List<Buff>();
 
@@ -202,6 +212,11 @@ public class ItemStats : ScriptableObject
 		this.rotationOffset = item.rotationOffset;
 		this.positionOffset = item.positionOffset;
 		this.scale = item.scale;
+
+		//Audio
+		this.fireAudio = item.fireAudio;
+		this.reloadAudio = item.reloadAudio;
+		this.ChangeWeaponAudio = item.ChangeWeaponAudio;
 	}
 	public void GetweaponOriginal(ItemStats item)
 	{
@@ -223,10 +238,12 @@ public class ItemStats : ScriptableObject
 		this.Durability = item.Durability;
 		this.Magazine = item.Magazine;
 		this.CurrentMagazine = item.CurrentMagazine;
-		this.bulletPrefab = item.bulletPrefab;
 		this.ReloadTime = item.ReloadTime;
 		this.weaponType = item.weaponType;
+		this.bulletType = item.bulletType;
 		this.Rare = item.Rare = ItemRare.original;
+
+		this.Crosshair = item.Crosshair;
 
 		//Buff
 		item.buffs = new List<Buff>();
@@ -250,6 +267,7 @@ public class ItemStats : ScriptableObject
 		this.ShakeDuration = item.ShakeDuration;
 		this.ShakeStrenght = item.ShakeStrenght;
 
+		//Visuals
 		this.sprite = item.sprite;
 		this.material = item.material;
 		this.mesh = item.mesh;
@@ -264,6 +282,11 @@ public class ItemStats : ScriptableObject
 		this.rotationOffset = item.rotationOffset;
 		this.positionOffset = item.positionOffset;
 		this.scale = item.scale;
+
+		//Audio
+		this.fireAudio = item.fireAudio;
+		this.reloadAudio = item.reloadAudio;
+		this.ChangeWeaponAudio = item.ChangeWeaponAudio;
 
 	}
 	public void GetweaponUpgrade(ItemStats item)
@@ -286,10 +309,12 @@ public class ItemStats : ScriptableObject
 		this.Durability = item.Durability;
 		this.Magazine = item.Magazine;
 		this.CurrentMagazine = item.CurrentMagazine;
-		this.bulletPrefab = item.bulletPrefab;
 		this.ReloadTime = item.ReloadTime;
 		this.weaponType = item.weaponType;
+		this.bulletType = item.bulletType;
 		this.Rare = item.Rare = ItemRare.upgrade;
+
+		this.Crosshair = item.Crosshair;
 
 		//Buff
 		item.buffs = new List<Buff>();
@@ -316,6 +341,7 @@ public class ItemStats : ScriptableObject
 		//this.ammoType = GetAmmoType<AmmoType>();
 		//this.Rare = GetItemRare<ItemRare>(0.7f,0.2f,0.1f);
 
+		//Visuals
 		this.sprite = item.sprite;
 		this.material = item.material;
 		this.mesh = item.mesh;
@@ -330,6 +356,11 @@ public class ItemStats : ScriptableObject
 		this.rotationOffset = item.rotationOffset;
 		this.positionOffset = item.positionOffset;
 		this.scale = item.scale;
+
+		//Audio
+		this.fireAudio = item.fireAudio;
+		this.reloadAudio = item.reloadAudio;
+		this.ChangeWeaponAudio = item.ChangeWeaponAudio;
 	}
 	public void GetweaponAdvanced(ItemStats item)
 	{
@@ -351,10 +382,12 @@ public class ItemStats : ScriptableObject
 		this.Durability = item.Durability * 2;
 		this.Magazine = item.Magazine * 2;
 		this.CurrentMagazine = item.CurrentMagazine * 2;
-		this.bulletPrefab = item.bulletPrefab;
 		this.ReloadTime = item.ReloadTime;
 		this.weaponType = item.weaponType;
+		this.bulletType = item.bulletType;
 		this.Rare = item.Rare = ItemRare.advanced;
+
+		this.Crosshair = item.Crosshair;
 
 		//Buff
 		item.buffs = new List<Buff>();
@@ -378,6 +411,7 @@ public class ItemStats : ScriptableObject
 		this.ShakeDuration = item.ShakeDuration;
 		this.ShakeStrenght = item.ShakeStrenght;
 
+		//Visuals
 		this.sprite = item.sprite;
 		this.material = item.material;
 		this.mesh = item.mesh;
@@ -392,6 +426,11 @@ public class ItemStats : ScriptableObject
 		this.rotationOffset = item.rotationOffset;
 		this.positionOffset = item.positionOffset;
 		this.scale = item.scale;
+
+		//Audio
+		this.fireAudio = item.fireAudio;
+		this.reloadAudio = item.reloadAudio;
+		this.ChangeWeaponAudio = item.ChangeWeaponAudio;
 	}
 	/*
 	public static AmmoType GetAmmoType<AmmoType>()

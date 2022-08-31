@@ -19,11 +19,6 @@ public class UISway : MonoBehaviour
     maxAmount = 0.06f,
     smoothAmount = 6f;
 
-    public float rotationAmount = 4f,
-        maxRotationAmount = 5f,
-        smoothRotation = 12f;
-
-
     private Vector3 initialPosition;
 
     private void Start()
