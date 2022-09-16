@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ee4f25a845d5c6a4badcfb4f4ba702c8, type: 3}
+  m_Name: Terrain
+  m_EditorClassIdentifier: 
+  label: Biome
+  id: biome
+  nextTerrain: {fileID: 0}
+  octaves:
+  - frequency: 1
+    amplitude: 10
+    ridged: 1
+  - frequency: 3
+    amplitude: 5
+    ridged: 0
+  props:
+  - {fileID: 11400000, guid: f52f256c98ff4694f8544d8452da3794, type: 2}
+  - {fileID: 11400000, guid: 4c72a7d38bf2c7444aecdcbe582102b6, type: 2}
+  textureIndex: 5
+  bounceLightColor: {r: 0, g: 0, b: 0, a: 1}
+  dustColor: {r: 1, g: 1, b: 1, a: 1}

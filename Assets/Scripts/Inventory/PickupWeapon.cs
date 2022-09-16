@@ -50,7 +50,7 @@ public class PickupWeapon : MonoBehaviour, Interact
 		{
 			return " " + language.GetLanguage();
 		}
-		return "E | " + this.item.nameViet;
+		return "[E] | " + this.item.nameViet;
 
 	}
 

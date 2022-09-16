@@ -276,6 +276,7 @@ MonoBehaviour:
   CurrentWeapon: {fileID: 0}
   WeaponStats: {fileID: 0}
   currentArmor: {fileID: 0}
+  weaponIK: {fileID: 6131745036830815417}
   WeaponContainer: {fileID: 602710194895555247}
   Original: 0.3
   Upgrade: 0.5

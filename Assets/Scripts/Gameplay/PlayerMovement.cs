@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using UnityEngine.Events;
 
 [RequireComponent(typeof(CharacterController), typeof(PlayerStats), typeof(PlayerInput))]
 public class PlayerMovement : MonoBehaviour
@@ -12,7 +11,7 @@ public class PlayerMovement : MonoBehaviour
     public Transform CameraPos;
     public Transform cameraCrouching;
     public float Sensitivity = 2.0f;
-    public float lookXLimit = 90f;
+
     public float Speed { get; private set; }
     public float currentSpeed;
     public bool IsMoving;
@@ -35,6 +34,7 @@ public class PlayerMovement : MonoBehaviour
     Vector3 moveDirection = Vector3.zero;
     Vector2 rotation = Vector2.zero;
     public float rotationX = 0;
+    public float lookXLimit = 90f;
 
     public bool IsGrounded { get; private set; }
     public bool IsCrouching { get; private set; }

@@ -1,8 +1,8 @@
 using UnityEngine;
 
-public class Terrain : MonoBehaviour
+public class terrain : MonoBehaviour
 {
-	public event System.Action<Terrain, bool> onVisibilityChanged;
+	public event System.Action<terrain, bool> onVisibilityChanged;
 	public Vector2 coord;
 
 	GameObject terrian;
@@ -12,7 +12,7 @@ public class Terrain : MonoBehaviour
 	float maxViewDst;
 	Transform player;
 
-	public Terrain(Vector2 coord, int size, float maxviewDst, Transform parent, Transform player, GameObject ground, Material material)
+	public terrain(Vector2 coord, int size, float maxviewDst, Transform parent, Transform player, GameObject ground, Material material)
 	{
 		position = coord * size;
 		this.player = player;

@@ -34,7 +34,7 @@ public class AIController : MonoBehaviour
 
     public bool canSee;
 
-    
+    public NavMeshTriangulation Triangulation;
 
     [Header("Hide")]
     public float radiusHide;
@@ -81,6 +81,7 @@ public class AIController : MonoBehaviour
 
     private void Awake()
     {
+       
         EnemyStats enemyStats = ScriptableObject.CreateInstance<EnemyStats>();
         enemyStats.Getstats(EnemyStats);
         EnemyStats = enemyStats;
@@ -244,16 +245,24 @@ public class AIController : MonoBehaviour
         this.transform.rotation = Quaternion.Slerp(this.transform.rotation, b, Time.deltaTime * 5);
     }
 
-    public void SearchWalkPoint()
+    public IEnumerator Search()
     {
-        //Calculate random point in range
-        float randomZ = Random.Range(-radiusHide, radiusHide);
-        float randomX = Random.Range(-radiusHide, radiusHide);
-
-        walkPoint = new Vector3(transform.position.x + randomX, transform.position.y, transform.position.z + randomZ);
-
-        if (Physics.Raycast(walkPoint, -transform.up, 2f, GroundMask))
-            walkPointSet = true;
+        yield return new WaitForSeconds(3);
+        WaitForSeconds Wait = new WaitForSeconds(2f);
+        while (true)
+        {
+            Triangulation = NavMesh.CalculateTriangulation();
+            int index = Random.Range(1, Triangulation.vertices.Length - 1);
+            Agent.SetDestination(Vector3.Lerp(
+                Triangulation.vertices[index],
+                Triangulation.vertices[index + (Random.value > 0.5f ? -1 : 1)],
+                Random.value)
+            );
+            Debug.Log("Search");
+            yield return null;
+            yield return new WaitUntil(() => Agent.remainingDistance <= Agent.stoppingDistance);
+            yield return Wait;
+        }
     }
 
     public void ReadyAttack()

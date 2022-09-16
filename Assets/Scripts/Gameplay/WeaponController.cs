@@ -13,7 +13,7 @@ public class WeaponController : MonoBehaviour
     public ItemStats GunStats;
     public Color WeaponAmmoType;
 
-    float nextFireTime = 0;
+    public float nextFireTime = 0;
     public bool reloading;
     public float delay;
     public bool canDrop;
@@ -25,7 +25,7 @@ public class WeaponController : MonoBehaviour
     public Rigidbody rb;
     public BoxCollider coll;
 
-    AudioSource audioSource;
+    public AudioSource audioSource { get; protected set; }
 
     public GameObject WeaponRoot;
 
@@ -33,10 +33,10 @@ public class WeaponController : MonoBehaviour
     public GameObject Crosshair;
 
     public int WeaponID;
-    public Interact WeaponIndex { get; private set; }
+    public Interact WeaponIndex { get; protected set; }
     PickupWeapon pickup;
 
-    public bool IsWeaponActive { get; private set; }
+    public bool IsWeaponActive { get; protected set; }
     public bool IsCharging { get; private set; }
 
     void Awake()
@@ -206,69 +206,7 @@ public class WeaponController : MonoBehaviour
 
     }       
 
-    public void AiFire()
-    {
-        if (!reloading)
-        {
-            if (Time.time > nextFireTime)
-            {
-                nextFireTime = Time.time + GunStats.fireRate;
-
-                if (GunStats.CurrentMagazine > 0)
-                {
-                    if (this.Pullet.IsShotGunShell == true)
-                    {
-                        for (int i = 0; i < Pullet.bulletsPerShot; i++)
-                        {
-                            Vector3 direction = ShotgunDirection();
-                            RaycastHit hit;
-                            Vector3 firePointPointerPosition = firePoint.transform.position + firePoint.transform.forward * 100;
-
-                            if (Physics.Raycast(firePoint.transform.position, direction, out hit, 100))
-                            {
-                                firePointPointerPosition = hit.point;
-                            }
-                            firePoint.LookAt(firePointPointerPosition);
-
-                            Bullet bulletobject = Instantiate(GunStats.bulletType.bulletPrefab, firePoint.position, firePoint.rotation).GetComponent<Bullet>();
-                            bulletobject.BulletDamage = GunStats.GunDamage;
-                            this.WeaponAmmoType = bulletobject.ammoTypeColor;
-                        }
-                    }
-                    else
-                    {
-                        Vector3 direction = GetDirection();
-                        Vector3 firePointPointerPosition = firePoint.transform.position + firePoint.transform.forward * 100;
-
-                        RaycastHit hit;
-                        if (Physics.Raycast(firePoint.transform.position, direction, out hit, 100))
-                        {
-                            firePointPointerPosition = hit.point;
-                        }
-                        firePoint.LookAt(firePointPointerPosition);
-                        //Fire
-                        Bullet bulletObject = Instantiate(GunStats.bulletType.bulletPrefab, firePoint.position, firePoint.rotation).GetComponent<Bullet>();
-                        bulletObject.BulletDamage = GunStats.GunDamage;
-                    }
-
-                    // giam Durability khi ban
-                    GunStats.CurrentDurability -= 0.5f;
-                    //UIBob.Instance.RecoilHUD();
-
-                    GunStats.CurrentMagazine--;
-                    audioSource.clip = GunStats.fireAudio;
-                    audioSource.Play();
-                }
-                else
-                {
-                    StartCoroutine(AiReload(true));
-                }
-            }
-        }
-
-    }
-
-    private Vector3 GetDirection()
+    protected Vector3 GetDirection()
     {
         Vector3 direction = transform.forward;
 
@@ -282,7 +220,7 @@ public class WeaponController : MonoBehaviour
 
         return direction;
     }
-    private Vector3 ShotgunDirection()
+    protected Vector3 ShotgunDirection()
     {
         Vector3 direction = transform.forward;
 
@@ -295,21 +233,6 @@ public class WeaponController : MonoBehaviour
         direction.Normalize();
 
         return direction;
-    }
-    
-    private IEnumerator AiReload(bool Reloading)
-    {
-        reloading = Reloading;
-
-        audioSource.PlayOneShot(GunStats.reloadAudio);
-        audioSource.minDistance = 1;
-
-
-        yield return new WaitForSeconds(GunStats.ReloadTime);
-
-        GunStats.CurrentMagazine = GunStats.Magazine;
-        audioSource.minDistance = 10;
-        reloading = !Reloading;
     }
 
     private IEnumerator Reload(bool Reloading)

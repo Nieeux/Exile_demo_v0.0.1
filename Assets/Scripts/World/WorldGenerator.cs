@@ -25,8 +25,8 @@ public class WorldGenerator : MonoBehaviour {
 	public WeightTerrain[] Allstructure;
 	public StructureGenerator.WeightedSpawn[] terrChoice;
 
-	Dictionary<Vector2, Terrain> terrainChunkDictionary = new Dictionary<Vector2, Terrain>();
-	List<Terrain> terrainChunksVisibleLastUpdate = new List<Terrain>();
+	Dictionary<Vector2, terrain> terrainChunkDictionary = new Dictionary<Vector2, terrain>();
+	List<terrain> terrainChunksVisibleLastUpdate = new List<terrain>();
 
 	void Start() 
 	{
@@ -74,7 +74,7 @@ public class WorldGenerator : MonoBehaviour {
 					}
 				} else {
 
-					Terrain newTerrain = new Terrain(viewedChunkCoord, chunkSize, maxViewDst, transform, player, Ground, material);
+					terrain newTerrain = new terrain(viewedChunkCoord, chunkSize, maxViewDst, transform, player, Ground, material);
 					terrainChunkDictionary.Add (viewedChunkCoord, newTerrain);
 					newTerrain.onVisibilityChanged += OnTerrainChunkVisibilityChanged;
 
@@ -83,7 +83,7 @@ public class WorldGenerator : MonoBehaviour {
 			}
 		}
 	}
-	void OnTerrainChunkVisibilityChanged(Terrain chunk, bool isVisible)
+	void OnTerrainChunkVisibilityChanged(terrain chunk, bool isVisible)
 	{
 		if (isVisible)
 		{

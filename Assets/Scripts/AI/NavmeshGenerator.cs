@@ -34,7 +34,7 @@ public class NavmeshGenerator : MonoBehaviour
     }
     private void Start()
     {
-       
+        
         base.Invoke("BuildNavMeshStart", 1f);
     }
     private void BuildNavMeshStart()

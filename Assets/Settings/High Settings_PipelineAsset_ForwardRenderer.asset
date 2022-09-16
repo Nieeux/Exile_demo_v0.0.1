@@ -23,6 +23,33 @@ MonoBehaviour:
     DirectLightingStrength: 0.25
     Radius: 0.035
     SampleCount: 4
+--- !u!114 &-936530034735857378
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 836fba37e8552f541abf20055e192196, type: 3}
+  m_Name: AtmosphericFogRenderFeature
+  m_EditorClassIdentifier: 
+  m_Active: 1
+  settings:
+    color: {r: 0.7490196, g: 0.8901961, b: 1, a: 1}
+    sunColor: {r: 0.6901961, g: 0.8156862, b: 0.8784314, a: 1}
+    fogDensity: 0.001
+    fogDensityPower: 1.5
+    skyAlpha: 1
+    useHeightFog: 1
+    fogHeightStart: 0
+    fogHeightEnd: 40
+    fogHeightPower: 0.3
+    extraFogHeightEnd: 0
+    extraFogHeightPower: 0.1
+    directionalIntesity: 1
+    directionalPower: 1
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -38,9 +65,9 @@ MonoBehaviour:
   debugShaders:
     debugReplacementPS: {fileID: 4800000, guid: cf852408f2e174538bcd9b7fda1c5ae7, type: 3}
   m_RendererFeatures:
-  - {fileID: 1033220213843635194}
   - {fileID: -1837458167735605325}
-  m_RendererFeatureMap: fa2be76c4fbc560eb3a77a1e880980e6
+  - {fileID: -936530034735857378}
+  m_RendererFeatureMap: b3a77a1e880980e61ec11536e5c600f3
   m_UseNativeRenderPass: 0
   postProcessData: {fileID: 11400000, guid: 41439944d30ece34e96484bdb6645b55, type: 2}
   xrSystemData: {fileID: 11400000, guid: 60e1133243b97e347b653163a8c01b64, type: 2}
@@ -77,17 +104,3 @@ MonoBehaviour:
   m_ClusteredRendering: 0
   m_TileSize: 32
   m_IntermediateTextureMode: 1
---- !u!114 &1033220213843635194
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e32e72b6a3f58a24c9033e2b9275eea0, type: 3}
-  m_Name: ScreenSpaceShadows
-  m_EditorClassIdentifier: 
-  m_Active: 1
-  m_Shader: {fileID: 4800000, guid: 0f854b35a0cf61a429bd5dcfea30eddd, type: 3}

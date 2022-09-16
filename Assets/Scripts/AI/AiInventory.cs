@@ -6,7 +6,7 @@ public class AiInventory : MonoBehaviour
     public WeaponAIController CurrentWeapon;
     public ItemStats WeaponStats;
     public ItemStats currentArmor;
-    WeaponIK weaponIK;
+    public WeaponIK weaponIK;
     AIController controller;
     private WeaponController brokeWeapon;
     public Transform WeaponContainer;
@@ -22,7 +22,7 @@ public class AiInventory : MonoBehaviour
     {
         this.random = new Random();
         controller = GetComponent<AIController>();
-        weaponIK = GetComponent<WeaponIK>();
+        //weaponIK = GetComponent<WeaponIK>();
         StarterArmor();
     }
     /*
@@ -213,7 +213,8 @@ public class AiInventory : MonoBehaviour
         weaponPrefab.firePoint = pickup.firePoint;
         weaponPrefab.WeaponRoot = pickup.WeaponRoot;
         weaponPrefab.GunStats = pickup.item;
- 
+
+        weaponIK.SetAimTransform(CurrentWeapon.firePoint);
         //WeaponStats = CurrentWeapon.GunStats;
 
     }
@@ -232,6 +233,7 @@ public class AiInventory : MonoBehaviour
         weaponPrefab.WeaponRoot = pickup.WeaponRoot;
         weaponPrefab.GunStats = pickup.item;
 
+        weaponIK.SetAimTransform(CurrentWeapon.firePoint);
         //WeaponStats = CurrentWeapon.GunStats;
 
     }
@@ -250,6 +252,7 @@ public class AiInventory : MonoBehaviour
         weaponPrefab.WeaponRoot = pickup.WeaponRoot;
         weaponPrefab.GunStats = pickup.item;
 
+        weaponIK.SetAimTransform(CurrentWeapon.firePoint);
         //WeaponStats = CurrentWeapon.GunStats;
     }
 }

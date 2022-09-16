@@ -4,8 +4,6 @@ using UnityEngine;
 
 public class AI_SearchTarget : MonoBehaviour, AIstate
 {
-    public float padleft = 0;
-
 
     public StateType GetState()
     {
@@ -13,7 +11,7 @@ public class AI_SearchTarget : MonoBehaviour, AIstate
     }
     public void AiEnter(AIController agent)
     {
-        //float Rot = agent.transform.localRotation.eulerAngles.y;
+        agent.StartCoroutine(agent.Search());
 
     }
     public void AiUpdate(AIController agent)
@@ -36,16 +34,7 @@ public class AI_SearchTarget : MonoBehaviour, AIstate
             
             else if (agent.remenberTarget == false)
             {
-
-                if (!agent.walkPointSet) agent.Invoke("SearchWalkPoint", 5f);
-                if (agent.walkPointSet)
-                    agent.Agent.SetDestination(agent.walkPoint);
-
-                Vector3 distanceToWalkPoint = agent.transform.position - agent.walkPoint;
-
-                //Walkpoint reached
-                if (distanceToWalkPoint.magnitude < 1f)
-                    agent.walkPointSet = false;
+                
             }
             
 
@@ -56,6 +45,6 @@ public class AI_SearchTarget : MonoBehaviour, AIstate
 
     public void AiExit(AIController agent)
     {
-
+        agent.StopCoroutine(agent.Search());
     }
 }

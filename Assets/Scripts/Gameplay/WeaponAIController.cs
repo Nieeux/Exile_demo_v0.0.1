@@ -3,43 +3,11 @@ using UnityEngine;
 using DG.Tweening;
 
 [RequireComponent(typeof(AudioSource))]
-public class WeaponAIController : MonoBehaviour
+public class WeaponAIController : WeaponController
 {
-
-    public Transform firePoint;
-    public bool singleFire = false;
-
-    public ItemStats GunStats;
-    public Color WeaponAmmoType;
-
-    float nextFireTime = 0;
-    public bool reloading;
-    public float delay;
-    public bool canDrop;
-    public bool canFire = false;
-
-    private Vector3 BulletSpreadVariance = new Vector3(0.01f, 0.01f, 0.01f);
-    private Vector3 BulletShotGun = new Vector3(0.1f, 0.1f, 0.1f);
-
-    public Rigidbody rb;
-    public BoxCollider coll;
-
-    AudioSource audioSource;
-
-    public GameObject WeaponRoot;
-
-    public Bullet Pullet;
-    public GameObject Crosshair;
-
-    public int WeaponID;
-    public Interact WeaponIndex { get; private set; }
-
-    public bool IsWeaponActive { get; private set; }
-    public bool IsCharging { get; private set; }
-
     void Start()
     {
-        this.WeaponIndex = GetComponent<PickupWeapon>();
+        base.WeaponIndex = GetComponent<PickupWeapon>();
         rb = base.GetComponent<Rigidbody>();
         coll = base.GetComponent<BoxCollider>();
 
@@ -51,13 +19,7 @@ public class WeaponAIController : MonoBehaviour
 
         audioSource = GetComponent<AudioSource>();
 
-    }
-
-    private void BrokenWeapon()
-    {
-        //WeaponInventory.Instance.BrokeWeapon(this, GunStats);
-
-    }       
+    } 
 
     public void AiFire()
     {
@@ -104,9 +66,9 @@ public class WeaponAIController : MonoBehaviour
                         bulletObject.BulletDamage = GunStats.GunDamage;
                     }
 
-                    // giam Durability khi ban
+
                     GunStats.CurrentDurability -= 0.5f;
-                    //UIBob.Instance.RecoilHUD();
+
 
                     GunStats.CurrentMagazine--;
                     audioSource.clip = GunStats.fireAudio;
@@ -119,35 +81,6 @@ public class WeaponAIController : MonoBehaviour
             }
         }
 
-    }
-
-    private Vector3 GetDirection()
-    {
-        Vector3 direction = transform.forward;
-
-        direction += new Vector3(
-            Random.Range(-BulletSpreadVariance.x, BulletSpreadVariance.x),
-            Random.Range(-BulletSpreadVariance.y, BulletSpreadVariance.y),
-            Random.Range(-BulletSpreadVariance.z, BulletSpreadVariance.z)
-        );
-
-        direction.Normalize();
-
-        return direction;
-    }
-    private Vector3 ShotgunDirection()
-    {
-        Vector3 direction = transform.forward;
-
-        direction += new Vector3(
-            Random.Range(-BulletShotGun.x, BulletShotGun.x),
-            Random.Range(-BulletShotGun.y, BulletShotGun.y),
-            Random.Range(-BulletShotGun.z, BulletShotGun.z)
-        );
-
-        direction.Normalize();
-
-        return direction;
     }
     
     private IEnumerator AiReload(bool Reloading)
@@ -163,18 +96,5 @@ public class WeaponAIController : MonoBehaviour
         GunStats.CurrentMagazine = GunStats.Magazine;
         audioSource.minDistance = 10;
         reloading = !Reloading;
-    }
-
-    public void ShowWeapon(bool show)
-    {
-        WeaponRoot.SetActive(show);
-        canFire = show;
-        //enabled = (show);
-        if (show && GunStats.ChangeWeaponAudio)
-        {
-            audioSource.PlayOneShot(GunStats.ChangeWeaponAudio);
-        }
-
-        IsWeaponActive = show;
     }
 }

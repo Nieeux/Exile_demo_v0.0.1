@@ -11,7 +11,7 @@ public class AI_Attack : MonoBehaviour, AIstate
 
     public void AiEnter(AIController agent)
     {
-        agent.Agent.destination = agent.Targetposition;
+        //agent.Agent.destination = agent.Targetposition;
     }
 
     public void AiUpdate(AIController agent)

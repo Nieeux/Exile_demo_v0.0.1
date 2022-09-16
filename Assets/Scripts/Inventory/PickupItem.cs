@@ -37,7 +37,7 @@ public class PickupItem : MonoBehaviour, Interact
 	}
 	public string GetName()
 	{
-		return "E | " + this.item.GetName();
+		return "[E] | " + this.item.GetName();
 	}
 
 	public ItemStats GetItem()
